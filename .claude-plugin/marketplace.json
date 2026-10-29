@@ -1,0 +1,16 @@
+{
+  "name": "web-playbook-local",
+  "owner": {
+    "name": "Mick Lu"
+  },
+  "plugins": [
+    {
+      "name": "web-playbook",
+      "source": "./",
+      "description": "A step-by-step handbook for websites and interfaces."
+    }
+  ],
+  "metadata": {
+    "description": "Local marketplace for the Web Playbook plugin."
+  }
+}
