@@ -5,3 +5,4 @@
 "S22","「Claude 當 SEO 專家」三工具貼文（你提供的截圖：GSC MCP、OpenSEO、GEO Optimizer Skill）","https://github.com/Suganthan-Mohanadasan/Suganthans-GSC-MCP ；https://github.com/every-app/open-seo ；https://github.com/Auriti-Labs/geo-optimizer-skill","2026-10-28","沿用製片手冊的來源代號；原文備份在 production-playbook/sources/"
 "S31","REA: Reverse Engineer Anything（morluto/rea，MIT）","https://github.com/morluto/rea","2026-10-30","README 已讀；未安裝"
 "R1","實戰經驗：產品網站的改版與上線（目的重組、照片取代線稿、公開頁與後台分開）","本手冊作者的製作紀錄","2026-10-30",""
+"S32","設計工具清單（你提供的截圖與名單：Taste Skill、Web Design Guidelines、Awesome DESIGN.md、Image to Code、Playwright CLI、Three.js、GSAP、Design DNA、Motion Design）","你提供的截圖；各工具 repo 見 tools.csv","2026-10-31","Design DNA、Motion Design 依名稱比對星數最多的 repo；Image to Code 在 taste-skill repo 裡找不到"

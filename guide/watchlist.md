@@ -19,3 +19,8 @@
 | T-01 | Google Search Console MCP（Suganthan） | 待試 | 讓 Claude 直接讀 Search Console 的搜尋數據：找出排名在第 2 頁、差一點就上首頁的關鍵字，建議要改哪一頁；29 個工具，每次回答附資料出處 | — |
 | T-03 | GEO Optimizer | 待試 | 檢查網站對 ChatGPT、Perplexity、Google AI 摘要、Gemini、Claude 的能見度，給 0–100 分、九大類結果和修正建議 | — |
 | T-05 | REA（Reverse Engineer Anything） | 待查 | 想知道別人網站的某個互動或效果怎麼做時 | 安裝前確認要分析的網站條款允許 |
+| T-06 | Awesome DESIGN.md（VoltAgent） | 待試 | 要定設計系統、想看好的 DESIGN.md 怎麼寫時 | — |
+| T-07 | Playwright CLI（Microsoft） | 待試 | 要批次截圖、查選擇器、錄測試時 | — |
+| T-08 | Image to Code | 待查 | — | 找到正確出處時 |
+| T-09 | Design DNA（zanwei） | 待試 | 有參考介面、想把風格量化成規格時 | — |
+| T-14 | Motion Design 技能（LottieFiles） | 待試 | 要設計動效的時間、緩動、編排時 | — |

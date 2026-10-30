@@ -114,7 +114,8 @@
           "do": "找 2–3 個參考，寫下要借的版面、節奏、字體處理",
           "ways": [
             "better-design 的靈感與設計系統工具",
-            "extract-style 從網址擷取風格"
+            "extract-style 從網址擷取風格",
+            "Design DNA 把參考轉成規格"
           ]
         },
         {
@@ -124,7 +125,8 @@
           "ways": [
             "design:design-system 技能",
             "better-design:create-design-system",
-            "design-taste-frontend 技能"
+            "design-taste-frontend 技能",
+            "拿 Awesome DESIGN.md 當範本"
           ]
         },
         {
@@ -174,7 +176,12 @@
         {
           "id": "3.3",
           "name": "動效",
-          "do": "動效有目的、短、可關閉（尊重 reduced motion）"
+          "do": "動效有目的、短、可關閉（尊重 reduced motion）",
+          "ways": [
+            "Motion Design 技能定時間和緩動",
+            "GSAP（時間軸、捲動）",
+            "Three.js（真的需要 3D 時）"
+          ]
         },
         {
           "id": "3.4",
@@ -259,7 +266,10 @@
         {
           "id": "5.3",
           "name": "跨裝置",
-          "do": "實際在手機和桌機的瀏覽器看一次"
+          "do": "實際在手機和桌機的瀏覽器看一次",
+          "ways": [
+            "Playwright CLI 批次截圖"
+          ]
         },
         {
           "id": "5.4",
