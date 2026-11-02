@@ -115,7 +115,8 @@
           "ways": [
             "better-design 的靈感與設計系統工具",
             "extract-style 從網址擷取風格",
-            "Design DNA 把參考轉成規格"
+            "Design DNA 把參考轉成規格",
+            "參考圖庫（Land-book、Supahero 等）截圖給 AI"
           ]
         },
         {
@@ -126,7 +127,8 @@
             "design:design-system 技能",
             "better-design:create-design-system",
             "design-taste-frontend 技能",
-            "拿 Awesome DESIGN.md 當範本"
+            "拿 Awesome DESIGN.md 當範本",
+            "logo-design-skill 做 Logo"
           ]
         },
         {

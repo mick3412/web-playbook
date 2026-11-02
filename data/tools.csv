@@ -13,3 +13,6 @@
 "T-12","Taste Skill（design-taste-frontend）","https://github.com/Leonxlnx/taste-skill","3","3.1","全部","要避免 AI 味的版面和視覺時","前端設計品味規則","—","MIT","寬鬆","免費","★★★","已安裝","目前只裝在 ITA 專案；其他專案要另外裝","要在其他專案用時","2026-10-31"
 "T-13","Web Design Guidelines（Vercel）","https://github.com/vercel-labs/agent-skills","5","5.1","全部","審查介面是否符合規範時","依 Web Interface Guidelines 審查 UI 程式碼","—","未標","未標","免費","★★★","已安裝","已裝在 user 層級","","2026-10-31"
 "T-14","Motion Design 技能（LottieFiles）","https://github.com/LottieFiles/motion-design-skill","3","3.3","全部","要設計動效的時間、緩動、編排時","把動畫原則寫成 agent 技能","—","MIT","寬鬆","免費","★★","待試","只從原作者 repo 裝，先讀內容","","2026-10-31"
+"T-15","網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery）","https://land-book.com/","2","2.1","行銷網站,登陸頁","找版面參考時","登陸頁、hero 區塊、定價頁、社會證明、選單、分享預覽圖、簡報的真實範例庫","—","網站內容各自所有","未標","免費","★★★","待試","截圖給 AI，借結構不抄文字","","2026-11-02"
+"T-16","logo-design-skill（kaankiziltug）","https://github.com/kaankiziltug/logo-design-skill","2","2.2","全部","要做或改 Logo 時","問需求、發想概念、畫 SVG Logo、測小尺寸和單色版、輸出品牌檔案","—","MIT","寬鬆","免費","★★","待試","從原作者 Releases 下載；先讀內容","","2026-11-02"
+"T-17","ScrollCraft","https://github.com/singhharsh1708/scrollcraft","3","3.3","行銷網站,登陸頁","要做捲動驅動的網站時","捲動式網站的範本與技能","—","MIT","寬鬆","免費","★","待查","搜到的 repo 只有約 100 星，可能不是原文指的那個","確認正確出處時","2026-11-02"

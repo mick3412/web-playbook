@@ -9,6 +9,8 @@
 | better-design MCP（T-04） | 已安裝 | 不明 | 不明（未標） | 建設計系統、找圖示庫、審查版面和間距時 |
 | [Awesome DESIGN.md（VoltAgent）](https://github.com/VoltAgent/awesome-design-md)（T-06） | 待試 | 免費 | MIT（寬鬆） | 要定設計系統、想看好的 DESIGN.md 怎麼寫時 |
 | [Design DNA（zanwei）](https://github.com/zanwei/design-dna)（T-09） | 待試 | 免費 | MIT（寬鬆） | 有參考介面、想把風格量化成規格時 |
+| [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時 |
+| [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [REA（Reverse Engineer Anything）](https://github.com/morluto/rea)（T-05） | 待查 | 免費 | MIT（寬鬆） | 想知道別人網站的某個互動或效果怎麼做時 |
 
 ## 3 視覺設計
@@ -19,6 +21,7 @@
 | [GSAP](https://github.com/greensock/GSAP)（T-11） | 已整合 | 免費 | GSAP Standard No Charge License（不是開源授權）（特殊） | 網頁動效需要時間軸、捲動觸發、文字拆分時 |
 | [Taste Skill（design-taste-frontend）](https://github.com/Leonxlnx/taste-skill)（T-12） | 已安裝 | 免費 | MIT（寬鬆） | 要避免 AI 味的版面和視覺時 |
 | [Motion Design 技能（LottieFiles）](https://github.com/LottieFiles/motion-design-skill)（T-14） | 待試 | 免費 | MIT（寬鬆） | 要設計動效的時間、緩動、編排時 |
+| [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 待查 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 
 ## 4 建置
 

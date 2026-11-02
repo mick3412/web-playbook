@@ -6,6 +6,8 @@
 
 | 代號 | 狀態 | 要點 | 複查條件 |
 |---|---|---|---|
+| S2-01 | 待試 | 給 AI 2–3 張參考截圖，只借結構、網格和字體，不抄文字 | — |
+| CO-01 | 待試 | 交代 AI 寫目標不寫步驟，學方法不學口氣 | — |
 | S1-01 | 待試 | 一頁只有一個主軸 | — |
 | S3-01 | 待試 | 網站動效的三條底線 | — |
 | S5-01 | 待試 | 深色和淺色模式都要量對比 | — |
@@ -24,3 +26,6 @@
 | T-08 | Image to Code | 待查 | — | 找到正確出處時 |
 | T-09 | Design DNA（zanwei） | 待試 | 有參考介面、想把風格量化成規格時 | — |
 | T-14 | Motion Design 技能（LottieFiles） | 待試 | 要設計動效的時間、緩動、編排時 | — |
+| T-15 | 網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery） | 待試 | 找版面參考時 | — |
+| T-16 | logo-design-skill（kaankiziltug） | 待試 | 要做或改 Logo 時 | — |
+| T-17 | ScrollCraft | 待查 | 要做捲動驅動的網站時 | 確認正確出處時 |
