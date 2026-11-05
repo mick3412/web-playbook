@@ -7,12 +7,18 @@
 | 代號 | 狀態 | 要點 | 複查條件 |
 |---|---|---|---|
 | S2-01 | 待試 | 給 AI 2–3 張參考截圖，只借結構、網格和字體，不抄文字 | — |
+| S3-05 | 待試 | 版面的 7 條網格原則 | — |
 | CO-01 | 待試 | 交代 AI 寫目標不寫步驟，學方法不學口氣 | — |
+| CO-02 | 待試 | 把參考變成風格說明：拆解、勾選、寫規則、套用（Give AI My Taste） | — |
 | S1-01 | 待試 | 一頁只有一個主軸 | — |
 | S3-01 | 待試 | 網站動效的三條底線 | — |
+| S3-04 | 待試 | 讓網站有質感的互動：每一個都要解決一個問題，不是裝飾 | — |
+| S3-06 | 待試 | 網頁 3D：用材質而不是面數做寫實，一頁只放一個 WebGL 重點 | — |
 | S5-01 | 待試 | 深色和淺色模式都要量對比 | — |
+| S5-02 | 待試 | 做完的網站用 5 段提示詞檢查：層級、AI 感、前 5 秒、設計師檢查、手機 | — |
 | S6-01 | 待試 | 上線前做 AI 搜尋能見度健檢，上線後讀 Search Console | — |
 | S7-01 | 待試 | 量測前先排除自己的瀏覽 | — |
+| S8-01 | 待試 | SEO 修正先看證據，依影響和工作量排序，一次改一項 | — |
 
 ## 待試與待查的工具
 
@@ -29,3 +35,6 @@
 | T-15 | 網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery） | 待試 | 找版面參考時 | — |
 | T-16 | logo-design-skill（kaankiziltug） | 待試 | 要做或改 Logo 時 | — |
 | T-17 | ScrollCraft | 待查 | 要做捲動驅動的網站時 | 確認正確出處時 |
+| T-18 | 設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells） | 待試 | 找特定元件或細節的參考時 | — |
+| T-19 | 網頁動態元件庫（React Bits、Aceternity UI） | 待試 | 要動態文字、背景、區塊時 | — |
+| T-20 | WebGL 特效（ShaderGradient、Liquid Logo、Liquid Glass JS、React Three Fiber） | 待試 | 首屏需要一個動態重點時 | — |

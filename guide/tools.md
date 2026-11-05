@@ -11,7 +11,9 @@
 | [Design DNA（zanwei）](https://github.com/zanwei/design-dna)（T-09） | 待試 | 免費 | MIT（寬鬆） | 有參考介面、想把風格量化成規格時 |
 | [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時 |
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
+| [設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells）](https://scrolltide.co/)（T-18） | 待試 | 免費 | 網站內容各自所有（未標） | 找特定元件或細節的參考時 |
 | [REA（Reverse Engineer Anything）](https://github.com/morluto/rea)（T-05） | 待查 | 免費 | MIT（寬鬆） | 想知道別人網站的某個互動或效果怎麼做時 |
+| [figmaformotion](https://figmaformotion.com/v2)（T-21） | 未採用 | 付費 | 付費授權（未標） | — |
 
 ## 3 視覺設計
 
@@ -21,12 +23,14 @@
 | [GSAP](https://github.com/greensock/GSAP)（T-11） | 已整合 | 免費 | GSAP Standard No Charge License（不是開源授權）（特殊） | 網頁動效需要時間軸、捲動觸發、文字拆分時 |
 | [Taste Skill（design-taste-frontend）](https://github.com/Leonxlnx/taste-skill)（T-12） | 已安裝 | 免費 | MIT（寬鬆） | 要避免 AI 味的版面和視覺時 |
 | [Motion Design 技能（LottieFiles）](https://github.com/LottieFiles/motion-design-skill)（T-14） | 待試 | 免費 | MIT（寬鬆） | 要設計動效的時間、緩動、編排時 |
+| [WebGL 特效（ShaderGradient、Liquid Logo、Liquid Glass JS、React Three Fiber）](https://cindyzhu.com.au/guides/4-github-design-repos)（T-20） | 待試 | 免費 | R3F、Liquid Glass JS 為 MIT；ShaderGradient 未標；Liquid Logo 自訂（特殊） | 首屏需要一個動態重點時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 待查 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 
 ## 4 建置
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
+| [網頁動態元件庫（React Bits、Aceternity UI）](https://reactbits.dev/)（T-19） | 待試 | 部分付費 | 依各庫條款（特殊） | 要動態文字、背景、區塊時 |
 | Image to Code（T-08） | 待查 | 不明 | 未標（未標） | — |
 
 ## 5 品質
