@@ -16,6 +16,8 @@
 | S3-06 | 待試 | 網頁 3D：用材質而不是面數做寫實，一頁只放一個 WebGL 重點 | — |
 | S5-01 | 待試 | 深色和淺色模式都要量對比 | — |
 | S5-02 | 待試 | 做完的網站用 5 段提示詞檢查：層級、AI 感、前 5 秒、設計師檢查、手機 | — |
+| S5-03 | 待試 | 7 種一看就是 AI 做的網頁痕跡，逐項檢查 | — |
+| S5-04 | 待試 | 檢查分三級：底線擋上線、習慣要寫理由才能留、加分不擋 | — |
 | S6-01 | 待試 | 上線前做 AI 搜尋能見度健檢，上線後讀 Search Console | — |
 | S7-01 | 待試 | 量測前先排除自己的瀏覽 | — |
 | S8-01 | 待試 | SEO 修正先看證據，依影響和工作量排序，一次改一項 | — |
@@ -38,3 +40,5 @@
 | T-18 | 設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells） | 待試 | 找特定元件或細節的參考時 | — |
 | T-19 | 網頁動態元件庫（React Bits、Aceternity UI） | 待試 | 要動態文字、背景、區塊時 | — |
 | T-20 | WebGL 特效（ShaderGradient、Liquid Logo、Liquid Glass JS、React Three Fiber） | 待試 | 首屏需要一個動態重點時 | — |
+| T-22 | Hallmark | 待試 | 建新頁、改版既有頁、或只想檢查 AI 感時 | 做下一個網站時 |
+| T-23 | Claude SEO | 待試 | 網站上線前後做 SEO 與 AI 搜尋健檢 | 網站上線前 |

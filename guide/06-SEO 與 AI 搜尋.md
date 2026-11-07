@@ -20,6 +20,7 @@
 
 **這一步可以試的新工具：**
 - GEO Optimizer（T-03，待試）：檢查網站對 ChatGPT、Perplexity、Google AI 摘要、Gemini、Claude 的能見度，給 0–100 分、九大類結果和修正建議
+- Claude SEO（T-23，待試）：網站上線前後做 SEO 與 AI 搜尋健檢；複查條件：網站上線前
 
 ## 要注意
 

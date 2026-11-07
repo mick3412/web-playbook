@@ -24,6 +24,7 @@
 | [Taste Skill（design-taste-frontend）](https://github.com/Leonxlnx/taste-skill)（T-12） | 已安裝 | 免費 | MIT（寬鬆） | 要避免 AI 味的版面和視覺時 |
 | [Motion Design 技能（LottieFiles）](https://github.com/LottieFiles/motion-design-skill)（T-14） | 待試 | 免費 | MIT（寬鬆） | 要設計動效的時間、緩動、編排時 |
 | [WebGL 特效（ShaderGradient、Liquid Logo、Liquid Glass JS、React Three Fiber）](https://cindyzhu.com.au/guides/4-github-design-repos)（T-20） | 待試 | 免費 | R3F、Liquid Glass JS 為 MIT；ShaderGradient 未標；Liquid Logo 自訂（特殊） | 首屏需要一個動態重點時 |
+| [Hallmark](https://github.com/Nutlope/hallmark)（T-22） | 待試 | 免費 | MIT（圖庫照片各有 CC0／公有領域／CC BY／CC BY-SA，使用時要標註）（寬鬆） | 建新頁、改版既有頁、或只想檢查 AI 感時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 待查 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 
 ## 4 建置
@@ -45,6 +46,7 @@
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
 | [GEO Optimizer](https://github.com/Auriti-Labs/geo-optimizer-skill)（T-03） | 待試 | 不明 | MIT（寬鬆） | 檢查網站對 ChatGPT、Perplexity、Google AI 摘要、Gemini、Claude 的能見度，給 0–100 分、九大類結果和修正建議 |
+| [Claude SEO](https://github.com/AgriciDaniel/claude-seo)（T-23） | 待試 | 免費 | MIT（寬鬆） | 網站上線前後做 SEO 與 AI 搜尋健檢 |
 | [OpenSEO](https://github.com/every-app/open-seo)（T-02） | 避開 | 不明 | MIT（寬鬆） | 開源版的 Semrush／Ahrefs：關鍵字研究、排名追蹤、反向連結、網站健檢 |
 
 ## 8 量測與迭代
