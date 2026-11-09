@@ -42,6 +42,7 @@
 |---|---|---|---|---|
 | [Web Design Guidelines（Vercel）](https://github.com/vercel-labs/agent-skills)（T-13） | 已安裝 | 免費 | 未標（未標） | 審查介面是否符合規範時 |
 | [Playwright CLI（Microsoft）](https://github.com/microsoft/playwright-cli)（T-07） | 待試 | 免費 | Apache-2.0（寬鬆） | 要批次截圖、查選擇器、錄測試時 |
+| [agency-agents（網站挑 3 個）](https://github.com/msitarzewski/agency-agents)（T-28） | 待試 | 免費 | MIT（寬鬆） | 上線前要獨立審查：通用感、無障礙、受眾模擬 |
 
 ## 6 SEO 與 AI 搜尋
 

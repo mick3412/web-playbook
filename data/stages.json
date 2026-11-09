@@ -262,7 +262,7 @@
         {
           "id": "5.1",
           "name": "無障礙",
-          "do": "WCAG AA：對比、替代文字、鍵盤、標題層級",
+          "do": "WCAG AA：對比、替代文字、鍵盤、標題層級；預設認為有障礙，沒用鍵盤和螢幕閱讀器實際走過主要流程就不算通過",
           "ways": [
             "design:accessibility-review 技能",
             "web-design-guidelines 技能"
