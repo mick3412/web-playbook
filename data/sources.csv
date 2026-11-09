@@ -25,3 +25,4 @@
 "S49","yt_tiny_miner IG 貼文介紹 Hallmark（你提供的截圖）＋ Hallmark README 查證","https://github.com/Nutlope/hallmark","2026-11-08","貼文星數不採用；兩項功能已對照 README 確認"
 "S50","Casper（Wcc723）〈Claude Code Skill 設計風格圖鑑〉58 種風格，每種一份 SKILL.md（repo CLAUDE.md＋design-minimalism SKILL.md）","https://github.com/Wcc723/claude-skill-design-gallery","2026-11-09","線上版 https://www.casper.tw/claude-skill-design-gallery/；repo 無 LICENSE"
 "S51","agency-agents（msitarzewski，MIT）設計角色：ui-finish-gate-reviewer、accessibility-auditor","https://github.com/msitarzewski/agency-agents","2026-11-10","讀角色檔原文；收方法，不安裝"
+"S52","AGENTS.md 介面原則截圖（使用者提供）：Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.","使用者提供的截圖","2026-11-10","原文出處未知"
