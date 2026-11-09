@@ -23,10 +23,12 @@
 | [Three.js](https://github.com/mrdoob/three.js)（T-10） | 已整合 | 免費 | MIT（寬鬆） | 頁面真的需要 3D 時 |
 | [GSAP](https://github.com/greensock/GSAP)（T-11） | 已整合 | 免費 | GSAP Standard No Charge License（不是開源授權）（特殊） | 網頁動效需要時間軸、捲動觸發、文字拆分時 |
 | [Taste Skill（design-taste-frontend）](https://github.com/Leonxlnx/taste-skill)（T-12） | 已安裝 | 免費 | MIT（寬鬆） | 要避免 AI 味的版面和視覺時 |
+| [unslop](https://github.com/heydamir/unslop)（T-29） | 已安裝 | 免費 | CC BY 4.0（須標註作者）（寬鬆） | 畫面一看就是 AI 做的、要改版或上線前審查視覺時 |
 | [Motion Design 技能（LottieFiles）](https://github.com/LottieFiles/motion-design-skill)（T-14） | 待試 | 免費 | MIT（寬鬆） | 要設計動效的時間、緩動、編排時 |
 | [WebGL 特效（ShaderGradient、Liquid Logo、Liquid Glass JS、React Three Fiber）](https://cindyzhu.com.au/guides/4-github-design-repos)（T-20） | 待試 | 免費 | R3F、Liquid Glass JS 為 MIT；ShaderGradient 未標；Liquid Logo 自訂（特殊） | 首屏需要一個動態重點時 |
 | [Hallmark](https://github.com/Nutlope/hallmark)（T-22） | 待試 | 免費 | MIT（圖庫照片各有 CC0／公有領域／CC BY／CC BY-SA，使用時要標註）（寬鬆） | 建新頁、改版既有頁、或只想檢查 AI 感時 |
 | [PulsoIcon](https://github.com/CityPulso/PulsoIcon)（T-26） | 待試 | 免費 | ISC（部分圖示沿用 Lucide、Tabler 等原授權；品牌 logo 是各品牌商標）（寬鬆） | 按鈕、連結、分頁要有輕微的滑過動態圖示時 |
+| [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 待試 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 待查 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 
 ## 4 建置
