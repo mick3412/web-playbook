@@ -27,6 +27,8 @@ If `~/.config/web-playbook/home` does not exist, tell the user to run `python3 "
 
 The product's own facts and rules live in `.agents/product-marketing.md` in the product's project (shared with the other playbooks); read it when it exists. The prompt hook prints one line per message while a piece of work is active (`▶ 作品 …`).
 
+Design details follow a reference ladder (S2-04). At step 2.1, before proposing any design detail, build the reference table from L1 (whole site) through L2 (page structure) and L3 (every section this work uses) to L4 (components and details: buttons, cards, type scale, spacing, micro-interactions, motion). Every row says what is borrowed and the value it becomes; every value in the design system and the page traces to a row or says why it is custom. Use free sources only. The same applies when a small request changes a section or component without an open piece of work: find references at that level before giving the details.
+
 ## Never on your own
 
 - Deploy, change DNS or domains, publish, or turn on tracking for real visitors: prepare it, the user approves.
