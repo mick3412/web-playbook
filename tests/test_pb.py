@@ -92,5 +92,20 @@ class PlaybookTest(unittest.TestCase):
         self.assertIn(f"{tid}: 待試 needs 測試方法", self.pb("check", ok=False))
 
 
+    def test_trials_caps_each_stage_and_drops_logged_items(self):
+        import json, re
+        stype = next(iter(json.loads((self.home / "data" / "stages.json").read_text(encoding="utf-8"))["asset_types"]))
+        self.pb("start", "trial-demo", "--type", stype)
+        out = self.pb("trials")
+        for block in out.split("\n## ")[1:]:
+            self.assertLessEqual(block.count("- [ ] **"), 3, block)
+        first = re.search(r"- \[ \] \*\*([A-Z]+-\d+)\*\*", out)
+        if first:
+            self.pb("run-log", "--entries", first[1], "--result", "有效", "--name", "trial-demo")
+            self.assertNotIn(f"**{first[1]}**", self.pb("trials"))
+        if out.count("- [ ] **") > 1:
+            self.assertIn("排定要測", self.pb("done", "trial-demo"))
+
+
 if __name__ == "__main__":
     unittest.main()

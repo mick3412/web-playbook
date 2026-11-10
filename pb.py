@@ -14,6 +14,7 @@ playbook, its state folder in the product's project and its environment variable
     python3 pb.py similar "<text>"          find entries that say something close
     python3 pb.py next-id <stage>           next free entry id for a stage or track
     python3 pb.py run-log --entries S6-03,S3-01,T-05 --result 有效 [--name <production>] [--note ...]
+    python3 pb.py trials [--name <production>] [--save]   the open items this piece of work tests, by stage (--type X previews)
     python3 pb.py review                    upgrade/downgrade/recheck suggestions from runs.csv and recheck conditions
     python3 pb.py log "<message>"           append a line to data/changelog.md
     python3 pb.py setup                     remember where this repo lives, so writes land here and not in a plugin cache
@@ -339,7 +340,7 @@ def render_card(key: str, asset: str | None = None) -> str:
     return "\n".join(out)
 
 
-def brief(key: str, asset: str | None, checked: set[str]) -> str:
+def brief(key: str, asset: str | None, checked: set[str], work: str | None = None) -> str:
     st = stages()
     p = card_parts(key, asset)
     s = p["stage"]
@@ -362,7 +363,72 @@ def brief(key: str, asset: str | None, checked: set[str]) -> str:
         "注意：" + ("；".join(r["要點"] + f"（{r['id']}）" for r in watch) or "（無）"),
         "提升：" + ("；".join(r["要點"] + f"（{r['id']}）" for r in up) or "（無）"),
     ]
+    if work and s:
+        picked = trial_pick(asset, work, checked).get(str(s["id"]), ([], []))[0]
+        if picked:
+            lines.append("這一步要測：" + "；".join(f"{r['id']}（{how(r)}）" for r in picked) + "；完成後用 run-log 記結果")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------- trials: which open (待試) items this piece of work tests
+TRIALS_PER_STAGE = 3
+TOOL_TRIALS_PER_WORK = 2
+
+
+def how(r: dict) -> str:
+    """The 怎麼做 part of a test method, short enough for one line."""
+    m = re.search(r"怎麼做：([^｜]+)", r["測試方法"])
+    return (m[1] if m else r["測試方法"])[:60]
+
+
+def trial_pick(asset: str | None, work: str, checked: set[str]) -> dict[str, tuple[list[dict], list[dict]]]:
+    """Per stage: (picked, later). At most TRIALS_PER_STAGE per stage and TOOL_TRIALS_PER_WORK tools in all,
+    best rated first, entries before tools; skips what this work already logged or ticked off."""
+    st = stages()
+    logged = {i for r in runs() if r["作品"] == work for i in split(r["條目id"])}
+    rows = [r for r in entries() + tools() if r["狀態"] == "待試" and for_asset(r, asset)
+            and r["id"] not in logged and r["id"] not in checked]
+    by_stage: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        by_stage[(split(r["階段"]) or [""])[0]].append(r)
+    out: dict[str, tuple[list[dict], list[dict]]] = {}
+    tools_used = 0
+    for k in stage_keys(st) + sorted(set(by_stage) - set(stage_keys(st))):
+        group = sorted(by_stage.get(k, []), key=lambda r: (rating_key(r)[0], r["id"].startswith("T-"), r["id"]))
+        picked, later = [], []
+        for r in group:
+            is_tool = r["id"].startswith("T-")
+            if len(picked) < TRIALS_PER_STAGE and (not is_tool or tools_used < TOOL_TRIALS_PER_WORK):
+                picked.append(r)
+                tools_used += is_tool
+            else:
+                later.append(r)
+        if picked or later:
+            out[k] = (picked, later)
+    return out
+
+
+def trials_text(work: str, asset: str | None, checked: set[str]) -> str:
+    st = stages()
+    plan = trial_pick(asset, work, checked)
+    out = [f"# 測試清單：{work}" + (f"（{asset}）" if asset else ""), "",
+           f"> 由 `pb.py trials` 產生，{today()}。每階段最多測 {TRIALS_PER_STAGE} 項、整支作品最多試 {TOOL_TRIALS_PER_WORK} 個工具；"
+           "做到那一步時照測試方法做，作品完成後用 `pb.py run-log --entries <代號> --result 有效|無效|需調整 --note \"<量到的結果>\"` 記下。", ""]
+    total = 0
+    for k, (picked, later) in plan.items():
+        s = stage_by_key(st, k)
+        out.append(f"## {s['id']} {s['name']}" if s else f"## {k}")
+        out.append("")
+        for r in picked:
+            name = r.get("要點") or r.get("工具")
+            out.append(f"- [ ] **{r['id']}** {name}（{r['實用度']}）")
+            out.append(f"  - {r['測試方法']}")
+            total += 1
+        if later:
+            out.append("- 之後再測：" + "、".join(f"{r['id']}" for r in later))
+        out.append("")
+    out.append(f"這支作品要測 {total} 項。" if total else "這支作品沒有可測的待試項目。")
+    return "\n".join(out) + "\n"
 
 
 def build_pages() -> dict[Path, str]:
@@ -604,9 +670,10 @@ def cmd_card(a) -> int:
     if a.brief:
         state = load_state()
         checked = set()
-        if state.get("current") in state["items"]:
-            checked = set(state["items"][state["current"]]["checked"])
-        print(brief(a.stage, a.type, checked) if stage_by_key(st, a.stage) else render_card(a.stage, a.type))
+        work = state.get("current") if state.get("current") in state["items"] else None
+        if work:
+            checked = set(state["items"][work]["checked"])
+        print(brief(a.stage, a.type, checked, work) if stage_by_key(st, a.stage) else render_card(a.stage, a.type))
     else:
         print(render_card(a.stage, a.type))
     return 0
@@ -636,7 +703,7 @@ def cmd_start(a) -> int:
     save_state(state)
     print(status_text(a.name, item))
     print()
-    print(brief(str(a.stage), a.type, set()))
+    print(brief(str(a.stage), a.type, set(), a.name))
     return 0
 
 
@@ -648,7 +715,7 @@ def cmd_status(a) -> int:
     name, item = pick(state, a.name)
     print(status_text(name, item))
     print()
-    print(brief(str(item["stage"]), item["type"], set(item["checked"])))
+    print(brief(str(item["stage"]), item["type"], set(item["checked"]), name))
     return 0
 
 
@@ -694,7 +761,7 @@ def cmd_advance(a) -> int:
     save_state(state)
     print(status_text(name, item))
     print()
-    print(brief(str(item["stage"]), item["type"], set(item["checked"])))
+    print(brief(str(item["stage"]), item["type"], set(item["checked"]), name))
     return 0
 
 
@@ -722,6 +789,9 @@ def set_status(a, status: str) -> int:
     if status == "done":
         last = stages()["stages"][-1]
         print(f"交付完成。接著做第 {last['id']} 階段{last['name']}：`pb.py card {last['id']}`，再用 `pb.py run-log` 記下這支作品用過哪些條目和工具（做法代號、T- 工具代號都可以）、效果如何。")
+        todo = [r["id"] for picked, _ in trial_pick(item["type"], name, set(item["checked"])).values() for r in picked]
+        if todo:
+            print("這支作品排定要測、還沒記結果的待試項目：" + "、".join(todo) + "。測過的用 run-log 記下；沒測到的不用記，會排到下一支。")
     return 0
 
 
@@ -843,6 +913,22 @@ def cmd_run_log(a) -> int:
     return 0
 
 
+def cmd_trials(a) -> int:
+    state = load_state()
+    if a.type and not a.name:
+        work, asset, checked = "（預覽）", a.type, set()
+    else:
+        work, item = pick(state, a.name)
+        asset, checked = item["type"], set(item["checked"])
+    text = trials_text(work, asset, checked)
+    print(text, end="")
+    if a.save and work != "（預覽）":
+        path = state_path().parent / f"trials-{slug(work)}.md"
+        path.write_text(text, encoding="utf-8")
+        print(f"\n存到 {path}")
+    return 0
+
+
 def cmd_review(_a) -> int:
     print(review_text())
     return 0
@@ -929,6 +1015,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--note")
     p.set_defaults(fn=cmd_run_log)
     sub.add_parser("review").set_defaults(fn=cmd_review)
+    p = sub.add_parser("trials")
+    p.add_argument("--name")
+    p.add_argument("--type", help="preview for a type without an open piece of work")
+    p.add_argument("--save", action="store_true")
+    p.set_defaults(fn=cmd_trials)
     p = sub.add_parser("log")
     p.add_argument("message")
     p.set_defaults(fn=cmd_log)
