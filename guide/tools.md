@@ -7,13 +7,13 @@
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
 | better-design MCP（T-04） | 已安裝 | 不明 | 不明（未標） | 建設計系統、找圖示庫、審查版面和間距時 |
+| [REA（Reverse Engineer Anything）](https://github.com/morluto/rea)（T-05） | 待試 | 免費 | MIT（寬鬆） | 想知道別人網站的某個互動或效果怎麼做時 |
 | [Awesome DESIGN.md（VoltAgent）](https://github.com/VoltAgent/awesome-design-md)（T-06） | 待試 | 免費 | MIT（寬鬆） | 要定設計系統、想看好的 DESIGN.md 怎麼寫時 |
 | [Design DNA（zanwei）](https://github.com/zanwei/design-dna)（T-09） | 待試 | 免費 | MIT（寬鬆） | 有參考介面、想把風格量化成規格時 |
 | [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時 |
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells）](https://scrolltide.co/)（T-18） | 待試 | 免費 | 網站內容各自所有（未標） | 找特定元件或細節的參考時 |
-| [REA（Reverse Engineer Anything）](https://github.com/morluto/rea)（T-05） | 待查 | 免費 | MIT（寬鬆） | 想知道別人網站的某個互動或效果怎麼做時 |
-| [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待查 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
+| [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待試 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
 | [figmaformotion](https://figmaformotion.com/v2)（T-21） | 未採用 | 付費 | 付費授權（未標） | — |
 
 ## 3 視覺設計
@@ -30,9 +30,9 @@
 | [PulsoIcon](https://github.com/CityPulso/PulsoIcon)（T-26） | 待試 | 免費 | ISC（部分圖示沿用 Lucide、Tabler 等原授權；品牌 logo 是各品牌商標）（寬鬆） | 按鈕、連結、分頁要有輕微的滑過動態圖示時 |
 | [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 待試 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
 | [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 待試 | 免費 | Apache-2.0（寬鬆） | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 |
-| [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 待查 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
+| [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 未採用 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 
 ## 4 建置
 
@@ -40,7 +40,7 @@
 |---|---|---|---|---|
 | [網頁動態元件庫（React Bits、Aceternity UI）](https://reactbits.dev/)（T-19） | 待試 | 部分付費 | 依各庫條款（特殊） | 要動態文字、背景、區塊時 |
 | [daisyUI](https://daisyui.com/)（T-31） | 待試 | 免費 | MIT（寬鬆） | 用 Tailwind 做元件，想要語意化的元件類別和主題時 |
-| Image to Code（T-08） | 待查 | 不明 | 未標（未標） | — |
+| Image to Code（T-08） | 未採用 | 不明 | 未標（未標） | — |
 
 ## 5 品質
 

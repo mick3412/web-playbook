@@ -65,5 +65,32 @@ class PlaybookTest(unittest.TestCase):
         self.assertIn("S0-01", self.pb("similar", "公開頁面和後台分開放").splitlines()[0])
 
 
+    def _first_tool(self, status):
+        import csv
+        with open(self.home / "data" / "tools.csv", encoding="utf-8") as f:
+            return next(t for t in csv.DictReader(f) if t["狀態"] == status)
+
+    def test_tool_runs_drive_review(self):
+        t = self._first_tool("待試")
+        self.pb("run-log", "--entries", t["id"], "--result", "有效")
+        self.pb("run-log", "--entries", t["id"], "--result", "有效")
+        self.assertIn(t["id"], self.pb("review"))
+
+    def test_open_items_need_test_method_and_recheck(self):
+        import csv
+        path = self.home / "data" / "tools.csv"
+        with open(path, encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        tid = next(r["id"] for r in rows if r["狀態"] == "待試")
+        for r in rows:
+            if r["id"] == tid:
+                r["測試方法"] = ""
+        with open(path, "w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=list(rows[0]), quoting=csv.QUOTE_ALL, lineterminator="\n")
+            w.writeheader()
+            w.writerows(rows)
+        self.assertIn(f"{tid}: 待試 needs 測試方法", self.pb("check", ok=False))
+
+
 if __name__ == "__main__":
     unittest.main()

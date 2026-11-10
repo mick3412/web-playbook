@@ -13,7 +13,7 @@ playbook, its state folder in the product's project and its environment variable
     python3 pb.py inbox add <url|file> --note "..."   |   inbox list
     python3 pb.py similar "<text>"          find entries that say something close
     python3 pb.py next-id <stage>           next free entry id for a stage or track
-    python3 pb.py run-log --entries S6-03,S3-01 --result 有效 [--name <production>] [--note ...]
+    python3 pb.py run-log --entries S6-03,S3-01,T-05 --result 有效 [--name <production>] [--note ...]
     python3 pb.py review                    upgrade/downgrade/recheck suggestions from runs.csv and recheck conditions
     python3 pb.py log "<message>"           append a line to data/changelog.md
     python3 pb.py setup                     remember where this repo lives, so writes land here and not in a plugin cache
@@ -56,9 +56,9 @@ ARCHIVE = ROOT / "archive"
 INBOX = ROOT / "inbox"
 
 ENTRY_COLS = ["id", "舊id", "階段", "步驟", "類型", "素材類型", "觸發", "要點", "做法", "為什麼", "來源", "證據",
-              "實用度", "狀態", "內建於", "複查條件", "更新日"]
+              "實用度", "狀態", "內建於", "複查條件", "測試方法", "更新日"]
 TOOL_COLS = ["id", "工具", "網址", "階段", "步驟", "素材類型", "何時用", "做什麼", "需求", "授權", "授權等級", "費用", "實用度", "狀態",
-             "安裝方式", "複查條件", "查證日"]
+             "安裝方式", "複查條件", "測試方法", "查證日"]
 SOURCE_COLS = ["id", "資源", "位置", "收錄日", "備註"]
 RUN_COLS = ["日期", "作品", "產品", "類型", "條目id", "結果", "備註"]
 
@@ -191,6 +191,11 @@ def validate() -> list[str]:
             errors.append(f"{tag}: 已內建 needs 內建於")
         if r["狀態"] in ("避開",) and r["實用度"] != "✗":
             errors.append(f"{tag}: 避開 entries are rated ✗")
+        if r["狀態"] == "待試":
+            if not r["測試方法"]:
+                errors.append(f"{tag}: 待試 needs 測試方法（何時：…｜怎麼做：…｜看什麼：…｜有效＝…）")
+            if not r["複查條件"]:
+                errors.append(f"{tag}: 待試 needs 複查條件 (a date or a trigger)")
     tseen: set[str] = set()
     for t in tools():
         tag = t["id"]
@@ -208,6 +213,10 @@ def validate() -> list[str]:
                 errors.append(f"{tag}: {col}「{t[col]}」must be one of {allowed}")
         if not t["何時用"]:
             errors.append(f"{tag}: 何時用 is empty")
+        if t["狀態"] == "待試" and not t["測試方法"]:
+            errors.append(f"{tag}: 待試 needs 測試方法（何時：…｜怎麼做：…｜看什麼：…｜有效＝…）")
+        if t["狀態"] in ("待試", "待查") and not t["複查條件"]:
+            errors.append(f"{tag}: {t['狀態']} needs 複查條件 (a date or a trigger)")
         for a in split(t["素材類型"]) or ["(empty)"]:
             if a not in assets:
                 errors.append(f"{tag}: 素材類型「{a}」must be one of {assets}")
@@ -307,6 +316,8 @@ def render_card(key: str, asset: str | None = None) -> str:
         out += ["", "**這一步可以試的新工具：**"]
         for t in p["tools_try"]:
             out.append(f"- {t['工具']}（{t['id']}，{t['狀態']}）：{t['何時用']}{recheck_note(t)}")
+            if t["測試方法"]:
+                out.append(f"  - 測試方法：{t['測試方法']}")
     out += ["", "## 要注意", ""]
     for r in p["watch"]:
         out.append(f"- {r['要點']}{tag(r)}")
@@ -396,10 +407,10 @@ def render_watchlist() -> str:
     out = ["# 待試與複查清單", "", "> 由 `python3 pb.py build` 產生。`pb.py review` 會依日期和實戰紀錄提出建議。", ""]
     es = [r for r in entries() if r["狀態"] in ("待試", "爭議")]
     ts = [t for t in tools() if t["狀態"] in ("待試", "待查")]
-    out += ["## 待試與爭議的做法", "", "| 代號 | 狀態 | 要點 | 複查條件 |", "|---|---|---|---|"]
-    out += [f"| {r['id']} | {r['狀態']} | {cell(r['要點'])} | {cell(r['複查條件']) or '—'} |" for r in sorted(es, key=rating_key)]
-    out += ["", "## 待試與待查的工具", "", "| 代號 | 工具 | 狀態 | 何時用 | 複查條件 |", "|---|---|---|---|---|"]
-    out += [f"| {t['id']} | {t['工具']} | {t['狀態']} | {cell(t['何時用'])} | {cell(t['複查條件']) or '—'} |" for t in ts]
+    out += ["## 待試與爭議的做法", "", "| 代號 | 狀態 | 要點 | 複查條件 | 測試方法 |", "|---|---|---|---|---|"]
+    out += [f"| {r['id']} | {r['狀態']} | {cell(r['要點'])} | {cell(r['複查條件']) or '—'} | {cell(r['測試方法']) or '—'} |" for r in sorted(es, key=rating_key)]
+    out += ["", "## 待試與待查的工具", "", "| 代號 | 工具 | 狀態 | 何時用 | 複查條件 | 測試方法 |", "|---|---|---|---|---|---|"]
+    out += [f"| {t['id']} | {t['工具']} | {t['狀態']} | {cell(t['何時用'])} | {cell(t['複查條件']) or '—'} | {cell(t['測試方法']) or '—'} |" for t in ts]
     out.append("")
     return "\n".join(out)
 
@@ -517,6 +528,13 @@ def review_text() -> str:
         out += ["## 建議升級（實戰有效兩次以上）"] + [f"- {e} {es[e]['要點']}：有效 {by_entry[e]['有效']} 次；建議升為 ★★★，寫進技能或過關條件後改「已內建」" for e in up]
     if down:
         out += ["## 建議降級或改寫（實戰無效兩次以上）"] + [f"- {e} {es[e]['要點']}：無效 {by_entry[e]['無效']} 次" for e in down]
+    ts = {t["id"]: t for t in tools()}
+    tup = [i for i, c in by_entry.items() if i in ts and c["有效"] >= 2 and c["無效"] == 0 and ts[i]["狀態"] in ("待試", "待查")]
+    tdown = [i for i, c in by_entry.items() if i in ts and c["無效"] >= 2 and ts[i]["狀態"] not in ("未採用", "避開")]
+    if tup:
+        out += ["## 建議把工具改成已安裝或已整合（實戰有效兩次以上）"] + [f"- {i} {ts[i]['工具']}：有效 {by_entry[i]['有效']} 次" for i in tup]
+    if tdown:
+        out += ["## 建議把工具改成未採用（實戰無效兩次以上）"] + [f"- {i} {ts[i]['工具']}：無效 {by_entry[i]['無效']} 次" for i in tdown]
     if settle:
         out += ["## 爭議條目有實戰紀錄了，建議定案"] + [f"- {e} {es[e]['要點']}：{dict(by_entry[e])}" for e in settle]
     dated, conditional = [], []
@@ -703,7 +721,7 @@ def set_status(a, status: str) -> int:
     print(f"作品「{name}」：{status}")
     if status == "done":
         last = stages()["stages"][-1]
-        print(f"交付完成。接著做第 {last['id']} 階段{last['name']}：`pb.py card {last['id']}`，再用 `pb.py run-log` 記下這支作品用過哪些條目、效果如何。")
+        print(f"交付完成。接著做第 {last['id']} 階段{last['name']}：`pb.py card {last['id']}`，再用 `pb.py run-log` 記下這支作品用過哪些條目和工具（做法代號、T- 工具代號都可以）、效果如何。")
     return 0
 
 
@@ -809,7 +827,7 @@ def cmd_next_id(a) -> int:
 
 def cmd_run_log(a) -> int:
     ids = split(a.entries)
-    known = {r["id"] for r in entries()}
+    known = {r["id"] for r in entries()} | {t["id"] for t in tools()}
     bad = [i for i in ids if i not in known]
     if bad:
         sys.exit(f"不認得這些代號：{bad}")
