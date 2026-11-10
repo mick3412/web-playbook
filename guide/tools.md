@@ -29,13 +29,17 @@
 | [Hallmark](https://github.com/Nutlope/hallmark)（T-22） | 待試 | 免費 | MIT（圖庫照片各有 CC0／公有領域／CC BY／CC BY-SA，使用時要標註）（寬鬆） | 建新頁、改版既有頁、或只想檢查 AI 感時 |
 | [PulsoIcon](https://github.com/CityPulso/PulsoIcon)（T-26） | 待試 | 免費 | ISC（部分圖示沿用 Lucide、Tabler 等原授權；品牌 logo 是各品牌商標）（寬鬆） | 按鈕、連結、分頁要有輕微的滑過動態圖示時 |
 | [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 待試 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
+| [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 待試 | 免費 | Apache-2.0（寬鬆） | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 待查 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
+| [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
+| [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
 
 ## 4 建置
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
 | [網頁動態元件庫（React Bits、Aceternity UI）](https://reactbits.dev/)（T-19） | 待試 | 部分付費 | 依各庫條款（特殊） | 要動態文字、背景、區塊時 |
+| [daisyUI](https://daisyui.com/)（T-31） | 待試 | 免費 | MIT（寬鬆） | 用 Tailwind 做元件，想要語意化的元件類別和主題時 |
 | Image to Code（T-08） | 待查 | 不明 | 未標（未標） | — |
 
 ## 5 品質
@@ -54,6 +58,7 @@
 | [Claude SEO](https://github.com/AgriciDaniel/claude-seo)（T-23） | 待試 | 免費 | MIT（寬鬆） | 網站上線前後做 SEO 與 AI 搜尋健檢 |
 | [localseoskills](https://github.com/garrettjsmith/localseoskills)（T-24） | 待試 | 部分付費 | MIT（寬鬆） | 做在地商家的 SEO：Google 商家檔案、評論、名錄、在地關鍵字、AI 在地搜尋 |
 | [All-In-One Free SEO Tool](https://github.com/IamRamgarhia/All-In-One-Free-SEO-Tool)（T-25） | 待試 | 免費 | MIT（寬鬆） | 要免費做關鍵字研究、關鍵字缺口、競品比較、AI 能見度、在地 SEO 時 |
+| [geo-seo-claude](https://github.com/zubair-trabzada/geo-seo-claude)（T-35） | 待試 | 免費 | MIT（寬鬆） | 做 AI 搜尋能見度健檢時 |
 | [OpenSEO](https://github.com/every-app/open-seo)（T-02） | 避開 | 付費 | MIT（寬鬆） | 開源版的 Semrush／Ahrefs：關鍵字研究、排名追蹤、反向連結、網站健檢 |
 
 ## 8 量測與迭代

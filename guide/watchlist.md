@@ -56,3 +56,8 @@
 | T-27 | Claude Code Skill 設計風格圖鑑（Casper） | 待查 | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 | 作者加上授權時 |
 | T-28 | agency-agents（網站挑 3 個） | 待試 | 上線前要獨立審查：通用感、無障礙、受眾模擬 | 有網站要上線時 |
 | T-30 | GSAP AI Skills（官方） | 待試 | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 | 有網頁動效要做時 |
+| T-31 | daisyUI | 待試 | 用 Tailwind 做元件，想要語意化的元件類別和主題時 | 有 Tailwind 專案要做元件時 |
+| T-32 | Originkit | 待查 | 找現成的網頁動畫元件時 | 官網寫明元件授權時 |
+| T-33 | AI Particle Simulator（casberry） | 待查 | 要做粒子背景或片頭粒子效果時 | 官網寫明價格與授權時 |
+| T-34 | Impeccable | 待試 | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 | 下一次介面改版時 |
+| T-35 | geo-seo-claude | 待試 | 做 AI 搜尋能見度健檢時 | 網站上線前做 6.4 時 |
