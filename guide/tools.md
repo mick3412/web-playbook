@@ -35,11 +35,11 @@
 | [Motion（原 Framer Motion）](https://motion.dev)（T-40） | 待試 | 免費 | MIT（寬鬆） | CSS 做不到的動效：拖曳、版面切換、跟著捲動的複雜效果 |
 | [動畫元件庫（Motion Primitives、Magic UI、Uiverse）](https://motion-primitives.com)（T-41） | 待試 | 免費 | MIT（寬鬆） | 想找現成的動畫元件或小互動（按鈕、載入、切換）時 |
 | [Anime.js](https://animejs.com)（T-42） | 待試 | 免費 | MIT（寬鬆） | 不用 React、要輕量的時間軸動畫時 |
-| [插圖與 3D 圖示（Open Peeps、3dicons、unDraw）](https://www.openpeeps.com)（T-44） | 待試 | 免費 | CC0（Open Peeps、3dicons）、unDraw 自有授權（特殊） | 照片表達不了、需要插圖或 3D 圖示時 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
 | [Spline](https://spline.design)（T-45） | 待查 | 部分付費 | 商業服務（特殊） | 想在網頁放可互動的 3D 場景時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 未採用 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
+| [插圖與 3D 圖示（Open Peeps、3dicons、unDraw）](https://www.openpeeps.com)（T-44） | 未採用 | 免費 | CC0（Open Peeps、3dicons）、unDraw 自有授權（特殊） | 照片表達不了、需要插圖或 3D 圖示時 |
 
 ## 4 建置
 
@@ -50,8 +50,8 @@
 | [Component Gallery](https://component.gallery)（T-38） | 待試 | 免費 | 網站內容各自所有（特殊） | 不確定一個元件叫什麼、該怎麼表現時 |
 | [21st.dev](https://21st.dev)（T-39） | 待試 | 部分付費 | 各元件不同（特殊） | 想借現成的 React 區塊（價格表、FAQ、主視覺）時 |
 | [shadcn/ui](https://ui.shadcn.com)（T-43） | 待試 | 免費 | MIT（寬鬆） | 需要一套可完全擁有、可改的基礎元件時 |
-| [mapcn](https://github.com/AnmolSaini16/mapcn)（T-46） | 待試 | 免費 | MIT（寬鬆） | 頁面需要地圖（標記、路線）時 |
 | Image to Code（T-08） | 未採用 | 不明 | 未標（未標） | — |
+| [mapcn](https://github.com/AnmolSaini16/mapcn)（T-46） | 未採用 | 免費 | MIT（寬鬆） | 頁面需要地圖（標記、路線）時 |
 
 ## 5 品質
 
