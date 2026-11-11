@@ -66,6 +66,7 @@ RECIPE_COLS = ["id", "名稱", "適用需求", "素材類型", "項目", "不適
 TRIAL_KINDS = ["桌上", "實戰"]          # 桌上: a sample kit is enough to judge it; 實戰: needs a real audience
 BENCH_WORK = "桌上試驗"                  # run-log --bench records under this name
 PLAN_OPTIONS = 3
+BASE_RECIPE = "R-00"                     # items every piece of work applies; never offered as an option
 
 TYPES = ["要做", "檢查", "工具", "提升", "陷阱", "知識"]
 EVIDENCE = ["單一來源", "多來源", "實戰驗證"]
@@ -675,7 +676,7 @@ def plan_options(need: str, asset: str | None = None, rules: list[str] | None = 
     q = grams(need)
     scored = []
     for rc in recipes():
-        if asset and not for_asset(rc, asset):
+        if rc["id"] == BASE_RECIPE or (asset and not for_asset(rc, asset)):
             continue
         terms = split(rc["適用需求"])
         g = grams(rc["名稱"] + "".join(terms))
@@ -734,6 +735,10 @@ def plan_text(res: dict) -> str:
     if res["excluded"]:
         out.append("專案規則排除：" + "；".join(f"{r['id']} {item_name(r)[:20]}（規則：{k}）" for r, k in res["excluded"]))
         out.append("")
+    base = next((rc for rc in recipes() if rc["id"] == BASE_RECIPE), None)
+    if base and res["options"]:
+        n = len(split(base["項目"]))
+        out.append(f"每個方案都另外套用 {BASE_RECIPE} {base['名稱']}（{n} 項：核准、授權、資安、協作習慣），`pb.py show` 各代號或看 data/recipes.csv。")
     if res["options"]:
         out.append("選好後：`pb.py plan \"<需求>\" --pick <方案編號> --save` 記進目前的作品；之後 `card --brief` 會先列方案裡的項目。")
     return "\n".join(out) + "\n"
