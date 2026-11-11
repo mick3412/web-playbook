@@ -18,7 +18,7 @@ class PlaybookTest(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         self.home = self.tmp / "playbook"
-        shutil.copytree(REPO, self.home, ignore=shutil.ignore_patterns(".git", "__pycache__", "inbox"))
+        shutil.copytree(REPO, self.home, ignore=shutil.ignore_patterns(".git", "__pycache__", "inbox", "bench"))
         self.project = self.tmp / "product"
         self.project.mkdir()
 
