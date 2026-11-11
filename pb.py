@@ -35,7 +35,7 @@ import urllib.parse
 from collections import Counter, defaultdict
 from pathlib import Path
 
-ENGINE_VERSION = "1.1"
+ENGINE_VERSION = "1.2"
 SCRIPT_ROOT = Path(__file__).resolve().parent
 CONF = json.loads((SCRIPT_ROOT / "playbook.json").read_text(encoding="utf-8"))
 NAME = CONF["name"]
@@ -57,11 +57,15 @@ ARCHIVE = ROOT / "archive"
 INBOX = ROOT / "inbox"
 
 ENTRY_COLS = ["id", "舊id", "階段", "步驟", "類型", "素材類型", "觸發", "要點", "做法", "為什麼", "來源", "證據",
-              "實用度", "狀態", "內建於", "複查條件", "測試方法", "更新日"]
+              "實用度", "狀態", "內建於", "複查條件", "測試方法", "試法", "更新日"]
 TOOL_COLS = ["id", "工具", "網址", "階段", "步驟", "素材類型", "何時用", "做什麼", "需求", "授權", "授權等級", "費用", "實用度", "狀態",
-             "安裝方式", "複查條件", "測試方法", "查證日"]
+             "安裝方式", "複查條件", "測試方法", "試法", "查證日"]
 SOURCE_COLS = ["id", "資源", "位置", "收錄日", "備註"]
 RUN_COLS = ["日期", "作品", "產品", "類型", "條目id", "結果", "備註"]
+RECIPE_COLS = ["id", "名稱", "適用需求", "素材類型", "項目", "不適用", "更新日"]
+TRIAL_KINDS = ["桌上", "實戰"]          # 桌上: a sample kit is enough to judge it; 實戰: needs a real audience
+BENCH_WORK = "桌上試驗"                  # run-log --bench records under this name
+PLAN_OPTIONS = 3
 
 TYPES = ["要做", "檢查", "工具", "提升", "陷阱", "知識"]
 EVIDENCE = ["單一來源", "多來源", "實戰驗證"]
@@ -126,6 +130,15 @@ def sources() -> list[dict]:
 
 def runs() -> list[dict]:
     return read_csv(DATA / "runs.csv", RUN_COLS)
+
+
+def recipes() -> list[dict]:
+    return read_csv(DATA / "recipes.csv", RECIPE_COLS)
+
+
+def bench_groups() -> dict[str, list[str]]:
+    p = DATA / "bench.json"
+    return json.loads(p.read_text(encoding="utf-8")).get("groups", {}) if p.is_file() else {}
 
 
 def split(value: str) -> list[str]:
@@ -197,6 +210,8 @@ def validate() -> list[str]:
                 errors.append(f"{tag}: 待試 needs 測試方法（何時：…｜怎麼做：…｜看什麼：…｜有效＝…）")
             if not r["複查條件"]:
                 errors.append(f"{tag}: 待試 needs 複查條件 (a date or a trigger)")
+            if r["試法"] not in TRIAL_KINDS:
+                errors.append(f"{tag}: 待試 needs 試法 {TRIAL_KINDS}")
     tseen: set[str] = set()
     for t in tools():
         tag = t["id"]
@@ -218,13 +233,44 @@ def validate() -> list[str]:
             errors.append(f"{tag}: 待試 needs 測試方法（何時：…｜怎麼做：…｜看什麼：…｜有效＝…）")
         if t["狀態"] in ("待試", "待查") and not t["複查條件"]:
             errors.append(f"{tag}: {t['狀態']} needs 複查條件 (a date or a trigger)")
+        if t["狀態"] == "待試" and t["試法"] not in TRIAL_KINDS:
+            errors.append(f"{tag}: 待試 needs 試法 {TRIAL_KINDS}")
         for a in split(t["素材類型"]) or ["(empty)"]:
             if a not in assets:
                 errors.append(f"{tag}: 素材類型「{a}」must be one of {assets}")
     for r in runs():
         if r["結果"] not in RESULTS:
             errors.append(f"runs.csv {r['作品']}: 結果「{r['結果']}」must be one of {RESULTS}")
+    status = {r["id"]: r["狀態"] for r in entries()} | {t["id"]: t["狀態"] for t in tools()}
+    rseen: set[str] = set()
+    for rc in recipes():
+        tag = rc["id"]
+        if not re.fullmatch(r"R-\d{2,}", tag) or tag in rseen:
+            errors.append(f"recipes.csv {tag}: id must be R-NN and unique")
+        rseen.add(tag)
+        if not rc["名稱"] or not split(rc["適用需求"]) or not split(rc["項目"]):
+            errors.append(f"recipes.csv {tag}: 名稱, 適用需求 and 項目 are required")
+        for a in split(rc["素材類型"]):
+            if a not in assets:
+                errors.append(f"recipes.csv {tag}: 素材類型「{a}」must be one of {assets}")
+        for i in split(rc["項目"]):
+            if i not in status:
+                errors.append(f"recipes.csv {tag}: 項目 {i} does not exist")
+            elif status[i] in ("避開", "未採用"):
+                errors.append(f"recipes.csv {tag}: 項目 {i} is {status[i]}")
+    for g, ids in bench_groups().items():
+        for i in ids:
+            if i not in status:
+                errors.append(f"bench.json {g}: {i} does not exist")
     return errors
+
+
+def unused_by_recipes() -> list[dict]:
+    """Live items no recipe points to: candidates for a recipe, a merge, or demotion."""
+    used = {i for rc in recipes() for i in split(rc["項目"])}
+    live = [r for r in entries() if r["狀態"] in ("已內建", "採用", "待試")] + \
+           [t for t in tools() if t["狀態"] in ("已整合", "已安裝", "待試")]
+    return [r for r in live if r["id"] not in used]
 
 
 # ---------------------------------------------------------------- stage cards
@@ -364,6 +410,9 @@ def brief(key: str, asset: str | None, checked: set[str], work: str | None = Non
         "提升：" + ("；".join(r["要點"] + f"（{r['id']}）" for r in up) or "（無）"),
     ]
     if work and s:
+        chosen = plan_ids_for_stage(work, str(s["id"]))
+        if chosen:
+            lines.insert(2, "方案項目：" + "；".join(f"{r['id']} {item_name(r)[:24]}{mark(r)}" for r in chosen))
         picked = trial_pick(asset, work, checked).get(str(s["id"]), ([], []))[0]
         if picked:
             lines.append("這一步要測：" + "；".join(f"{r['id']}（{how(r)}）" for r in picked) + "；完成後用 run-log 記結果")
@@ -394,7 +443,8 @@ def trial_pick(asset: str | None, work: str, checked: set[str]) -> dict[str, tup
     out: dict[str, tuple[list[dict], list[dict]]] = {}
     tools_used = 0
     for k in stage_keys(st) + sorted(set(by_stage) - set(stage_keys(st))):
-        group = sorted(by_stage.get(k, []), key=lambda r: (rating_key(r)[0], r["id"].startswith("T-"), r["id"]))
+        # real work goes to what only real work can test; 桌上 items are cleared on the bench
+        group = sorted(by_stage.get(k, []), key=lambda r: (r.get("試法") != "實戰", rating_key(r)[0], r["id"].startswith("T-"), r["id"]))
         picked, later = [], []
         for r in group:
             is_tool = r["id"].startswith("T-")
@@ -571,6 +621,133 @@ def similar_rows(text: str, top: int = 5) -> list[tuple[float, dict]]:
     return sorted(scored, key=lambda x: -x[0])[:top]
 
 
+# ---------------------------------------------------------------- plan: from a free-text need to option packages
+def item_name(r: dict) -> str:
+    return r.get("要點") or r.get("工具") or ""
+
+
+def similar_tools(text: str, top: int = 5) -> list[tuple[float, dict]]:
+    q = grams(text)
+    scored = []
+    for t in tools():
+        if t["狀態"] in ("避開", "未採用"):
+            continue
+        g = grams(t["工具"] + t["何時用"] + t["做什麼"])
+        scored.append((round(len(q & g) / max(1, len(q | g)), 3), t))
+    return sorted(scored, key=lambda x: -x[0])[:top]
+
+
+def load_rules(path: str | None) -> list[str]:
+    """A project's rule file, one rule per line (# comments allowed):
+    `欄位=值` leaves out rows whose field equals the value (e.g. 費用=付費, 授權等級=未標);
+    a plain keyword leaves out rows whose name (要點 or 工具) or 觸發 mentions it."""
+    if not path:
+        return []
+    out = []
+    for line in Path(path).expanduser().read_text(encoding="utf-8").splitlines():
+        line = re.sub(r"^\s*[-*]?\s*(排除[:：])?\s*", "", line.split("#", 1)[0]).strip()
+        if line:
+            out.append(line)
+    return out
+
+
+def broken_rule(r: dict, rules: list[str]) -> str | None:
+    name = " ".join(r.get(c, "") for c in ("要點", "工具", "觸發")).lower()
+    for k in rules:
+        if "=" in k:
+            col, val = (x.strip() for x in k.split("=", 1))
+            if r.get(col, "").strip() == val:
+                return k
+        elif k.lower() in name:
+            return k
+    return None
+
+
+def mark(r: dict) -> str:
+    kind = f"・{r['試法']}" if r["狀態"] == "待試" and r.get("試法") else ""
+    return f"〔{r['狀態']}{kind}〕"
+
+
+def plan_options(need: str, asset: str | None = None, rules: list[str] | None = None) -> dict:
+    """Score recipes against the need, fill each with its items, and suggest matching items the recipe lacks."""
+    rules = rules or []
+    rows = {r["id"]: r for r in entries()} | {t["id"]: t for t in tools()}
+    q = grams(need)
+    scored = []
+    for rc in recipes():
+        if asset and not for_asset(rc, asset):
+            continue
+        terms = split(rc["適用需求"])
+        g = grams(rc["名稱"] + "".join(terms))
+        s = len(q & g) / max(1, len(q | g)) + 0.2 * sum(1 for t in terms if t and t.lower() in need.lower())
+        if s > 0.03:
+            scored.append((round(s, 3), rc))
+    scored.sort(key=lambda x: -x[0])
+    matched = [r for s, r in similar_rows(need, 15) if s >= 0.08 and for_asset(r, asset) and r["狀態"] in SHOWN]
+    matched += [t for s, t in similar_tools(need, 8) if s >= 0.06 and for_asset(t, asset)]
+    excluded: dict[str, tuple[dict, str]] = {}
+
+    def keep(r: dict) -> bool:
+        k = broken_rule(r, rules)
+        if k:
+            excluded[r["id"]] = (r, k)
+        return not k
+
+    options = []
+    for s, rc in scored[:PLAN_OPTIONS]:
+        items = [rows[i] for i in split(rc["項目"]) if i in rows]
+        items = [r for r in items if keep(r)]
+        ids = {r["id"] for r in items}
+        extras = [r for r in matched if r["id"] not in ids and keep(r)][:5]
+        options.append({"id": rc["id"], "名稱": rc["名稱"], "適用需求": rc["適用需求"], "不適用": rc["不適用"],
+                        "score": s, "items": items, "extras": extras})
+    if not options and matched:
+        items = [r for r in matched if keep(r)]
+        options.append({"id": "自組", "名稱": "沒有對應的配方，依需求比對組成", "適用需求": need, "不適用": "",
+                        "score": 0, "items": items, "extras": []})
+    return {"need": need, "asset": asset, "options": options, "excluded": list(excluded.values())}
+
+
+def stage_label(st: dict, r: dict) -> str:
+    k = (split(r["階段"]) or ["其他"])[0]
+    s = stage_by_key(st, k)
+    return f"{s['id']} {s['name']}" if s else k
+
+
+def plan_text(res: dict) -> str:
+    st = stages()
+    order = {k: i for i, k in enumerate(stage_keys(st))}
+    out = [f"# 方案：{res['need']}" + (f"（{res['asset']}）" if res["asset"] else ""), ""]
+    if not res["options"]:
+        out.append("找不到對應的配方或條目。換個說法再試，或用 `pb.py card 0` 從頭照階段走。")
+    for n, o in enumerate(res["options"], 1):
+        out.append(f"## 方案 {n}：{o['id']} {o['名稱']}" + (f"（符合度 {o['score']:.2f}）" if o["score"] else ""))
+        out.append(f"適合：{o['適用需求']}" + (f"｜不適用：{o['不適用']}" if o["不適用"] else ""))
+        by: dict[str, list[dict]] = defaultdict(list)
+        for r in o["items"]:
+            by[stage_label(st, r)].append(r)
+        for lab in sorted(by, key=lambda x: order.get(x.split(" ")[0], 99)):
+            out.append(f"- {lab}：" + "；".join(f"{r['id']} {item_name(r)[:28]}{mark(r)}" for r in by[lab]))
+        if o["extras"]:
+            out.append("- 也可以加：" + "；".join(f"{r['id']} {item_name(r)[:28]}{mark(r)}" for r in o["extras"]))
+        out.append("")
+    if res["excluded"]:
+        out.append("專案規則排除：" + "；".join(f"{r['id']} {item_name(r)[:20]}（規則：{k}）" for r, k in res["excluded"]))
+        out.append("")
+    if res["options"]:
+        out.append("選好後：`pb.py plan \"<需求>\" --pick <方案編號> --save` 記進目前的作品；之後 `card --brief` 會先列方案裡的項目。")
+    return "\n".join(out) + "\n"
+
+
+def plan_ids_for_stage(work: str | None, key: str) -> list[dict]:
+    if not work:
+        return []
+    item = load_state()["items"].get(work, {})
+    ids = (item.get("plan") or {}).get("ids", [])
+    rows = {r["id"]: r for r in entries()} | {t["id"]: t for t in tools()}
+    return [rows[i] for i in ids if i in rows and key in split(rows[i]["階段"])]
+
+
 # ---------------------------------------------------------------- review
 def due(cond: str) -> bool | None:
     m = re.fullmatch(r"(\d{4})-(\d{2})(?:-(\d{2}))?", cond.strip())
@@ -643,7 +820,10 @@ def cmd_check(_a) -> int:
     if errors:
         print("\n".join(errors))
         return 1
-    print(f"OK：{len(entries())} 條做法、{len(tools())} 個工具、{len(sources())} 個來源、{len(runs())} 筆實戰紀錄")
+    print(f"OK：{len(entries())} 條做法、{len(tools())} 個工具、{len(recipes())} 個配方、{len(sources())} 個來源、{len(runs())} 筆實戰紀錄")
+    unused = unused_by_recipes()
+    if recipes() and unused:
+        print(f"提醒：{len(unused)} 個採用或待試的項目沒被任何配方用到（`pb.py plan --unused` 看清單）。")
     return 0
 
 
@@ -792,6 +972,10 @@ def set_status(a, status: str) -> int:
         todo = [r["id"] for picked, _ in trial_pick(item["type"], name, set(item["checked"])).values() for r in picked]
         if todo:
             print("這支作品排定要測、還沒記結果的待試項目：" + "、".join(todo) + "。測過的用 run-log 記下；沒測到的不用記，會排到下一支。")
+        logged = {i for r in runs() if r["作品"] == name for i in split(r["條目id"])}
+        planned = [i for i in (item.get("plan") or {}).get("ids", []) if i not in logged]
+        if planned:
+            print("方案裡用過、還沒記結果的項目：" + "、".join(planned) + "。用過的記有效、無效或需調整；沒用到的不用記。")
     return 0
 
 
@@ -904,9 +1088,9 @@ def cmd_run_log(a) -> int:
     if a.result not in RESULTS:
         sys.exit(f"結果要是其中之一：{RESULTS}")
     state = load_state()
-    name = a.name or state.get("current") or ""
+    name = BENCH_WORK if a.bench else (a.name or state.get("current") or "")
     kind = state["items"].get(name, {}).get("type", "")
-    product = a.product or project_dir().name
+    product = "bench" if a.bench else (a.product or project_dir().name)
     append_csv(DATA / "runs.csv", RUN_COLS, [{"日期": today(), "作品": name, "產品": product, "類型": kind,
                                                "條目id": ",".join(ids), "結果": a.result, "備註": a.note or ""}])
     print(f"記下了：{name}｜{','.join(ids)}｜{a.result}")
@@ -926,6 +1110,73 @@ def cmd_trials(a) -> int:
         path = state_path().parent / f"trials-{slug(work)}.md"
         path.write_text(text, encoding="utf-8")
         print(f"\n存到 {path}")
+    return 0
+
+
+def cmd_plan(a) -> int:
+    if a.unused:
+        rows = unused_by_recipes()
+        for r in sorted(rows, key=lambda r: (r["階段"], r["id"])):
+            print(f"{r['id']}  {item_name(r)}{mark(r)}")
+        print(f"共 {len(rows)} 項沒被配方用到。")
+        return 0
+    if not a.need:
+        sys.exit("用法：pb.py plan \"<需求>\" [--type 類型] [--rules 規則檔] [--pick N --save]")
+    state = load_state()
+    cur = state["items"].get(state.get("current") or "", {})
+    asset = a.type or cur.get("type")
+    res = plan_options(a.need, asset, load_rules(a.rules))
+    print(plan_text(res), end="")
+    if a.save:
+        if not res["options"]:
+            sys.exit("沒有方案可以存。")
+        n = a.pick or 1
+        if not 1 <= n <= len(res["options"]):
+            sys.exit(f"--pick 要在 1 到 {len(res['options'])} 之間")
+        name, item = pick(state, a.name)
+        o = res["options"][n - 1]
+        ids = [r["id"] for r in o["items"]]
+        item["plan"] = {"need": a.need, "recipe": o["id"], "ids": ids, "date": today()}
+        event(item, f"plan {o['id']}")
+        save_state(state)
+        print(f"\n已把方案 {n}（{o['id']} {o['名稱']}，{len(ids)} 項）記進作品「{name}」。")
+    return 0
+
+
+def bench_text(group: str | None, stage: str | None, batch: int) -> str:
+    logged = {i for r in runs() if r["作品"] == BENCH_WORK for i in split(r["條目id"])}
+    rows = {r["id"]: r for r in entries() + tools()
+            if r["狀態"] == "待試" and r.get("試法") == "桌上" and r["id"] not in logged}
+    out = [f"# 桌上試驗（{today()}）", "",
+           "> 用樣本素材測；記錄用 `pb.py run-log --bench --entries <代號> --result 有效|無效|需調整 --note \"<結果>\"`。"
+           "同一組一次比完，只留一個。", ""]
+    n = 0
+    groups = {g: [i for i in ids if i in rows] for g, ids in bench_groups().items() if not group or group in g}
+    for g, ids in groups.items():
+        if not ids or n >= batch:
+            continue
+        out.append(f"## 比較組：{g}")
+        for i in ids:
+            out.append(f"- [ ] **{i}** {item_name(rows[i])}（{rows[i]['實用度']}）：{how(rows[i])}")
+        out.append("")
+        n += len(ids)
+    if not group:
+        in_group = {i for ids in bench_groups().values() for i in ids}
+        singles = sorted((r for i, r in rows.items() if i not in in_group and (not stage or stage in split(r["階段"]))),
+                         key=lambda r: (split(r["階段"])[0] if split(r["階段"]) else "z", rating_key(r)))
+        if singles and n < batch:
+            out.append("## 單項")
+            for r in singles[: batch - n]:
+                out.append(f"- [ ] **{r['id']}** {item_name(r)}（{r['實用度']}）：{how(r)}")
+                n += 1
+            out.append("")
+    left = len(rows) - n
+    out.append(f"這一批 {n} 項；桌上可測的還有 {left} 項沒排到。")
+    return "\n".join(out) + "\n"
+
+
+def cmd_bench(a) -> int:
+    print(bench_text(a.group, a.stage, a.batch), end="")
     return 0
 
 
@@ -1013,7 +1264,22 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--name")
     p.add_argument("--product")
     p.add_argument("--note")
+    p.add_argument("--bench", action="store_true", help="a 桌上 test with the sample kit, not a real piece of work")
     p.set_defaults(fn=cmd_run_log)
+    p = sub.add_parser("plan")
+    p.add_argument("need", nargs="?")
+    p.add_argument("--type")
+    p.add_argument("--rules", help="a project's rule file: one excluded keyword per line")
+    p.add_argument("--pick", type=int)
+    p.add_argument("--save", action="store_true")
+    p.add_argument("--name")
+    p.add_argument("--unused", action="store_true", help="list live items no recipe uses")
+    p.set_defaults(fn=cmd_plan)
+    p = sub.add_parser("bench")
+    p.add_argument("--group")
+    p.add_argument("--stage")
+    p.add_argument("--batch", type=int, default=12)
+    p.set_defaults(fn=cmd_bench)
     sub.add_parser("review").set_defaults(fn=cmd_review)
     p = sub.add_parser("trials")
     p.add_argument("--name")

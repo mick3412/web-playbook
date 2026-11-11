@@ -16,6 +16,21 @@ python3 "$WB" <command>
 
 If `~/.config/web-playbook/home` does not exist, tell the user to run `python3 "<repo>/pb.py" setup` once and stop.
 
+## From a request to a plan (start here)
+
+This handbook is only useful if requests are built from it. For every new request, before proposing anything:
+
+1. **Get options from the data.** `plan "<the request in one or two sentences>" [--type <type>] [--rules <project rule file>]` scores the recipes (`data/recipes.csv`) and the entries and tools against the request and prints up to three option packages, stage by stage, each item with its id and status (〔採用〕, 〔待試・桌上〕, 〔待試・實戰〕 …), plus matching items the recipe lacks under 也可以加.
+2. **Present two or three options** to the user. For each: what it suits, the main ids it relies on per stage, what material is missing, and the main risk. Recommend one. When nothing matches, say so and build from the stage cards instead; never invent a method the data does not have without saying it is new.
+3. **Apply the project's rules first.** If the project keeps a rule file (keywords or `欄位=值` lines such as `費用=付費`), pass it with `--rules`; items it excludes are listed and must not come back. The project's own documents still win over the handbook.
+4. **Save the choice.** After the user picks, `plan "<request>" --pick <n> --save` stores the chosen ids on the piece of work. From then on `card --brief` lists them first under 方案項目, and `done` lists the ones still without a result.
+5. **Cite ids.** Every recommendation, five-line summary and review names the ids it comes from, so the user can see what came from the handbook and what did not.
+6. **Prefer proven items.** Use 已內建／採用／已整合 items first. 待試 items enter a real piece of work only through `trials` (at most three per stage, two tools per work, 實戰 items first); 桌上 items are cleared on the bench (below).
+
+## Bench: clearing 待試 items without a real project
+
+Items marked 試法＝桌上 can be judged with a sample kit (a short talking-head clip, a sample page, a sample draft, a small repo). `bench [--group <name>] [--stage <n>] [--batch 12]` lists the next batch, comparison groups first (`data/bench.json`: items that do the same job; test them on the same sample and keep one). Record each result with `run-log --bench --entries <id> --result <有效|無效|需調整> --note "<what you measured>"`, then run `review` and show the user the suggested upgrades and downgrades. Change statuses only after the user agrees.
+
 ## While working (the main use)
 
 1. **Find the piece of work.** Run `status`. If the project has none, ask whether to open one: `start "<name>" --type <行銷網站|登陸頁|應用介面|設計系統|文件與說明頁>`. Never open one silently. Small one-step requests do not need one.
@@ -45,6 +60,7 @@ Ask before adding anything. When the user agrees: park it if needed (`inbox add 
 
 ## Rules
 
+- Every new or merged item names the recipe (R-NN in `data/recipes.csv`) it belongs to and is added to that recipe's 項目, or the intake note says why no recipe fits. New items also get 試法 (桌上 or 實戰). `check` reports live items no recipe uses; `plan --unused` lists them.
 - `data/*.csv` and `data/stages.json` are the hand-edited data. Never edit `guide/`; run `build`.
 - Ids are permanent. Never renumber or reuse; removed entries move to `archive/`.
 - `pb.py` is shared with the other playbooks and must stay identical; change it in one repo, copy it to the others, run every test suite.

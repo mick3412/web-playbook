@@ -19,3 +19,4 @@
 - 2026-11-11 收錄 IG〈42 Things to Install in Claude〉：查證未收的工具，新收免費開源者，付費與不合者記為未採用
 - 2026-11-11 收錄 IG SEO 地圖輪播（lawrenceaiseo）與 5 個 Claude Skills Reel（your.engineer.ben）
 - 2026-11-11 收錄 2026-11-11 多批：SEO/元件/渴望型開場/Remotion 教學/音效對齊/去背特效/設計資源等
+- 2026-11-11 運用流程：新增 plan（需求→方案）、配方表、試法欄位、bench 桌上試驗、golden briefs 測試；技能與 README 加上「怎麼用這個智庫」

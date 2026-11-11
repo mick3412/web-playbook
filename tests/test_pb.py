@@ -107,5 +107,40 @@ class PlaybookTest(unittest.TestCase):
             self.assertIn("排定要測", self.pb("done", "trial-demo"))
 
 
+    def _golden(self):
+        import json
+        return json.loads((REPO / "tests" / "golden_briefs.json").read_text(encoding="utf-8"))
+
+    def test_golden_briefs_pick_the_right_items(self):
+        for c in self._golden()["cases"]:
+            out = self.pb("plan", c["need"], *(["--type", c["type"]] if c.get("type") else []))
+            first = out.split("## 方案 2")[0]
+            for i in c["must"]:
+                self.assertIn(i + " ", first, f"「{c['need']}」的第一個方案少了 {i}")
+            self.assertNotIn("〔避開", out)
+            self.assertNotIn("〔未採用", out)
+
+    def test_rules_file_leaves_items_out(self):
+        c = self._golden()["cases"][0]
+        rules = self.tmp / "rules.txt"
+        rules.write_text("# 樣本規則\nid=" + c["must"][0] + "\n", encoding="utf-8")
+        out = self.pb("plan", c["need"], "--rules", str(rules))
+        self.assertIn("專案規則排除：" + c["must"][0], out)
+
+    def test_saved_plan_shows_in_brief_and_done(self):
+        g = self._golden()
+        self.pb("start", "demo", "--type", g["start_type"])
+        self.assertIn("已把方案 1", self.pb("plan", g["save_need"], "--save"))
+        self.assertIn("方案項目：", self.pb("card", g["brief_stage"], "--brief"))
+        self.assertIn("方案裡用過、還沒記結果的項目", self.pb("done"))
+
+    def test_bench_lists_desk_items_and_logs_them(self):
+        out = self.pb("bench", "--batch", "3")
+        self.assertIn("桌上試驗", out)
+        first = out.split("**")[1]
+        self.pb("run-log", "--bench", "--entries", first, "--result", "有效")
+        self.assertNotIn("**" + first + "**", self.pb("bench", "--batch", "500"))
+
+
 if __name__ == "__main__":
     unittest.main()
