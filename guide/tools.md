@@ -10,7 +10,7 @@
 | [REA（Reverse Engineer Anything）](https://github.com/morluto/rea)（T-05） | 待試 | 免費 | MIT（寬鬆） | 想知道別人網站的某個互動或效果怎麼做時 |
 | [Awesome DESIGN.md（VoltAgent）](https://github.com/VoltAgent/awesome-design-md)（T-06） | 待試 | 免費 | MIT（寬鬆） | 要定設計系統、想看好的 DESIGN.md 怎麼寫時 |
 | [Design DNA（zanwei）](https://github.com/zanwei/design-dna)（T-09） | 待試 | 免費 | MIT（寬鬆） | 有參考介面、想把風格量化成規格時 |
-| [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時 |
+| [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery、Httpster、Mobbin）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時 |
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells）](https://scrolltide.co/)（T-18） | 待試 | 免費 | 網站內容各自所有（未標） | 找特定元件或細節的參考時 |
 | [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待試 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
@@ -32,8 +32,13 @@
 | [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 待試 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
 | [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 待試 | 免費 | Apache-2.0（寬鬆） | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 |
 | [emilkowalski/skills（emil-design-eng 等）](https://github.com/emilkowalski/skills)（T-36） | 待試 | 免費 | MIT（寬鬆） | 做或檢查網頁動畫時 |
+| [Motion（原 Framer Motion）](https://motion.dev)（T-40） | 待試 | 免費 | MIT（寬鬆） | CSS 做不到的動效：拖曳、版面切換、跟著捲動的複雜效果 |
+| [動畫元件庫（Motion Primitives、Magic UI、Uiverse）](https://motion-primitives.com)（T-41） | 待試 | 免費 | MIT（寬鬆） | 想找現成的動畫元件或小互動（按鈕、載入、切換）時 |
+| [Anime.js](https://animejs.com)（T-42） | 待試 | 免費 | MIT（寬鬆） | 不用 React、要輕量的時間軸動畫時 |
+| [插圖與 3D 圖示（Open Peeps、3dicons、unDraw）](https://www.openpeeps.com)（T-44） | 待試 | 免費 | CC0（Open Peeps、3dicons）、unDraw 自有授權（特殊） | 照片表達不了、需要插圖或 3D 圖示時 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
+| [Spline](https://spline.design)（T-45） | 待查 | 部分付費 | 商業服務（特殊） | 想在網頁放可互動的 3D 場景時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 未採用 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |
 
 ## 4 建置
@@ -42,6 +47,10 @@
 |---|---|---|---|---|
 | [網頁動態元件庫（React Bits、Aceternity UI）](https://reactbits.dev/)（T-19） | 待試 | 部分付費 | 依各庫條款（特殊） | 要動態文字、背景、區塊時 |
 | [daisyUI](https://daisyui.com/)（T-31） | 待試 | 免費 | MIT（寬鬆） | 用 Tailwind 做元件，想要語意化的元件類別和主題時 |
+| [Component Gallery](https://component.gallery)（T-38） | 待試 | 免費 | 網站內容各自所有（特殊） | 不確定一個元件叫什麼、該怎麼表現時 |
+| [21st.dev](https://21st.dev)（T-39） | 待試 | 部分付費 | 各元件不同（特殊） | 想借現成的 React 區塊（價格表、FAQ、主視覺）時 |
+| [shadcn/ui](https://ui.shadcn.com)（T-43） | 待試 | 免費 | MIT（寬鬆） | 需要一套可完全擁有、可改的基礎元件時 |
+| [mapcn](https://github.com/AnmolSaini16/mapcn)（T-46） | 待試 | 免費 | MIT（寬鬆） | 頁面需要地圖（標記、路線）時 |
 | Image to Code（T-08） | 未採用 | 不明 | 未標（未標） | — |
 
 ## 5 品質
@@ -61,10 +70,11 @@
 | [localseoskills](https://github.com/garrettjsmith/localseoskills)（T-24） | 待試 | 部分付費 | MIT（寬鬆） | 做在地商家的 SEO：Google 商家檔案、評論、名錄、在地關鍵字、AI 在地搜尋 |
 | [All-In-One Free SEO Tool](https://github.com/IamRamgarhia/All-In-One-Free-SEO-Tool)（T-25） | 待試 | 免費 | MIT（寬鬆） | 要免費做關鍵字研究、關鍵字缺口、競品比較、AI 能見度、在地 SEO 時 |
 | [geo-seo-claude](https://github.com/zubair-trabzada/geo-seo-claude)（T-35） | 待試 | 免費 | MIT（寬鬆） | 做 AI 搜尋能見度健檢時 |
+| [NotFair Plugin（原 TopRank）](https://github.com/nowork-studio/notfair-plugin)（T-47） | 待試 | 免費 | MIT（寬鬆） | 做 SEO、GEO 健檢與內容時 |
 | [OpenSEO](https://github.com/every-app/open-seo)（T-02） | 避開 | 付費 | MIT（寬鬆） | 開源版的 Semrush／Ahrefs：關鍵字研究、排名追蹤、反向連結、網站健檢 |
 
 ## 8 量測與迭代
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
-| [Google Search Console MCP（Suganthan）](https://github.com/Suganthan-Mohanadasan/Suganthans-GSC-MCP)（T-01） | 待試 | 不明 | Apache-2.0（寬鬆） | 讓 Claude 直接讀 Search Console 的搜尋數據：找出排名在第 2 頁、差一點就上首頁的關鍵字，建議要改哪一頁；29 個工具，每次回答附資料出處 |
+| [Google Search Console MCP（Suganthan）](https://github.com/Suganthan-Mohanadasan/Suganthans-GSC-MCP)（T-01） | 待試 | 免費 | Apache-2.0（寬鬆） | 讓 Claude 直接讀 Search Console 的搜尋數據：找出排名在第 2 頁、差一點就上首頁的關鍵字，建議要改哪一頁；29 個工具，每次回答附資料出處 |

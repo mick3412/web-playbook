@@ -18,3 +18,4 @@
 - 2026-11-10 pb.py trials：每支作品的待試測試清單（每階段最多 3 項、工具最多 2 個）；brief 顯示這一步要測、done 提醒未記錄的項目
 - 2026-11-11 收錄 IG〈42 Things to Install in Claude〉：查證未收的工具，新收免費開源者，付費與不合者記為未採用
 - 2026-11-11 收錄 IG SEO 地圖輪播（lawrenceaiseo）與 5 個 Claude Skills Reel（your.engineer.ben）
+- 2026-11-11 收錄 2026-11-11 多批：SEO/元件/渴望型開場/Remotion 教學/音效對齊/去背特效/設計資源等
