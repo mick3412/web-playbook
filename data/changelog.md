@@ -22,3 +22,4 @@
 - 2026-11-11 運用流程：新增 plan（需求→方案）、配方表、試法欄位、bench 桌上試驗、golden briefs 測試；技能與 README 加上「怎麼用這個智庫」
 - 2026-11-11 待試分類（使用者同意）：直接採用事實與硬規則、★ 低價值降為參考或未採用；同類項目分成比較組
 - 2026-11-12 動效技能定案：emil（animate、choreograph）與 GSAP 官方技能改已安裝；LottieFiles、design-motion-principles 未採用
+- 2026-11-12 收錄：Shaan Johari 字幕教學（S55）／Modern Web Guidance（S64），並掛進配方

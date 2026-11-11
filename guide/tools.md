@@ -50,6 +50,7 @@
 | [Component Gallery](https://component.gallery)（T-38） | 待試 | 免費 | 網站內容各自所有（特殊） | 不確定一個元件叫什麼、該怎麼表現時 |
 | [21st.dev](https://21st.dev)（T-39） | 待試 | 部分付費 | 各元件不同（特殊） | 想借現成的 React 區塊（價格表、FAQ、主視覺）時 |
 | [shadcn/ui](https://ui.shadcn.com)（T-43） | 待試 | 免費 | MIT（寬鬆） | 需要一套可完全擁有、可改的基礎元件時 |
+| [Modern Web Guidance](https://github.com/GoogleChrome/modern-web-guidance)（T-48） | 待試 | 免費 | Apache-2.0（寬鬆） | 寫元件、表單、動效或想把舊寫法換成瀏覽器內建功能時 |
 | Image to Code（T-08） | 未採用 | 不明 | 未標（未標） | — |
 | [mapcn](https://github.com/AnmolSaini16/mapcn)（T-46） | 未採用 | 免費 | MIT（寬鬆） | 頁面需要地圖（標記、路線）時 |
 
