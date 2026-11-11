@@ -28,3 +28,4 @@
 - 2026-11-12 運用流程：新增 R-00 底座配方、把未用項目掛進配方、新增配方、golden briefs 擴充；依試跑修正觸發詞
 - 2026-11-12 桌上試驗：網站單項（多寬度截圖、三級檢查、固定內容換風格、Modern Web Guidance 內容）
 - 2026-11-12 收錄：cs2pm_ghost Scrolltide Reel（併入 S2-02、T-18／S4-06）
+- 2026-11-12 情境分面：新增「情境」欄位、data/facets.json（同義詞、上層、調性關聯、限制衝突）、plan --facets、facets 指令與檢查

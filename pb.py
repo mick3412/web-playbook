@@ -57,12 +57,12 @@ ARCHIVE = ROOT / "archive"
 INBOX = ROOT / "inbox"
 
 ENTRY_COLS = ["id", "舊id", "階段", "步驟", "類型", "素材類型", "觸發", "要點", "做法", "為什麼", "來源", "證據",
-              "實用度", "狀態", "內建於", "複查條件", "測試方法", "試法", "更新日"]
+              "實用度", "狀態", "內建於", "複查條件", "測試方法", "試法", "情境", "更新日"]
 TOOL_COLS = ["id", "工具", "網址", "階段", "步驟", "素材類型", "何時用", "做什麼", "需求", "授權", "授權等級", "費用", "實用度", "狀態",
-             "安裝方式", "複查條件", "測試方法", "試法", "查證日"]
+             "安裝方式", "複查條件", "測試方法", "試法", "情境", "查證日"]
 SOURCE_COLS = ["id", "資源", "位置", "收錄日", "備註"]
 RUN_COLS = ["日期", "作品", "產品", "類型", "條目id", "結果", "備註"]
-RECIPE_COLS = ["id", "名稱", "適用需求", "素材類型", "項目", "不適用", "更新日"]
+RECIPE_COLS = ["id", "名稱", "適用需求", "素材類型", "項目", "不適用", "情境", "更新日"]
 TRIAL_KINDS = ["桌上", "實戰"]          # 桌上: a sample kit is enough to judge it; 實戰: needs a real audience
 BENCH_WORK = "桌上試驗"                  # run-log --bench records under this name
 PLAN_OPTIONS = 3
@@ -140,6 +140,142 @@ def recipes() -> list[dict]:
 def bench_groups() -> dict[str, list[str]]:
     p = DATA / "bench.json"
     return json.loads(p.read_text(encoding="utf-8")).get("groups", {}) if p.is_file() else {}
+
+
+# ---------------------------------------------------------------- situation facets (data/facets.json)
+def facet_dict() -> dict:
+    p = DATA / "facets.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"分面": {}, "關聯": [], "衝突": []}
+
+
+def parse_ctx(text: str) -> dict[str, set[str]]:
+    """「目的=名單、信任建立；調性=安靜高級」→ {"目的": {...}, "調性": {...}}"""
+    out: dict[str, set[str]] = {}
+    for part in re.split(r"[；;]", text or ""):
+        if "=" not in part:
+            continue
+        k, v = part.split("=", 1)
+        vals = set(split(v))
+        if k.strip() and vals:
+            out.setdefault(k.strip(), set()).update(vals)
+    return out
+
+
+def ctx_text(ctx: dict[str, set[str]]) -> str:
+    return "；".join(f"{k}={'、'.join(sorted(v))}" for k, v in ctx.items() if v)
+
+
+def expand(facet: str, vals: set[str], F: dict) -> set[str]:
+    """A value matches itself, every ancestor and every descendant, so neither a coarse nor a fine tag is missed."""
+    tree = F["分面"].get(facet, {})
+    parent = {v: m.get("上層") for v, m in tree.items()}
+    out = set(vals)
+    for v in vals:
+        p = parent.get(v)
+        while p and p not in out:
+            out.add(p)
+            p = parent.get(p)
+    grew = True
+    while grew:
+        kids = {v for v, p in parent.items() if p in out and v not in out}
+        out |= kids
+        grew = bool(kids)
+    return out
+
+
+def suggest_ctx(text: str, F: dict) -> dict[str, set[str]]:
+    low = text.lower()
+    out: dict[str, set[str]] = {}
+    for facet, vals in F["分面"].items():
+        for v, m in vals.items():
+            if any(w and w.lower() in low for w in [v, *m.get("同義詞", [])]):
+                out.setdefault(facet, set()).add(v)
+    for facet, vals in out.items():  # keep the most specific value: drop ancestors of other matches
+        tree = F["分面"][facet]
+        anc = set()
+        for v in vals:
+            p = tree[v].get("上層")
+            while p:
+                anc.add(p)
+                p = tree.get(p, {}).get("上層")
+        out[facet] = vals - anc
+    return out
+
+
+def facet_score(row_ctx: dict[str, set[str]], need: dict[str, set[str]], F: dict) -> float:
+    """+1 per need facet the row shares a value with; a facet the row does not tag is neutral; a mismatch costs 0.25."""
+    s = 0.0
+    for facet, vals in need.items():
+        if facet == "限制" or facet not in row_ctx:
+            continue
+        s += 1.0 if expand(facet, vals, F) & row_ctx[facet] else -0.25
+    return s
+
+
+def conflict(row: dict, need: dict[str, set[str]], F: dict) -> str | None:
+    row_ctx = parse_ctx(row.get("情境", ""))
+    for c in F.get("衝突", []):
+        if c["限制"] in need.get("限制", set()):
+            col, val = c["排除"].split("=", 1)
+            have = row_ctx.get(col, set()) | set(split(row.get(col, "")))
+            if val in have:
+                return f"限制「{c['限制']}」排除 {c['排除']}"
+    return None
+
+
+def tone_advice(need: dict[str, set[str]], F: dict) -> tuple[dict[str, list[str]], list[str]]:
+    """Suggested tones with their reasons, plus warnings when the need picks a tone a relation advises against."""
+    sug: dict[str, list[str]] = {}
+    warn: list[str] = []
+    for rel in F.get("關聯", []):
+        facet, val = rel["if"].split("=", 1)
+        if val not in need.get(facet, set()):
+            continue
+        for t in rel.get("建議", {}).get("調性", []):
+            sug.setdefault(t, []).append(rel["if"])
+        for t in rel.get("避開", {}).get("調性", []):
+            if t in need.get("調性", set()):
+                warn.append(f"{rel['if']} 建議避開「{t}」")
+    return sug, warn
+
+
+def validate_facets(F: dict, rows: list[tuple[str, str]]) -> list[str]:
+    errors: list[str] = []
+    tree = F.get("分面", {})
+    for facet, vals in tree.items():
+        seen: dict[str, str] = {}
+        for v, m in vals.items():
+            p = m.get("上層")
+            if p and p not in vals:
+                errors.append(f"facets.json {facet}/{v}: 上層「{p}」不在同一分面")
+            hop, cur = 0, p
+            while cur and hop < 20:
+                cur = vals.get(cur, {}).get("上層"); hop += 1
+            if hop >= 20:
+                errors.append(f"facets.json {facet}/{v}: 上層形成循環")
+            for w in [v, *m.get("同義詞", [])]:
+                if w in seen and seen[w] != v:
+                    errors.append(f"facets.json {facet}: 「{w}」同時對應 {seen[w]} 和 {v}")
+                seen[w] = v
+    for rel in F.get("關聯", []) + [{"if": c["排除"]} for c in F.get("衝突", []) if c["排除"].split("=")[0] in tree]:
+        facet, val = rel["if"].split("=", 1)
+        if val not in tree.get(facet, {}):
+            errors.append(f"facets.json 關聯：「{rel['if']}」不在字典裡")
+        for kind in ("建議", "避開"):
+            for f2, vs in rel.get(kind, {}).items():
+                errors += [f"facets.json 關聯 {rel['if']}：{f2}=「{x}」不在字典裡" for x in vs if x not in tree.get(f2, {})]
+    for c in F.get("衝突", []):
+        if c["限制"] not in tree.get("限制", {}):
+            errors.append(f"facets.json 衝突：限制「{c['限制']}」不在字典裡")
+    for tag, text in rows:
+        for facet, vals in parse_ctx(text).items():
+            if facet not in tree:
+                errors.append(f"{tag}: 情境分面「{facet}」不在 facets.json")
+                continue
+            errors += [f"{tag}: 情境 {facet}=「{v}」不在 facets.json" for v in vals if v not in tree[facet]]
+        if text and not parse_ctx(text):
+            errors.append(f"{tag}: 情境格式要像「目的=名單、信任建立；調性=安靜高級」")
+    return errors
 
 
 def split(value: str) -> list[str]:
@@ -263,6 +399,9 @@ def validate() -> list[str]:
         for i in ids:
             if i not in status:
                 errors.append(f"bench.json {g}: {i} does not exist")
+    ctx_rows = [(r["id"], r["情境"]) for r in entries()] + [(t["id"], t["情境"]) for t in tools()] + \
+               [(f"recipes.csv {rc['id']}", rc["情境"]) for rc in recipes()]
+    errors += validate_facets(facet_dict(), ctx_rows)
     return errors
 
 
@@ -669,9 +808,12 @@ def mark(r: dict) -> str:
     return f"〔{r['狀態']}{kind}〕"
 
 
-def plan_options(need: str, asset: str | None = None, rules: list[str] | None = None) -> dict:
-    """Score recipes against the need, fill each with its items, and suggest matching items the recipe lacks."""
+def plan_options(need: str, asset: str | None = None, rules: list[str] | None = None, facets: str | None = None) -> dict:
+    """Score recipes against the need (words plus situation facets), fill each with its items,
+    leave out what the project's rules or the need's limits forbid, and suggest matching items the recipe lacks."""
     rules = rules or []
+    F = facet_dict()
+    need_ctx = parse_ctx(facets) if facets else suggest_ctx(need, F)
     rows = {r["id"]: r for r in entries()} | {t["id"]: t for t in tools()}
     q = grams(need)
     scored = []
@@ -681,32 +823,53 @@ def plan_options(need: str, asset: str | None = None, rules: list[str] | None = 
         terms = split(rc["適用需求"])
         g = grams(rc["名稱"] + "".join(terms))
         s = len(q & g) / max(1, len(q | g)) + 0.2 * sum(1 for t in terms if t and t.lower() in need.lower())
+        s += 0.15 * facet_score(parse_ctx(rc["情境"]), need_ctx, F)
         if s > 0.03:
             scored.append((round(s, 3), rc))
     scored.sort(key=lambda x: -x[0])
-    matched = [r for s, r in similar_rows(need, 15) if s >= 0.08 and for_asset(r, asset) and r["狀態"] in SHOWN]
-    matched += [t for s, t in similar_tools(need, 8) if s >= 0.06 and for_asset(t, asset)]
+    pool: dict[str, float] = {}
+    for s, r in similar_rows(need, 40):
+        if for_asset(r, asset) and r["狀態"] in SHOWN:
+            pool[r["id"]] = s
+    for s, r in similar_tools(need, 20):
+        if for_asset(r, asset):
+            pool[r["id"]] = max(pool.get(r["id"], 0), s)
+    if need_ctx:
+        for r in list(entries()) + list(tools()):
+            if r["狀態"] in ("避開", "未採用", "參考", "待查") or not for_asset(r, asset):
+                continue
+            fs = facet_score(parse_ctx(r["情境"]), need_ctx, F)
+            if fs > 0:
+                pool[r["id"]] = pool.get(r["id"], 0) + 0.12 * fs
+    matched = [rows[i] for i, s in sorted(pool.items(), key=lambda x: -x[1]) if s >= 0.08 and i in rows]
     excluded: dict[str, tuple[dict, str]] = {}
 
     def keep(r: dict) -> bool:
-        k = broken_rule(r, rules)
+        k = broken_rule(r, rules) or conflict(r, need_ctx, F)
         if k:
             excluded[r["id"]] = (r, k)
         return not k
 
     options = []
-    for s, rc in scored[:PLAN_OPTIONS]:
-        items = [rows[i] for i in split(rc["項目"]) if i in rows]
-        items = [r for r in items if keep(r)]
+    for s, rc in scored:
+        if len(options) >= PLAN_OPTIONS:
+            break
+        why = conflict(rc, need_ctx, F)
+        if why:
+            excluded[rc["id"]] = (dict(rc, 要點="配方：" + rc["名稱"]), why)
+            continue
+        items = [r for r in (rows[i] for i in split(rc["項目"]) if i in rows) if keep(r)]
         ids = {r["id"] for r in items}
-        extras = [r for r in matched if r["id"] not in ids and keep(r)][:5]
+        extras = [r for r in matched if r["id"] not in ids and keep(r)][:6]
         options.append({"id": rc["id"], "名稱": rc["名稱"], "適用需求": rc["適用需求"], "不適用": rc["不適用"],
                         "score": s, "items": items, "extras": extras})
     if not options and matched:
-        items = [r for r in matched if keep(r)]
+        items = [r for r in matched if keep(r)][:20]
         options.append({"id": "自組", "名稱": "沒有對應的配方，依需求比對組成", "適用需求": need, "不適用": "",
                         "score": 0, "items": items, "extras": []})
-    return {"need": need, "asset": asset, "options": options, "excluded": list(excluded.values())}
+    tones, warns = tone_advice(need_ctx, F)
+    return {"need": need, "asset": asset, "options": options, "excluded": list(excluded.values()),
+            "ctx": need_ctx, "ctx_from": "指定" if facets else "從需求文字推測", "tones": tones, "warns": warns}
 
 
 def stage_label(st: dict, r: dict) -> str:
@@ -719,6 +882,14 @@ def plan_text(res: dict) -> str:
     st = stages()
     order = {k: i for i, k in enumerate(stage_keys(st))}
     out = [f"# 方案：{res['need']}" + (f"（{res['asset']}）" if res["asset"] else ""), ""]
+    if res.get("ctx"):
+        out.append(f"分面表（{res['ctx_from']}）：{ctx_text(res['ctx'])}")
+    if res.get("tones") and "調性" not in res.get("ctx", {}):
+        out.append("推測調性：" + "；".join(f"{t}（{'、'.join(w)}）" for t, w in sorted(res["tones"].items(), key=lambda x: -len(x[1]))[:4]))
+    for w in res.get("warns", []):
+        out.append(f"提醒：{w}")
+    if res.get("ctx") or res.get("tones") or res.get("warns"):
+        out.append("")
     if not res["options"]:
         out.append("找不到對應的配方或條目。換個說法再試，或用 `pb.py card 0` 從頭照階段走。")
     for n, o in enumerate(res["options"], 1):
@@ -733,7 +904,7 @@ def plan_text(res: dict) -> str:
             out.append("- 也可以加：" + "；".join(f"{r['id']} {item_name(r)[:28]}{mark(r)}" for r in o["extras"]))
         out.append("")
     if res["excluded"]:
-        out.append("專案規則排除：" + "；".join(f"{r['id']} {item_name(r)[:20]}（規則：{k}）" for r, k in res["excluded"]))
+        out.append("排除：" + "；".join(f"{r['id']} {item_name(r)[:20]}（規則：{k}）" for r, k in res["excluded"]))
         out.append("")
     base = next((rc for rc in recipes() if rc["id"] == BASE_RECIPE), None)
     if base and res["options"]:
@@ -826,6 +997,9 @@ def cmd_check(_a) -> int:
         print("\n".join(errors))
         return 1
     print(f"OK：{len(entries())} 條做法、{len(tools())} 個工具、{len(recipes())} 個配方、{len(sources())} 個來源、{len(runs())} 筆實戰紀錄")
+    untagged = [r for r in entries() + tools() if r["情境"] == "" and r["狀態"] not in ("避開", "未採用")]
+    if facet_dict()["分面"] and untagged:
+        print(f"提醒：{len(untagged)} 個項目還沒標情境（`pb.py facets` 看各值的使用數）。")
     unused = unused_by_recipes()
     if recipes() and unused:
         print(f"提醒：{len(unused)} 個採用或待試的項目沒被任何配方用到（`pb.py plan --unused` 看清單）。")
@@ -1130,7 +1304,7 @@ def cmd_plan(a) -> int:
     state = load_state()
     cur = state["items"].get(state.get("current") or "", {})
     asset = a.type or cur.get("type")
-    res = plan_options(a.need, asset, load_rules(a.rules))
+    res = plan_options(a.need, asset, load_rules(a.rules), a.facets)
     print(plan_text(res), end="")
     if a.save:
         if not res["options"]:
@@ -1182,6 +1356,24 @@ def bench_text(group: str | None, stage: str | None, batch: int) -> str:
 
 def cmd_bench(a) -> int:
     print(bench_text(a.group, a.stage, a.batch), end="")
+    return 0
+
+
+def cmd_facets(a) -> int:
+    F = facet_dict()
+    if a.suggest:
+        print(ctx_text(suggest_ctx(a.suggest, F)) or "（沒有對到任何分面值）")
+        return 0
+    rows = entries() + tools()
+    used: Counter = Counter()
+    for r in rows:
+        for f, vs in parse_ctx(r["情境"]).items():
+            for v in vs:
+                used[(f, v)] += 1
+    for facet, vals in F["分面"].items():
+        print(f"{facet}：" + "、".join(f"{v}（{used[(facet, v)]}）" + (f"⊂{m['上層']}" if m.get("上層") else "") for v, m in vals.items()))
+    tagged = sum(1 for r in rows if r["情境"])
+    print(f"\n已標情境 {tagged}/{len(rows)} 項；括號是標了這個值的項目數。")
     return 0
 
 
@@ -1279,7 +1471,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--save", action="store_true")
     p.add_argument("--name")
     p.add_argument("--unused", action="store_true", help="list live items no recipe uses")
+    p.add_argument("--facets", help="the need as facets: 目的=名單；調性=安靜高級 (default: guessed from the text)")
     p.set_defaults(fn=cmd_plan)
+    p = sub.add_parser("facets")
+    p.add_argument("--suggest", help="guess the facets of a need from its words")
+    p.set_defaults(fn=cmd_facets)
     p = sub.add_parser("bench")
     p.add_argument("--group")
     p.add_argument("--stage")

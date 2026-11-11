@@ -125,7 +125,7 @@ class PlaybookTest(unittest.TestCase):
         rules = self.tmp / "rules.txt"
         rules.write_text("# 樣本規則\nid=" + c["must"][0] + "\n", encoding="utf-8")
         out = self.pb("plan", c["need"], "--rules", str(rules))
-        self.assertIn("專案規則排除：" + c["must"][0], out)
+        self.assertIn("排除：" + c["must"][0], out)
 
     def test_saved_plan_shows_in_brief_and_done(self):
         g = self._golden()
@@ -140,6 +140,25 @@ class PlaybookTest(unittest.TestCase):
         first = out.split("**")[1]
         self.pb("run-log", "--bench", "--entries", first, "--result", "有效")
         self.assertNotIn("**" + first + "**", self.pb("bench", "--batch", "500"))
+
+
+    def test_facets_suggest_expand_and_tone(self):
+        self.assertIn("平台=IG Reels", self.pb("facets", "--suggest", "45 秒 IG Reels，質感 premium，要留名單"))
+        self.assertIn("調性=安靜高級", self.pb("facets", "--suggest", "要有質感 premium 一點"))
+        out = self.pb("plan", "海外投資說明", "--facets", "目的=信任建立；產業=金融保險")
+        line = next(l for l in out.splitlines() if l.startswith("推測調性"))
+        self.assertIn("權威專業", line)
+        self.assertNotIn("可愛", line)
+        self.assertIn("提醒：產業=金融保險 建議避開「可愛」", self.pb("plan", "海外投資說明", "--facets", "產業=金融保險；調性=可愛"))
+
+    def test_unknown_facet_value_fails_check(self):
+        import csv as _csv
+        p = self.home / "data" / "entries.csv"
+        rows = list(_csv.DictReader(open(p, encoding="utf-8")))
+        rows[0]["情境"] = "目的=不存在的值"
+        w = _csv.DictWriter(open(p, "w", encoding="utf-8", newline=""), fieldnames=list(rows[0]), quoting=_csv.QUOTE_ALL, lineterminator="\n")
+        w.writeheader(); w.writerows(rows)
+        self.assertIn("不在 facets.json", self.pb("check", ok=False))
 
 
 if __name__ == "__main__":
