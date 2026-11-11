@@ -14,6 +14,7 @@
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells）](https://scrolltide.co/)（T-18） | 待試 | 免費 | 網站內容各自所有（未標） | 找特定元件或細節的參考時 |
 | [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待試 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
+| [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)（T-37） | 待試 | 免費 | MIT（寬鬆） | 選配色、字型、版型方向時 |
 | [figmaformotion](https://figmaformotion.com/v2)（T-21） | 未採用 | 付費 | 付費授權（未標） | — |
 
 ## 3 視覺設計
@@ -30,6 +31,7 @@
 | [PulsoIcon](https://github.com/CityPulso/PulsoIcon)（T-26） | 待試 | 免費 | ISC（部分圖示沿用 Lucide、Tabler 等原授權；品牌 logo 是各品牌商標）（寬鬆） | 按鈕、連結、分頁要有輕微的滑過動態圖示時 |
 | [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 待試 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
 | [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 待試 | 免費 | Apache-2.0（寬鬆） | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 |
+| [emilkowalski/skills（emil-design-eng 等）](https://github.com/emilkowalski/skills)（T-36） | 待試 | 免費 | MIT（寬鬆） | 做或檢查網頁動畫時 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
 | [ScrollCraft](https://github.com/singhharsh1708/scrollcraft)（T-17） | 未採用 | 免費 | MIT（寬鬆） | 要做捲動驅動的網站時 |

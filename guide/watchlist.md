@@ -61,3 +61,5 @@
 | T-33 | AI Particle Simulator（casberry） | 待查 | 要做粒子背景或片頭粒子效果時 | 2026-12-10；官網寫明價格與授權時 | — |
 | T-34 | Impeccable | 待試 | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 | 下一次介面改版時 | 何時：下一次介面改版｜怎麼做：同一個畫面用 Impeccable 和 unslop 各改一次｜看什麼：負責人偏好、修改次數｜有效＝明顯比 unslop 好才留 |
 | T-35 | geo-seo-claude | 待試 | 做 AI 搜尋能見度健檢時 | 網站上線前做 6.4 時 | 何時：做 AI 搜尋健檢｜怎麼做：跟 Claude SEO 對同一網站各跑一次｜看什麼：建議的差異和可做性｜有效＝有 Claude SEO 沒給的可做建議才留 |
+| T-36 | emilkowalski/skills（emil-design-eng 等） | 待試 | 做或檢查網頁動畫時 | 下一次做 3.3 動效時 | 何時：下一次做 3.3 動效｜怎麼做：用 review-animations 審一次現有動畫，照建議改｜看什麼：改前後的時長、曲線、掉幀與主觀順暢度｜有效＝至少找出 2 個自己沒發現、改了明顯更好的問題 |
+| T-37 | ui-ux-pro-max | 待試 | 選配色、字型、版型方向時 | 下一次做 2.1 參考與風格時 | 何時：下一次做 2.1｜怎麼做：同一份需求分別問 ui-ux-pro-max 和 taste-skill 要方向｜看什麼：建議是否貼合產業、是否避開 AI 感｜有效＝它給出 taste-skill 沒有、而且被採用的建議才留 |
