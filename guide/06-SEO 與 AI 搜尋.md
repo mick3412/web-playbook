@@ -8,11 +8,14 @@
 
 - [ ] **6.1 結構化資料**：依頁面類型加 schema；不加產品沒有的評價標記
   - 幾種做法：(a) marketing-playbook:schema 技能
+  - 結構化資料要和頁面上看得到的文字一致；不需要特別的 AI 標記（S6-05，待試）
 - [ ] **6.2 meta 與分享預覽**：標題、描述、分享預覽圖（OG）每頁都有
 - [ ] **6.3 sitemap 與索引**：sitemap、robots、canonical；不想被收錄的頁加 noindex
+  - AI 爬蟲不跑 JavaScript：重要內容和圖片要在原始 HTML 裡（S6-03，待試）
 - [ ] **6.4 AI 搜尋健檢**：跑一次 AI 搜尋能見度健檢，修完再上線
   - 幾種做法：(a) GEO Optimizer；(b) marketing-playbook:ai-seo 技能；(c) marketing-playbook:seo-audit 技能
   - 上線前做 AI 搜尋能見度健檢，上線後讀 Search Console（S6-01，待試）
+  - 寫成 AI 會引用的段落：H2 用問句，第一句直接回答（S6-04，待試）
 
 ## 用什麼工具
 
