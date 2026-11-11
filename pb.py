@@ -206,9 +206,13 @@ def facet_score(row_ctx: dict[str, set[str]], need: dict[str, set[str]], F: dict
     """+1 per need facet the row shares a value with; a facet the row does not tag is neutral; a mismatch costs 0.25."""
     s = 0.0
     for facet, vals in need.items():
-        if facet == "限制" or facet not in row_ctx:
+        if facet not in row_ctx:
             continue
-        s += 1.0 if expand(facet, vals, F) & row_ctx[facet] else -0.25
+        hit = bool(expand(facet, vals, F) & row_ctx[facet])
+        if facet == "限制":   # a row tagged with a limit works under it; not sharing one is no penalty
+            s += 1.0 if hit else 0.0
+        else:
+            s += 1.0 if hit else -0.25
     return s
 
 
