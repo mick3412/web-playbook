@@ -23,3 +23,4 @@
 - 2026-11-11 待試分類（使用者同意）：直接採用事實與硬規則、★ 低價值降為參考或未採用；同類項目分成比較組
 - 2026-11-12 動效技能定案：emil（animate、choreograph）與 GSAP 官方技能改已安裝；LottieFiles、design-motion-principles 未採用
 - 2026-11-12 收錄：Shaan Johari 字幕教學（S55）／Modern Web Guidance（S64），並掛進配方
+- 2026-11-12 桌上試驗：W5、W6 用埋了 18 個問題的樣本頁測檢查做法；GEO Optimizer 只接受公開網址
