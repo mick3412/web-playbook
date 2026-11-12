@@ -140,6 +140,14 @@ class PlaybookTest(unittest.TestCase):
         self.assertNotIn("平台=IG", self.pb("facets", "--suggest", "redesign the company site"))
         self.assertIn("平台=IG", self.pb("facets", "--suggest", "發 IG 貼文"))
 
+    def test_web_spec_from_page_type_style_and_named_dimension(self):
+        out = self.pb("spec", "--from", "定價頁改版，要新粗獷風，要通過無障礙")
+        self.assertIn("推測：場景 定價頁；風格 新粗獷", out)
+        self.assertIn("| 陰影模糊px | 0 | 風格：新粗獷 |", out)
+        self.assertIn("| 方案數 | 2–3 | 場景：定價頁 |", out)
+        self.assertIn("焦點可見（指定（整個維度））", out)
+        self.assertIn("視覺風格=玻璃擬態", self.pb("facets", "--suggest", "做一個 glassmorphism 的卡片"))
+
     def test_rules_file_leaves_items_out(self):
         c = self._golden()["cases"][0]
         rules = self.tmp / "rules.txt"

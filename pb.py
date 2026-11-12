@@ -156,7 +156,8 @@ def facet_dict() -> dict:
     F = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"分面": {}, "關聯": [], "衝突": []}
     for dim, vals in vocab()["維度"].items():
         if dim not in F["分面"]:
-            F["分面"][dim] = {k: {"同義詞": [x["英文"]] if x.get("英文") else []} for k, x in vals.items()}
+            F["分面"][dim] = {k: {"同義詞": ([x["英文"]] if x.get("英文") else []) + x.get("同義詞", []),
+                                 **({"上層": x["上層"]} if x.get("上層") else {})} for k, x in vals.items()}
     return F
 
 
@@ -440,6 +441,12 @@ def validate() -> list[str]:
     for tone, dims in V.get("調性預設", {}).items():
         for dim, vals in dims.items():
             errors += [f"vocab.json 調性預設 {tone}：{dim}「{x}」不在語彙裡" for x in vals if x not in V["維度"].get(dim, {})]
+    for dim, vals in V["維度"].items():
+        for k, x in vals.items():
+            for name in x.get("專有名稱", []):
+                for how, text in x.get("寫法", {}).items():
+                    if name.lower() in text.lower():
+                        errors.append(f"vocab.json {dim}/{k}：寫法「{how}」出現專有名稱「{name}」；提示詞要寫特徵，不寫工作室或作者名稱")
     for c in V.get("衝突", []):
         for side in (c["a"], c["b"]):
             dim, val = side.split("=", 1)
@@ -978,15 +985,23 @@ def plan_ids_for_stage(work: str | None, key: str) -> list[dict]:
 SPEC_META = {"編號", "秒數", "內容", "台詞", "備註", "過場到下一鏡", "英文描述", "畫面類型"}
 SHOT_KINDS = ("實拍", "AI 生成", "動態圖形")      # 動態圖形 = screen graphics, UI, text cards: no camera or light
 CAMERA_DIMS = {"運鏡", "視角與機位", "鏡頭與攝影機", "布光"}
-SPEC_SINGLE_DIMS = {"景別", "視角與機位", "運鏡", "過場", "氛圍", "剪輯節奏"}          # one value per shot
+SPEC_SINGLE_DIMS = {"畫風", "景別", "視角與機位", "運鏡", "過場", "氛圍", "剪輯節奏"}          # one value per shot
 SPEC_CONTENT_DIMS = {"動態圖像", "聲音設計", "文字與字幕", "主體動作與表演", "材質描寫"}  # tone presets only suggest these
-PROMPT_ORDER = ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "主體", "構圖", "布光", "色彩", "質感", "材質描寫", "氛圍"]
+PROMPT_ORDER = ["畫風", "景別", "視角與機位", "運鏡", "鏡頭與攝影機", "主體", "構圖", "布光", "色彩", "質感", "材質描寫", "氛圍"]
 REVIEW_HOW = {"景別": "抽格總覽看取景範圍", "視角與機位": "看定格的鏡頭高度與角度", "運鏡": "逐格條看位移方向和速度",
               "鏡頭與攝影機": "定格看景深、透視和格率", "構圖": "定格疊三分線檢查主體位置", "布光": "定格看光向、光比和陰影邊緣",
               "色彩": "和參考定格並排比色", "質感": "放大 200% 看顆粒和高光", "氛圍": "整鏡看完說得出同樣的感覺",
               "主體動作與表演": "看表演是否照寫", "剪輯節奏": "量每鏡秒數", "過場": "看過場中間那一格（S6-02）",
               "動態圖像": "逐格條看進場時長、緩動和錯開", "文字與字幕": "檢查安全區、行長、逐字時間", "聲音設計": "量響度並戴耳機和手機各聽一次（S7-09）",
-              "材質描寫": "放大看材質反光"}
+              "材質描寫": "放大看材質反光", "畫風": "抽三格對照它的六項特徵（線條、上色、光影、色板、比例、動態），再和最容易混淆的那一種比一次"}
+
+
+def num_text(x: dict, lead: str = "；") -> str:
+    """A value's structured numbers as a short string, for shooting lists and review tables."""
+    nums = {k: v for k, v in x.get("數值", {}).items() if k != "判準"}
+    if not nums:
+        return ""
+    return lead + "（" * (lead == " ") + "、".join(f"{k} {'／'.join(map(str, v)) if isinstance(v, list) else v}" for k, v in nums.items()) + "）" * (lead == " ")
 
 
 def as_list(x) -> list[str]:
@@ -1182,6 +1197,12 @@ def spec_render(card: dict, V: dict) -> str:
             out.append(f"  - 備註：{s['備註']}")
         if "文字與字幕" in full and "大字在頭後" in full["文字與字幕"][0]:
             out.append("  - 圖層：背景 → 大字 → 去背的人 → 字幕（S5-32）")
+        for dim in ["畫風"]:
+            for x in full.get(dim, ([], ""))[0]:
+                d = dims[dim][x]
+                out.append(f"  - 畫風＝{x}（{full[dim][1]}）：{d['寫法']['程式動畫']}")
+                if d.get("特徵"):
+                    out.append("    特徵：" + "；".join(f"{k} {v}" for k, v in d["特徵"].items()))
         for dim in ["運鏡", "動態圖像", "文字與字幕", "過場", "聲音設計", "色彩", "質感"]:
             if dim in full:
                 for x in full[dim][0]:
@@ -1194,9 +1215,11 @@ def spec_render(card: dict, V: dict) -> str:
         frame += n
     out += ["", "② 對時間：觸發點用逐字時間（S5-16，每個字對到音量起點）。③ 去背：需要時草稿用 u2net、定稿用 birefnet-portrait（T-13）。④ 做不好時，每次只改一個參數。", ""]
     out += ["## 三、實拍拍攝單（給負責人）", ""]
+    if card.get("數值"):
+        out += ["全片生效數值（場景或畫風定的，優先於下面各值的通用範圍）：" + "、".join(f"{k} {v}" for k, v in card["數值"].items()), ""]
     for r in rows:
         s, full = r["shot"], r["full"]
-        items = [f"{dim}：{x}（{dims[dim][x]['寫法']['實拍']}）" for dim in ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "構圖", "布光"]
+        items = [f"{dim}：{x}（{dims[dim][x]['寫法']['實拍']}{num_text(dims[dim][x])}）" for dim in ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "構圖", "布光"]
                  if dim in full for x in full[dim][0] if dims[dim][x]["寫法"]["實拍"] not in ("", "—")]
         if r["kind"] in ("動態圖形", "AI 生成"):
             items = []
@@ -1204,7 +1227,128 @@ def spec_render(card: dict, V: dict) -> str:
     out += ["", "## 四、審片對照表", "", "| 鏡 | 維度 | 規格 | 來源 | 怎麼檢查 |", "|---|---|---|---|---|"]
     for r in rows:
         for dim, (vals, src) in r["full"].items():
-            out.append(f"| {r['shot'].get('編號')} | {dim} | {'、'.join(vals)} | {src} | {REVIEW_HOW.get(dim, '對照規格')} |")
+            spec = "、".join(x + num_text(dims[dim][x], " ") for x in vals)
+            out.append(f"| {r['shot'].get('編號')} | {dim} | {spec} | {src} | {REVIEW_HOW.get(dim, '對照規格')} |")
+    return "\n".join(out) + "\n"
+
+
+GRAPHIC_FAMILIES = {"動漫", "插畫", "3D", "平面設計"}
+PER_VALUE_KEYS = {"時長格", "時長秒", "對齊", "緩動", "間隔格", "位移%畫面高", "速度°每秒", "速度"}
+
+
+def family_of(dim: dict, v: str) -> str:
+    while dim.get(v, {}).get("上層"):
+        v = dim[v]["上層"]
+    return v
+
+
+def spec_from(need: str, V: dict) -> dict:
+    """Draft a spec card from a need: values the need names (指定) > scene preset (場景) > tone preset (調性) > style preset (畫風).
+    A lower layer never overwrites a higher one; where it disagrees on a one-value dimension it is offered as an option."""
+    F = facet_dict()
+    dims, C = V["維度"], spec_conf(V)
+    low = need.lower()
+    sug = suggest_ctx(need, F)
+    layers: list[tuple[str, dict, dict]] = [("指定", {d: sorted(vs) for d, vs in sug.items() if d in dims}, {})]
+    scenes = [k for k, sc in V.get("場景預設", {}).items() if any(term_in(w, low) for w in [k, *sc.get("同義詞", [])])]
+    layers += [(f"場景：{k}", V["場景預設"][k]["預設"], V["場景預設"][k].get("數值", {})) for k in scenes]
+    tones = [t for t in sorted(sug.get("調性", set())) if t in V.get("調性預設", {})]
+    layers += [(f"調性：{t}", V["調性預設"][t], {}) for t in tones]
+    sdim = (V.get("規格卡") or {}).get("風格維度", "畫風")
+    styles = sorted(sug.get(sdim, set())) if sdim in dims else []
+    slabel = "畫風" if sdim == "畫風" else "風格"
+    layers += [(f"{slabel}：{st}", dims[sdim][st].get("預設", {}), dims[sdim][st].get("數值", {})) for st in styles]
+    named = {d: list(dims[d])[:4] for d in dims if d != sdim and term_in(d, low) and d not in layers[0][1]}
+    if named:   # the need names a whole dimension ("要通過無障礙"): bring its first values
+        layers.insert(1, ("指定（整個維度）", named, {}))
+    chosen: dict[str, list[tuple[str, str]]] = {}      # dim → [(value, layer it came from)]
+    hints: dict[str, list[str]] = {}
+    options: list[str] = []
+    for label, dmap, _ in layers:
+        for d, vals in dmap.items():
+            vals = as_list(vals)
+            if d not in dims or not vals:
+                continue
+            if label.startswith("調性") and d in C["內容"]:
+                hints.setdefault(d, [x for x in vals if x not in hints.get(d, [])])
+                continue
+            keep = vals[:1] if d in C["單選"] else vals[:4] if label == "指定（整個維度）" else vals[:2]
+            have_d = [x for x, _ in chosen.get(d, [])]
+            if not have_d:
+                chosen[d] = [(x, label) for x in keep]
+            elif not set(keep) & set(have_d):
+                if d in C["單選"]:
+                    options.append(f"{d}：{'、'.join(have_d)}（{chosen[d][0][1]}）或 {'、'.join(keep)}（{label}）")
+                elif len(have_d) < 3:
+                    chosen[d].append((keep[0], label))
+    have = {f"{d}={x}" for d, pairs in chosen.items() for x, _ in pairs}
+    warns = [f"{c['a']} 和 {c['b']} 衝突：{c['說明']}" for c in V.get("衝突", []) if c["a"] in have and c["b"] in have]
+    numbers = [(f"{d}＝{x}", dims[d][x].get("數值", {}), src) for d, pairs in chosen.items() for x, src in pairs if dims[d][x].get("數值")]
+    # one effective number per key: scene > style > the value's general range; disagreements are noted, not hidden
+    effective: dict[str, tuple[str, str, list[str]]] = {}
+    ranked = [(label, nums) for label, _, nums in layers if nums and label.startswith("場景")] + \
+             [(label, nums) for label, _, nums in layers if nums and label.startswith(("畫風", "風格"))] + [(f"{n}", nums) for n, nums, _ in numbers]
+    for label, nums in ranked:
+        for k, v in nums.items():
+            if k in ("判準", "說明", "畫面類型"):
+                continue
+            v = "／".join(map(str, v)) if isinstance(v, list) else str(v)
+            if k in PER_VALUE_KEYS and "＝" in label:      # a duration or alignment belongs to its own value
+                k = f"{k}（{label.split('＝', 1)[1]}）"
+            if k not in effective:
+                effective[k] = (v, label, [])
+            elif v != effective[k][0]:
+                effective[k][2].append(f"{label} 寫 {v}")
+    kind = ""
+    if styles and sdim == "畫風":
+        fam = family_of(dims["畫風"], styles[0])
+        kind = ("AI 生成" if re.search(r"\bai\b|生成|生圖", low) else "動態圖形") if fam in GRAPHIC_FAMILIES else "實拍"
+    if any(nums.get("畫面類型") for _, _, nums in layers):
+        kind = next(nums["畫面類型"] for _, _, nums in layers if nums.get("畫面類型"))
+    full = {d: [x for x, _ in pairs] if d not in C["單選"] else pairs[0][0] for d, pairs in chosen.items()}
+    if V.get("規格卡"):
+        card = {"頁面": need[:24], "調性": tones[0] if tones else "", C["全域"]: full,
+                C["清單"]: [{"編號": 1, "名稱": "首屏", "內容": ""}, {"編號": 2, "名稱": "", "內容": ""}]}
+    else:
+        m = re.search(r"(\d+)\s*秒", need)
+        length = int(m[1]) if m else 15
+        n = 3 if length >= 9 else 1
+        card = {"片名": need[:24], "畫幅": "直式 9:16" if re.search(r"reels|shorts|直式|tiktok|限動|9:16", low) else "16:9",
+                "格率": 24 if any("24" in str(nums.get("格率", "")) for _, nums, _ in numbers) else 30, "片長": length,
+                "調性": tones[0] if tones else "", **({"畫面類型": kind} if kind else {}),
+                "全片": full,
+                "鏡頭": [{"編號": i + 1, "秒數": round(length / n, 2) if i < n - 1 else round(length - round(length / n, 2) * (n - 1), 2),
+                          "內容": "（這一鏡發生什麼）"} for i in range(n)]}
+    card["數值"] = {k: v for k, (v, src, _) in effective.items() if src.startswith(("場景", "畫風", "風格"))}
+    unit = C["單位"]
+    return {"unit": unit, "card": card, "chosen": chosen, "hints": hints, "options": options, "warns": warns, "numbers": numbers, "effective": effective,
+            "scenes": scenes, "tones": tones, "styles": styles, "kind": kind}
+
+
+def spec_from_text(need: str, R: dict) -> str:
+    def fmt(nums: dict) -> str:
+        return "、".join(f"{k} {'／'.join(map(str, v)) if isinstance(v, list) else v}" for k, v in nums.items())
+    out = [f"# 規格卡草稿：{need}", ""]
+    out.append("推測：" + "；".join(x for x in [f"場景 {'、'.join(R['scenes'])}" if R["scenes"] else "",
+                                               f"調性 {'、'.join(R['tones'])}" if R["tones"] else "",
+                                               f"風格 {'、'.join(R['styles'])}" if R["styles"] else "",
+                                               f"畫面類型 {R['kind']}" if R["kind"] else ""] if x) if any(
+        [R["scenes"], R["tones"], R["styles"], R["kind"]]) else "推測：沒有對到場景、調性或畫風；值只來自需求明寫的部分")
+    out += ["", "| 維度 | 值（來源） |", "|---|---|"]
+    out += [f"| {d} | {'、'.join(f'{x}（{src}）' for x, src in pairs)} |" for d, pairs in R["chosen"].items()]
+    if R["effective"]:
+        out += ["", "## 生效數值（製作和審查都照這些；場景＞風格＞語彙的通用範圍）", "", "| 參數 | 值 | 依據 | 其他層的說法 |", "|---|---|---|---|"]
+        out += [f"| {k} | {v} | {src} | {'；'.join(alt) or '—'} |" for k, (v, src, alt) in R["effective"].items()]
+    crit = [(n, nums["判準"]) for n, nums, _ in R["numbers"] if nums.get("判準")]
+    if crit:
+        out += ["", "沒有單一數字的值，照這些判準：" + "；".join(f"{n}：{c}" for n, c in crit)]
+    if R["options"]:
+        out += ["", "## 要選一個（兩層預設不一致，沒有自動覆蓋）", ""] + [f"- {o}" for o in R["options"]]
+    if R["warns"]:
+        out += ["", "## 衝突", ""] + [f"- {w}" for w in R["warns"]]
+    if R["hints"]:
+        out += ["", "可考慮（調性建議，沒自動套用）：" + "；".join(f"{k}＝{'、'.join(v)}" for k, v in R["hints"].items())]
+    out += ["", f"下一步：把草稿存成卡片（加 `--out 卡.json`），補每一{R['unit']}的內容與要改的值，再跑 `pb.py spec 卡.json`。"]
     return "\n".join(out) + "\n"
 
 
@@ -1766,7 +1910,12 @@ def cmd_vocab(a) -> int:
         sys.exit(f"沒有「{a.dim}」；有：{'、'.join(V['維度'])}")
     for k, x in vals.items():
         mp = (" " + " ".join(x["對應"])) if x["對應"] else ""
-        print(f"{k}｜{x['英文']}｜{x['定義']}｜效果：{x['效果']}｜參數：{x['參數']}{mp}")
+        up = f"（屬於 {x['上層']}）" if x.get("上層") else ""
+        print(f"{k}{up}｜{x['英文']}｜{x['定義']}｜效果：{x['效果']}｜參數：{x['參數']}{mp}")
+        if x.get("數值"):
+            print("  數值：" + "、".join(f"{a} {b if not isinstance(b, list) else '／'.join(map(str, b))}" for a, b in x["數值"].items()))
+        if x.get("易混淆"):
+            print(f"  最容易混淆：{x['易混淆']}")
     return 0
 
 
@@ -1776,6 +1925,13 @@ def cmd_spec(a) -> int:
         sys.exit("這本手冊沒有製作語彙（data/vocab.json）。")
     if a.template:
         print(json.dumps(spec_template(V), ensure_ascii=False, indent=1))
+        return 0
+    if a.need:
+        R = spec_from(a.need, V)
+        print(spec_from_text(a.need, R), end="")
+        if a.out:
+            Path(a.out).expanduser().write_text(json.dumps(R["card"], ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            print(f"已寫出規格卡草稿 {a.out}")
         return 0
     if not a.card:
         sys.exit("用法：pb.py spec <規格卡.json> [--out 檔案]；空白範本：pb.py spec --template")
@@ -1904,6 +2060,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("card", nargs="?")
     p.add_argument("--out")
     p.add_argument("--template", action="store_true")
+    p.add_argument("--from", dest="need", help="draft a spec card from a need: scene, tone and style presets with their numbers")
     p.set_defaults(fn=cmd_spec)
     p = sub.add_parser("probe", help="measure raw footage (footage) or break down a reference video (breakdown)")
     p.add_argument("args", nargs=argparse.REMAINDER)
