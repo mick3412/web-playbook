@@ -30,3 +30,4 @@
 - 2026-11-12 收錄：cs2pm_ghost Scrolltide Reel（併入 S2-02、T-18／S4-06）
 - 2026-11-12 情境分面：新增「情境」欄位、data/facets.json（同義詞、上層、調性關聯、限制衝突）、plan --facets、facets 指令與檢查
 - 2026-11-12 網站：新增製作語彙 data/vocab.json（15 維 113 值，含 17 個調性預設與底線）與頁面規格卡；pb.py spec 改成通用（規格卡設定寫在 vocab.json），全頁共用值只列一次、調性預設造成的衝突也警告；來源 S66 WCAG 2.2、S67 Core Web Vitals、S68 Component Gallery
+- 2026-11-12 照負責人授權處理 bench 狀態建議；補齊所有項目的情境標籤；黃金測試改三段式（需求→分面→配方→代號）；修正分面同義詞誤判
