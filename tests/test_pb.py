@@ -142,11 +142,18 @@ class PlaybookTest(unittest.TestCase):
 
     def test_web_spec_from_page_type_style_and_named_dimension(self):
         out = self.pb("spec", "--from", "定價頁改版，要新粗獷風，要通過無障礙")
-        self.assertIn("推測：場景 定價頁；風格 新粗獷", out)
+        self.assertIn("推測：媒材 網站；場景 定價頁；風格 新粗獷", out)
         self.assertIn("| 陰影模糊px | 0 | 風格：新粗獷 |", out)
         self.assertIn("| 方案數 | 2–3 | 場景：定價頁 |", out)
         self.assertIn("焦點可見（指定（整個維度））", out)
-        self.assertIn("視覺風格=玻璃擬態", self.pb("facets", "--suggest", "做一個 glassmorphism 的卡片"))
+        self.assertIn("風格=玻璃擬態", self.pb("facets", "--suggest", "做一個 glassmorphism 的卡片"))
+
+    def test_shared_tags_are_identical_across_books(self):
+        others = [REPO.parent / f"{b}-playbook" / "data" / "shared.json" for b in ("production", "marketing", "web", "engineering")]
+        for o in others:
+            if o.is_file():
+                self.assertEqual((REPO / "data" / "shared.json").read_bytes(), o.read_bytes(), f"copy data/shared.json to {o.parent.parent.name}")
+        self.assertIn("風格=新粗獷", self.pb("facets", "--suggest", "新粗獷風的活動"))
 
     def test_rules_file_leaves_items_out(self):
         c = self._golden()["cases"][0]

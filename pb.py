@@ -144,20 +144,110 @@ def bench_groups() -> dict[str, list[str]]:
 
 
 # ---------------------------------------------------------------- situation facets (data/facets.json)
-def vocab() -> dict:
+SHARED_DIMS = ("色彩方案", "字體性格", "形狀語言", "線條", "深度與光影", "紋理", "版面密度", "構成", "動態性格")
+MOTION_DIMS = {"運鏡", "過場", "剪輯節奏", "主體動作與表演", "動態圖像"}
+IMAGE_WORDS = re.compile(r"圖卡|縮圖|輪播|海報|封面|貼文圖|單張|carousel|thumbnail|poster", re.I)
+_cache: dict = {}
+
+
+def shared() -> dict:
+    """data/shared.json: situation facets, design attributes and styles shared by all four books."""
+    if "shared" not in _cache:
+        p = DATA / "shared.json"
+        _cache["shared"] = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"分面": {}, "關聯": [], "衝突": [], "設計屬性": {}, "風格": {}}
+    return _cache["shared"]
+
+
+def media() -> list[str]:
+    return CONF.get("媒材", [])
+
+
+def attr_dim_of(name: str) -> str | None:
+    """Which shared design attribute a value belongs to (values are unique per attribute, not across)."""
+    for dim, vals in shared()["設計屬性"].items():
+        if name in vals:
+            return dim
+    return None
+
+
+def landing(x: dict, medium: str) -> dict[str, list[str]]:
+    """A shared value's local values for one medium: its own 落地, else the union of its design attributes' 落地."""
+    own = x.get("落地", {}).get(medium, {}).get("值")
+    if own:
+        return {d: list(v) for d, v in own.items()}
+    out: dict[str, list[str]] = {}
+    for dim, vals in x.get("設計屬性", {}).items():
+        for v in vals:
+            for d, xs in shared()["設計屬性"].get(dim, {}).get(v, {}).get("落地", {}).get(medium, {}).get("值", {}).items():
+                out.setdefault(d, [])
+                out[d] += [y for y in xs if y not in out[d]]
+    if medium == "圖片":
+        out = {d: v for d, v in out.items() if d not in MOTION_DIMS}
+    return out
+
+
+def localize(x: dict, medium: str, writing_keys: list[str]) -> dict:
+    """A shared style or attribute value in the shape a book's vocabulary uses, for one medium."""
+    lw = x.get("落地", {}).get(medium, {}).get("寫法", {})
+    attrs_en = [shared()["設計屬性"][d][v]["英文"] for d, vs in x.get("設計屬性", {}).items() for v in vs if v in shared()["設計屬性"].get(d, {})]
+    feat = x.get("特徵", {})
+    generic = {"AI 生成": ", ".join([x["英文"], *attrs_en]), "設計提示詞": ", ".join([x["英文"], *attrs_en]),
+               "程式動畫": "依特徵做：" + "；".join(f"{k} {v}" for k, v in feat.items() if v != "—") if feat else x["英文"],
+               "程式實作": "依數值做：" + "、".join(f"{k} {v}" for k, v in x.get("數值", {}).items()) if x.get("數值") else "—", "實拍": "—"}
+    nums = x.get("數值", {})
+    return {"英文": x["英文"], "定義": x.get("定義", ""), "效果": x.get("效果", ""),
+            "參數": "；".join(f"{k} {v if not isinstance(v, list) else '／'.join(map(str, v))}" for k, v in nums.items()) or "見子類",
+            "數值": nums, "寫法": {k: lw.get(k) or generic.get(k, x["英文"]) for k in writing_keys}, "對應": [], "來源": x.get("來源", []),
+            **{k: x[k] for k in ("上層", "同義詞", "專有名稱", "特徵", "易混淆", "設計屬性") if x.get(k)},
+            "預設": landing(x, medium), "落地": x.get("落地", {}), "共用": True}
+
+
+def vocab(medium: str | None = None) -> dict:
+    """The book's vocabulary plus the shared style and design attributes, localized to this book's (or the given) medium."""
+    key = f"vocab:{medium}"
+    if key in _cache:
+        return _cache[key]
     p = DATA / "vocab.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"維度": {}, "衝突": [], "調性預設": {}}
+    V = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"維度": {}, "衝突": [], "調性預設": {}}
+    if V["維度"] and media():
+        medium = medium or media()[0]
+        wk = sorted({k for vals in V["維度"].values() for x in vals.values() for k in x.get("寫法", {})})
+        S = shared()
+        for dim, vals in S["設計屬性"].items():
+            V["維度"].setdefault(dim, {k: localize(x, medium, wk) for k, x in vals.items()})
+        V["維度"].setdefault("風格", {k: localize(x, medium, wk) for k, x in S["風格"].items()})
+    _cache[key] = V
+    return V
 
 
 def facet_dict() -> dict:
-    """facets.json, plus every production-vocabulary dimension as a facet (its English term counts as a synonym),
-    so an item can be tagged 過場=甩鏡 and a need that says "whip pan" finds it."""
+    """Shared facets and design vocabulary first, then this book's own facets.json (its 工作項目, plus 停用分面／停用同義詞),
+    then this book's vocabulary dimensions. English terms count as synonyms, so "whip pan" finds 過場=甩鏡."""
+    if "facets" in _cache:
+        return _cache["facets"]
+    S = shared()
+    F = {"分面": json.loads(json.dumps(S["分面"])), "關聯": list(S["關聯"]), "衝突": list(S["衝突"])}
     p = DATA / "facets.json"
-    F = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"分面": {}, "關聯": [], "衝突": []}
+    B = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+    F["分面"].update(B.get("分面", {}))
+    F["關聯"] += B.get("關聯", [])
+    F["衝突"] += B.get("衝突", [])
+    def as_facet(vals: dict) -> dict:
+        return {k: {"同義詞": ([x["英文"]] if x.get("英文") else []) + x.get("同義詞", []), **({"上層": x["上層"]} if x.get("上層") else {})}
+                for k, x in vals.items()}
+    for dim, vals in S["設計屬性"].items():
+        F["分面"].setdefault(dim, as_facet(vals))
+    F["分面"].setdefault("風格", as_facet(S["風格"]))
     for dim, vals in vocab()["維度"].items():
         if dim not in F["分面"]:
-            F["分面"][dim] = {k: {"同義詞": ([x["英文"]] if x.get("英文") else []) + x.get("同義詞", []),
-                                 **({"上層": x["上層"]} if x.get("上層") else {})} for k, x in vals.items()}
+            F["分面"][dim] = as_facet(vals)
+    for f in B.get("停用分面", []):
+        F["分面"].pop(f, None)
+    for f, vals in B.get("停用同義詞", {}).items():
+        for v, words in vals.items():
+            if v in F["分面"].get(f, {}):
+                F["分面"][f][v]["同義詞"] = [w for w in F["分面"][f][v].get("同義詞", []) if w not in words]
+    _cache["facets"] = F
     return F
 
 
@@ -441,6 +531,17 @@ def validate() -> list[str]:
     for tone, dims in V.get("調性預設", {}).items():
         for dim, vals in dims.items():
             errors += [f"vocab.json 調性預設 {tone}：{dim}「{x}」不在語彙裡" for x in vals if x not in V["維度"].get(dim, {})]
+    if V["維度"]:   # shared values must land on values this book really has
+        own = json.loads((DATA / "vocab.json").read_text(encoding="utf-8"))["維度"] if (DATA / "vocab.json").is_file() else {}
+        S = shared()
+        for kind, group in [("設計屬性", S["設計屬性"]), ("風格", {"風格": S["風格"]})]:
+            for dim, vals in group.items():
+                for k, x in vals.items():
+                    for m in media():
+                        for d, xs in x.get("落地", {}).get(m, {}).get("值", {}).items():
+                            errors += [f"shared.json {kind}/{k}：{m} 落地 {d}「{y}」不在本書語彙" for y in xs if d not in own or y not in own[d]]
+                    for d, vs in x.get("設計屬性", {}).items():
+                        errors += [f"shared.json 風格/{k}：設計屬性 {d}「{y}」不存在" for y in vs if y not in S["設計屬性"].get(d, {})]
     for dim, vals in V["維度"].items():
         for k, x in vals.items():
             for name in x.get("專有名稱", []):
@@ -985,15 +1086,15 @@ def plan_ids_for_stage(work: str | None, key: str) -> list[dict]:
 SPEC_META = {"編號", "秒數", "內容", "台詞", "備註", "過場到下一鏡", "英文描述", "畫面類型"}
 SHOT_KINDS = ("實拍", "AI 生成", "動態圖形")      # 動態圖形 = screen graphics, UI, text cards: no camera or light
 CAMERA_DIMS = {"運鏡", "視角與機位", "鏡頭與攝影機", "布光"}
-SPEC_SINGLE_DIMS = {"畫風", "景別", "視角與機位", "運鏡", "過場", "氛圍", "剪輯節奏"}          # one value per shot
+SPEC_SINGLE_DIMS = {"風格", "景別", "視角與機位", "運鏡", "過場", "氛圍", "剪輯節奏"}          # one value per shot
 SPEC_CONTENT_DIMS = {"動態圖像", "聲音設計", "文字與字幕", "主體動作與表演", "材質描寫"}  # tone presets only suggest these
-PROMPT_ORDER = ["畫風", "景別", "視角與機位", "運鏡", "鏡頭與攝影機", "主體", "構圖", "布光", "色彩", "質感", "材質描寫", "氛圍"]
+PROMPT_ORDER = ["風格", "景別", "視角與機位", "運鏡", "鏡頭與攝影機", "主體", "構圖", "布光", "色彩", "質感", "材質描寫", "氛圍"]
 REVIEW_HOW = {"景別": "抽格總覽看取景範圍", "視角與機位": "看定格的鏡頭高度與角度", "運鏡": "逐格條看位移方向和速度",
               "鏡頭與攝影機": "定格看景深、透視和格率", "構圖": "定格疊三分線檢查主體位置", "布光": "定格看光向、光比和陰影邊緣",
               "色彩": "和參考定格並排比色", "質感": "放大 200% 看顆粒和高光", "氛圍": "整鏡看完說得出同樣的感覺",
               "主體動作與表演": "看表演是否照寫", "剪輯節奏": "量每鏡秒數", "過場": "看過場中間那一格（S6-02）",
               "動態圖像": "逐格條看進場時長、緩動和錯開", "文字與字幕": "檢查安全區、行長、逐字時間", "聲音設計": "量響度並戴耳機和手機各聽一次（S7-09）",
-              "材質描寫": "放大看材質反光", "畫風": "抽三格對照它的六項特徵（線條、上色、光影、色板、比例、動態），再和最容易混淆的那一種比一次"}
+              "材質描寫": "放大看材質反光", "風格": "抽三格對照它的六項特徵（線條、色彩、形狀、深度與光影、字體、動態），再和最容易混淆的那一種比一次"}
 
 
 def num_text(x: dict, lead: str = "；") -> str:
@@ -1197,10 +1298,10 @@ def spec_render(card: dict, V: dict) -> str:
             out.append(f"  - 備註：{s['備註']}")
         if "文字與字幕" in full and "大字在頭後" in full["文字與字幕"][0]:
             out.append("  - 圖層：背景 → 大字 → 去背的人 → 字幕（S5-32）")
-        for dim in ["畫風"]:
+        for dim in ["風格"]:
             for x in full.get(dim, ([], ""))[0]:
                 d = dims[dim][x]
-                out.append(f"  - 畫風＝{x}（{full[dim][1]}）：{d['寫法']['程式動畫']}")
+                out.append(f"  - 風格＝{x}（{full[dim][1]}）：{d['寫法']['程式動畫']}")
                 if d.get("特徵"):
                     out.append("    特徵：" + "；".join(f"{k} {v}" for k, v in d["特徵"].items()))
         for dim in ["運鏡", "動態圖像", "文字與字幕", "過場", "聲音設計", "色彩", "質感"]:
@@ -1216,7 +1317,7 @@ def spec_render(card: dict, V: dict) -> str:
     out += ["", "② 對時間：觸發點用逐字時間（S5-16，每個字對到音量起點）。③ 去背：需要時草稿用 u2net、定稿用 birefnet-portrait（T-13）。④ 做不好時，每次只改一個參數。", ""]
     out += ["## 三、實拍拍攝單（給負責人）", ""]
     if card.get("數值"):
-        out += ["全片生效數值（場景或畫風定的，優先於下面各值的通用範圍）：" + "、".join(f"{k} {v}" for k, v in card["數值"].items()), ""]
+        out += ["全片生效數值（場景或風格定的，優先於下面各值的通用範圍）：" + "、".join(f"{k} {v}" for k, v in card["數值"].items()), ""]
     for r in rows:
         s, full = r["shot"], r["full"]
         items = [f"{dim}：{x}（{dims[dim][x]['寫法']['實拍']}{num_text(dims[dim][x])}）" for dim in ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "構圖", "布光"]
@@ -1232,7 +1333,7 @@ def spec_render(card: dict, V: dict) -> str:
     return "\n".join(out) + "\n"
 
 
-GRAPHIC_FAMILIES = {"動漫", "插畫", "3D", "平面設計"}
+GRAPHIC_FAMILIES = {"動漫", "插畫", "3D", "平面設計", "極簡", "粗獷", "質感擬物", "編輯排版", "科技", "有機柔和"}
 PER_VALUE_KEYS = {"時長格", "時長秒", "對齊", "緩動", "間隔格", "位移%畫面高", "速度°每秒", "速度"}
 
 
@@ -1242,23 +1343,36 @@ def family_of(dim: dict, v: str) -> str:
     return v
 
 
-def spec_from(need: str, V: dict) -> dict:
-    """Draft a spec card from a need: values the need names (指定) > scene preset (場景) > tone preset (調性) > style preset (畫風).
+def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
+    """Draft a spec card from a need: values the need names (指定) > work order (作品單) > scene preset (場景) > tone preset (調性)
+    > style (風格) > design attributes (設計屬性). Shared values land in this book's medium (圖片 when the need is a still image).
     A lower layer never overwrites a higher one; where it disagrees on a one-value dimension it is offered as an option."""
     F = facet_dict()
-    dims, C = V["維度"], spec_conf(V)
     low = need.lower()
+    medium = "圖片" if "圖片" in media() and IMAGE_WORDS.search(need) else (media()[0] if media() else "")
+    if medium and medium != (media() or [""])[0]:
+        V = vocab(medium)
+    dims, C = V["維度"], spec_conf(V)
     sug = suggest_ctx(need, F)
-    layers: list[tuple[str, dict, dict]] = [("指定", {d: sorted(vs) for d, vs in sug.items() if d in dims}, {})]
+    if work:   # the work order's facets and design genes count as if the need had named them
+        for f, vals in parse_ctx(work.get("情境", "")).items():
+            sug.setdefault(f, set()).update(vals)
+        for f, vals in work.get("設計基因", {}).items():
+            sug.setdefault(f, set()).update(as_list(vals))
+    if medium == "圖片":
+        dims = {d: v for d, v in dims.items() if d not in MOTION_DIMS}
+    given = {d: sorted(vs) for d, vs in sug.items() if d in dims and d != "風格" and d not in SHARED_DIMS}
+    layers: list[tuple[str, dict, dict]] = [("指定" if not work else "指定／作品單", given, {})]
     scenes = [k for k, sc in V.get("場景預設", {}).items() if any(term_in(w, low) for w in [k, *sc.get("同義詞", [])])]
     layers += [(f"場景：{k}", V["場景預設"][k]["預設"], V["場景預設"][k].get("數值", {})) for k in scenes]
     tones = [t for t in sorted(sug.get("調性", set())) if t in V.get("調性預設", {})]
     layers += [(f"調性：{t}", V["調性預設"][t], {}) for t in tones]
-    sdim = (V.get("規格卡") or {}).get("風格維度", "畫風")
+    sdim = "風格"
     styles = sorted(sug.get(sdim, set())) if sdim in dims else []
-    slabel = "畫風" if sdim == "畫風" else "風格"
-    layers += [(f"{slabel}：{st}", dims[sdim][st].get("預設", {}), dims[sdim][st].get("數值", {})) for st in styles]
-    named = {d: list(dims[d])[:4] for d in dims if d != sdim and term_in(d, low) and d not in layers[0][1]}
+    layers += [(f"風格：{st}", {sdim: [st], **dims[sdim][st].get("預設", {})}, dims[sdim][st].get("數值", {})) for st in styles]
+    attrs = [(d, v) for d in SHARED_DIMS for v in sorted(sug.get(d, set())) if d in dims and v in dims[d]]
+    layers += [(f"設計屬性：{v}", {d: [v], **dims[d][v].get("預設", {})}, dims[d][v].get("數值", {})) for d, v in attrs]
+    named = {d: list(dims[d])[:4] for d in dims if d != sdim and d not in SHARED_DIMS and term_in(d, low) and d not in layers[0][1]}
     if named:   # the need names a whole dimension ("要通過無障礙"): bring its first values
         layers.insert(1, ("指定（整個維度）", named, {}))
     chosen: dict[str, list[tuple[str, str]]] = {}      # dim → [(value, layer it came from)]
@@ -1283,11 +1397,12 @@ def spec_from(need: str, V: dict) -> dict:
                     chosen[d].append((keep[0], label))
     have = {f"{d}={x}" for d, pairs in chosen.items() for x, _ in pairs}
     warns = [f"{c['a']} 和 {c['b']} 衝突：{c['說明']}" for c in V.get("衝突", []) if c["a"] in have and c["b"] in have]
-    numbers = [(f"{d}＝{x}", dims[d][x].get("數值", {}), src) for d, pairs in chosen.items() for x, src in pairs if dims[d][x].get("數值")]
+    numbers = [(f"{d}＝{x}", dims[d][x].get("數值", {}), src) for d, pairs in chosen.items() for x, src in pairs
+               if dims[d][x].get("數值") and d != "風格" and d not in SHARED_DIMS]     # shared values already count as their own layer
     # one effective number per key: scene > style > the value's general range; disagreements are noted, not hidden
     effective: dict[str, tuple[str, str, list[str]]] = {}
     ranked = [(label, nums) for label, _, nums in layers if nums and label.startswith("場景")] + \
-             [(label, nums) for label, _, nums in layers if nums and label.startswith(("畫風", "風格"))] + [(f"{n}", nums) for n, nums, _ in numbers]
+             [(label, nums) for label, _, nums in layers if nums and label.startswith(("風格", "設計屬性"))] + [(f"{n}", nums) for n, nums, _ in numbers]
     for label, nums in ranked:
         for k, v in nums.items():
             if k in ("判準", "說明", "畫面類型"):
@@ -1300,8 +1415,8 @@ def spec_from(need: str, V: dict) -> dict:
             elif v != effective[k][0]:
                 effective[k][2].append(f"{label} 寫 {v}")
     kind = ""
-    if styles and sdim == "畫風":
-        fam = family_of(dims["畫風"], styles[0])
+    if styles and "影片" in media():
+        fam = family_of(dims["風格"], styles[0])
         kind = ("AI 生成" if re.search(r"\bai\b|生成|生圖", low) else "動態圖形") if fam in GRAPHIC_FAMILIES else "實拍"
     if any(nums.get("畫面類型") for _, _, nums in layers):
         kind = next(nums["畫面類型"] for _, _, nums in layers if nums.get("畫面類型"))
@@ -1319,19 +1434,22 @@ def spec_from(need: str, V: dict) -> dict:
                 "全片": full,
                 "鏡頭": [{"編號": i + 1, "秒數": round(length / n, 2) if i < n - 1 else round(length - round(length / n, 2) * (n - 1), 2),
                           "內容": "（這一鏡發生什麼）"} for i in range(n)]}
-    card["數值"] = {k: v for k, (v, src, _) in effective.items() if src.startswith(("場景", "畫風", "風格"))}
+    card["數值"] = {k: v for k, (v, src, _) in effective.items() if src.startswith(("場景", "風格", "設計屬性"))}
+    if medium == "圖片" and "鏡頭" in card:
+        card["素材類型"] = "圖片"
     unit = C["單位"]
-    return {"unit": unit, "card": card, "chosen": chosen, "hints": hints, "options": options, "warns": warns, "numbers": numbers, "effective": effective,
-            "scenes": scenes, "tones": tones, "styles": styles, "kind": kind}
+    return {"medium": medium, "unit": unit, "card": card, "chosen": chosen, "hints": hints, "options": options, "warns": warns, "numbers": numbers, "effective": effective,
+            "scenes": scenes, "tones": tones, "styles": styles, "kind": kind, "attrs": [v for _, v in attrs]}
 
 
 def spec_from_text(need: str, R: dict) -> str:
     def fmt(nums: dict) -> str:
         return "、".join(f"{k} {'／'.join(map(str, v)) if isinstance(v, list) else v}" for k, v in nums.items())
     out = [f"# 規格卡草稿：{need}", ""]
-    out.append("推測：" + "；".join(x for x in [f"場景 {'、'.join(R['scenes'])}" if R["scenes"] else "",
+    out.append("推測：" + "；".join(x for x in [f"媒材 {R['medium']}" if R.get("medium") else "", f"場景 {'、'.join(R['scenes'])}" if R["scenes"] else "",
                                                f"調性 {'、'.join(R['tones'])}" if R["tones"] else "",
                                                f"風格 {'、'.join(R['styles'])}" if R["styles"] else "",
+                                               f"設計屬性 {'、'.join(R['attrs'])}" if R.get("attrs") else "",
                                                f"畫面類型 {R['kind']}" if R["kind"] else ""] if x) if any(
         [R["scenes"], R["tones"], R["styles"], R["kind"]]) else "推測：沒有對到場景、調性或畫風；值只來自需求明寫的部分")
     out += ["", "| 維度 | 值（來源） |", "|---|---|"]
