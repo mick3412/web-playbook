@@ -1362,7 +1362,7 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
     if medium == "圖片":
         dims = {d: v for d, v in dims.items() if d not in MOTION_DIMS}
     given = {d: sorted(vs) for d, vs in sug.items() if d in dims and d != "風格" and d not in SHARED_DIMS}
-    layers: list[tuple[str, dict, dict]] = [("指定" if not work else "指定／作品單", given, {})]
+    layers: list[tuple[str, dict, dict]] = [("指定" if not work else f"指定／{'策略卡' if work.get('編號') == '策略卡' else '作品單'}", given, {})]
     scenes = [k for k, sc in V.get("場景預設", {}).items() if any(term_in(w, low) for w in [k, *sc.get("同義詞", [])])]
     layers += [(f"場景：{k}", V["場景預設"][k]["預設"], V["場景預設"][k].get("數值", {})) for k in scenes]
     tones = [t for t in sorted(sug.get("調性", set())) if t in V.get("調性預設", {})]
@@ -1858,8 +1858,15 @@ def cmd_plan(a) -> int:
             print(f"{r['id']}  {item_name(r)}{mark(r)}")
         print(f"共 {len(rows)} 項沒被配方用到。")
         return 0
+    work = load_work(a.work) if a.work else None
+    if work and not a.need:
+        a.need = work["作品"]
     if not a.need:
-        sys.exit("用法：pb.py plan \"<需求>\" [--type 類型] [--rules 規則檔] [--pick N --save]")
+        sys.exit("用法：pb.py plan \"<需求>\" [--type 類型] [--rules 規則檔] [--work W01] [--pick N --save]")
+    if work and not a.facets:   # the work order's situation plus its design genes
+        genes = {d: set(as_list(v)) for d, v in work.get("設計基因", {}).items()}
+        a.facets = ctx_text({**suggest_ctx(a.need, facet_dict()), **parse_ctx(work.get("情境", "")), **genes})
+        print(f"作品單 {work['編號']}（{work['堆疊']}，策略：{work['策略']}）\n")
     state = load_state()
     cur = state["items"].get(state.get("current") or "", {})
     asset = a.type or cur.get("type")
@@ -2044,9 +2051,26 @@ def cmd_spec(a) -> int:
     if a.template:
         print(json.dumps(spec_template(V), ensure_ascii=False, indent=1))
         return 0
-    if a.need:
-        R = spec_from(a.need, V)
-        print(spec_from_text(a.need, R), end="")
+    if a.need or a.work:
+        work = load_work(a.work) if a.work else None
+        need = a.need or work["作品"]
+        note = f"作品單 {work['編號']}（策略：{work['策略']}）" if work else ""
+        if not work:   # called on its own: reuse the project's strategy card when there is one, else ask at most three questions
+            c = strategy_card()
+            if c:
+                ctx = {k: set(c[k]) for k in ("受眾", "調性") if c.get(k)}
+                work = {"情境": ctx_text(ctx), "設計基因": c.get("設計基因", {}), "編號": "策略卡"}
+                note = f"沿用策略卡（{c['目的']}）：受眾、調性和設計基因照策略卡"
+        R = spec_from(need, V, work)
+        if note:
+            print(note + "\n")
+        print(spec_from_text(need, R), end="")
+        if not work:
+            sug = suggest_ctx(need, facet_dict())
+            asks = [q for f, q in (("受眾", "給誰看？"), ("平台", "放在哪個平台？"), ("調性", "什麼調性？（或直接指定風格）"))
+                    if not sug.get(f) and not (f == "調性" and sug.get("風格"))][:3]
+            if asks:
+                print("\n沒有策略卡，先問：" + "　".join(asks) + "（答不出來就照上面的預設做）")
         if a.out:
             Path(a.out).expanduser().write_text(json.dumps(R["card"], ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
             print(f"已寫出規格卡草稿 {a.out}")
@@ -2072,6 +2096,194 @@ def cmd_probe(a) -> int:
         sys.exit("用法：pb.py probe footage <毛片> [--asr-python <有 faster-whisper 的 python>] [--lang zh] [--out 資料夾]\n"
                  "      pb.py probe breakdown <參考片> [--out 資料夾]；填好拆解卡後 pb.py probe breakdown --to-spec <拆解卡>")
     return subprocess.call([sys.executable, str(tool), *a.args])
+
+
+# ---------------------------------------------------------------- strategy → work orders (all books read <project>/.strategy/)
+BOOK_OF_MEDIUM = {"影片": "production-playbook", "圖片": "production-playbook", "網站": "web-playbook", "文案": "marketing-playbook", "程式": "engineering-playbook"}
+HORIZON = ("短期", "中期", "長期")
+
+
+def strategy_dir() -> Path:
+    start = Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()).resolve()
+    for d in (start, *start.parents):
+        if (d / ".strategy" / "策略卡.json").is_file():
+            return d / ".strategy"
+    return start / ".strategy"
+
+
+def strategy_card() -> dict | None:
+    p = strategy_dir() / "策略卡.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
+
+
+def strategy_from(goal: str) -> dict:
+    """A strategy card draft: goal and KPI, audience, platform roles, a short/mid/long content stack and the design genes.
+    Only what the goal states or the shared rules give; anything else becomes a question."""
+    S, F = shared(), facet_dict()
+    rules = S.get("策略", {})
+    ctx = suggest_ctx(goal, F)
+    purposes = sorted(ctx.get("目的", set())) or []
+    platforms = sorted(ctx.get("平台", set()))
+    tones = sorted(ctx.get("調性", set()))
+    questions = []
+    kpi = re.findall(r"\d[\d,]*\s*(?:筆|位|人|個|%|萬|元|次|則|支|篇)[^，。；,;]*", goal)
+    period = re.findall(r"[一二三四五六七八九十\d]+\s*(?:個月|週|周|天|季|年)", goal)
+    if not purposes:
+        questions.append("主要目的是哪一個：" + "、".join(k for k in rules.get("目的堆疊", {})))
+    if not kpi:
+        questions.append("用什麼數字算成功（例如名單筆數、詢問數、觀看數），期限多久？")
+    if not ctx.get("受眾"):
+        questions.append("主要受眾是誰（身分、處境、他們最在意的一件事）？")
+    if not tones:
+        questions.append("品牌調性是哪一種：" + "、".join(rules.get("調性設計基因", {})))
+    stack: dict[str, list[dict]] = {h: [] for h in HORIZON}
+    for pur in purposes or []:
+        for h in HORIZON:
+            for item in rules.get("目的堆疊", {}).get(pur, {}).get(h, []):
+                if platforms and item["平台"] not in platforms and not any(expand("平台", {pl}, F) & {item["平台"]} for pl in platforms) \
+                        and item["平台"] not in ("網站", "Email"):
+                    continue
+                if item not in stack[h]:
+                    stack[h].append({**item, "目的": pur})
+    used_platforms = sorted({i["平台"] for h in HORIZON for i in stack[h]} | set(platforms))
+    roles = {pl: rules.get("平台角色", {}).get(pl, {"角色": "（請補：這個平台負責漏斗哪一段）"}) for pl in used_platforms}
+    genes: dict[str, list[str]] = {}
+    for t in tones:
+        g = rules.get("調性設計基因", {}).get(t, {})
+        for st in g.get("風格", []):
+            genes.setdefault("風格", []).append(st)
+        for d, vs in g.get("設計屬性", {}).items():
+            genes.setdefault(d, [])
+            genes[d] += [v for v in vs if v not in genes[d]]
+    for d in SHARED_DIMS + ("風格",):
+        if ctx.get(d):
+            genes[d] = sorted(ctx[d])
+    cites = {}
+    for h in HORIZON:
+        for item in stack[h]:
+            res = plan_options(item["形式"], facets=ctx_text({"平台": {item["平台"]}, "目的": {item["目的"]}}))
+            if res["options"] and res["options"][0]["id"] != "自組":
+                cites[item["形式"]] = res["options"][0]["id"]
+    return {"目的": goal, "目的分面": purposes, "指標": kpi, "期限": period, "受眾": sorted(ctx.get("受眾", set())),
+            "產業": sorted(ctx.get("產業", set())), "調性": tones, "平台角色": roles, "內容堆疊": stack, "設計基因": genes,
+            "代號": cites, "待補問題": questions, "規則檔": "", "建立日": dt.date.today().isoformat(), "手冊": NAME}
+
+
+def strategy_text(c: dict) -> str:
+    out = [f"# 策略卡草稿：{c['目的']}", ""]
+    out.append(f"目的：{'、'.join(c['目的分面']) or '（待補）'}｜指標：{'；'.join(c['指標']) or '（待補）'}｜期限：{'、'.join(c['期限']) or '（待補）'}")
+    out.append(f"受眾：{'、'.join(c['受眾']) or '（待補）'}｜產業：{'、'.join(c['產業']) or '—'}｜調性：{'、'.join(c['調性']) or '（待補）'}")
+    out += ["", "## 平台角色", ""] + [f"- {pl}：{r.get('角色')}（漏斗 {'、'.join(r.get('漏斗', [])) or '—'}）" for pl, r in c["平台角色"].items()]
+    out += ["", "## 內容堆疊", ""]
+    for h in HORIZON:
+        items = c["內容堆疊"].get(h, [])
+        out.append(f"- {h}：" + ("；".join(f"{i['形式']}（{i['平台']}，{i['媒材']}→{i['手冊']}手冊{'，' + c['代號'][i['形式']] if i['形式'] in c['代號'] else ''}）" for i in items) or "（待補）"))
+    out += ["", "## 設計基因（所有媒材共用）", ""]
+    out += [f"- {d}：{'、'.join(v)}" for d, v in c["設計基因"].items()] or ["- （待補：先定調性，或直接指定風格）"]
+    if c["待補問題"]:
+        out += ["", "## 待補問題（沒有答案前不編）", ""] + [f"- {q}" for q in c["待補問題"]]
+    out += ["", "下一步：存成策略卡（`--save`），再用 `pb.py strategy --works` 拆成作品單。"]
+    return "\n".join(out) + "\n"
+
+
+def works_from(c: dict) -> list[dict]:
+    out = []
+    n = 0
+    for h in HORIZON:
+        for i in c["內容堆疊"].get(h, []):
+            n += 1
+            ctx = {"目的": {i["目的"]}, "平台": {i["平台"]}, "篇幅": {i["篇幅"]}}
+            if c.get("受眾"):
+                ctx["受眾"] = set(c["受眾"])
+            if c.get("調性"):
+                ctx["調性"] = set(c["調性"])
+            book = BOOK_OF_MEDIUM.get(i["媒材"], "")
+            out.append({"編號": f"W{n:02d}", "作品": i["形式"], "堆疊": h, "媒材": i["媒材"], "手冊": book, "平台": i["平台"],
+                        "情境": ctx_text(ctx), "設計基因": c.get("設計基因", {}), "策略": c["目的"],
+                        "下一步": f"在 {book} 跑 `pb.py plan \"{i['形式']}\" --work W{n:02d}`，再 `pb.py spec --from \"{i['形式']}\" --work W{n:02d}`"
+                        if book in ("production-playbook", "web-playbook") else f"在 {book} 跑 `pb.py plan \"{i['形式']}\" --work W{n:02d}`"})
+    return out
+
+
+def load_work(ref: str) -> dict:
+    p = Path(ref)
+    if not p.is_file():
+        p = strategy_dir() / "作品單" / f"{ref}.json"
+    if not p.is_file():
+        sys.exit(f"找不到作品單 {ref}（先跑 `pb.py strategy --works`）")
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def cmd_strategy(a) -> int:
+    if a.works:
+        c = strategy_card()
+        if not c:
+            sys.exit("還沒有策略卡：先跑 `pb.py strategy --from \"<目的>\" --save`。")
+        W = works_from(c)
+        d = strategy_dir() / "作品單"
+        d.mkdir(parents=True, exist_ok=True)
+        for w in W:
+            (d / f"{w['編號']}.json").write_text(json.dumps(w, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            print(f"- {w['編號']}｜{w['堆疊']}｜{w['作品']}｜{w['媒材']} → {w['手冊']}｜{w['下一步']}")
+        print(f"\n已寫出 {len(W)} 張作品單到 {d}")
+        return 0
+    if not a.goal:
+        c = strategy_card()
+        print(strategy_text(c) if c else "還沒有策略卡。用法：pb.py strategy --from \"<目的，含期限與數字>\" [--save]")
+        return 0
+    c = strategy_from(a.goal)
+    print(strategy_text(c), end="")
+    if a.save:
+        d = strategy_dir()
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "策略卡.json").write_text(json.dumps(c, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        (d / "策略卡.md").write_text(strategy_text(c), encoding="utf-8")
+        print(f"已存到 {d / '策略卡.json'}")
+    return 0
+
+
+def cmd_style(a) -> int:
+    """One style across media: features, design attributes, numbers and how it lands in video, image and web; plus this book's items."""
+    S, F = shared(), facet_dict()
+    if not a.name:
+        fams = [k for k, x in S["風格"].items() if not x.get("上層")]
+        for f in fams:
+            print(f"{f}：" + "、".join(k for k, x in S["風格"].items() if x.get("上層") == f))
+        return 0
+    name = a.name if a.name in S["風格"] else next(iter(suggest_ctx(a.name, F).get("風格", [])), None)
+    if not name:
+        sys.exit(f"沒有「{a.name}」這個風格；`pb.py style` 列出全部")
+    x = S["風格"][name]
+    tagged = [r for r in entries() + tools() if r["狀態"] in LIVE and expand("風格", {name}, F) & parse_ctx(r["情境"]).get("風格", set())]
+    if a.items:
+        print(f"{NAME}：" + ("、".join(f"{r['id']} {item_name(r)}" for r in tagged) or "沒有標這個風格的項目"))
+        return 0
+    print(f"# 風格：{name}" + (f"（屬於 {x['上層']}）" if x.get("上層") else "") + f"｜{x['英文']}\n\n{x.get('定義', '')}")
+    if x.get("特徵"):
+        print("\n## 共用特徵\n\n" + "\n".join(f"- {k}：{v}" for k, v in x["特徵"].items()))
+    if x.get("設計屬性"):
+        print("\n## 設計屬性（共用數值）\n")
+        for d, vs in x["設計屬性"].items():
+            for v in vs:
+                nums = S["設計屬性"][d][v].get("數值", {})
+                print(f"- {d}＝{v}：" + "、".join(f"{k} {'／'.join(map(str, n)) if isinstance(n, list) else n}" for k, n in nums.items()))
+    if x.get("數值"):
+        print("\n風格本身的數值：" + "、".join(f"{k} {'／'.join(map(str, n)) if isinstance(n, list) else n}" for k, n in x["數值"].items()))
+    print("\n## 各媒材怎麼落地\n")
+    for m in ("影片", "圖片", "網站"):
+        vals = landing(x, m)
+        how = x.get("落地", {}).get(m, {}).get("寫法", {})
+        src = "自有落地" if x.get("落地", {}).get(m) else "由設計屬性推出"
+        print(f"- {m}（{src}）：" + ("；".join(f"{d}＝{'、'.join(v)}" for d, v in vals.items()) or "—"))
+        for k, w in how.items():
+            if w and w != "—":
+                print(f"  - {k}：{w}")
+    if x.get("易混淆"):
+        print(f"\n最容易混淆：{x['易混淆']}")
+    if x.get("專有名稱"):
+        print(f"專有名稱只當檢索詞，提示詞不要寫：{'、'.join(x['專有名稱'])}")
+    print(f"\n本書標了這個風格的項目：" + ("、".join(r["id"] for r in tagged) or "沒有"))
+    return 0
 
 
 def cmd_review(_a) -> int:
@@ -2169,6 +2381,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--name")
     p.add_argument("--unused", action="store_true", help="list live items no recipe uses")
     p.add_argument("--facets", help="the need as facets: 目的=名單；調性=安靜高級 (default: guessed from the text)")
+    p.add_argument("--work", help="a work order from `strategy --works` (W01 or a path): its facets and design genes become the need")
     p.set_defaults(fn=cmd_plan)
     p = sub.add_parser("vocab")
     p.add_argument("dim", nargs="?")
@@ -2179,7 +2392,17 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out")
     p.add_argument("--template", action="store_true")
     p.add_argument("--from", dest="need", help="draft a spec card from a need: scene, tone and style presets with their numbers")
+    p.add_argument("--work", help="a work order from `strategy --works` (W01 or a path)")
     p.set_defaults(fn=cmd_spec)
+    p = sub.add_parser("style", help="one shared style across video, image and web")
+    p.add_argument("name", nargs="?")
+    p.add_argument("--items", action="store_true", help="only list this book's items tagged with the style")
+    p.set_defaults(fn=cmd_style)
+    p = sub.add_parser("strategy", help="goal → strategy card → work orders for each book")
+    p.add_argument("--from", dest="goal")
+    p.add_argument("--save", action="store_true")
+    p.add_argument("--works", action="store_true")
+    p.set_defaults(fn=cmd_strategy)
     p = sub.add_parser("probe", help="measure raw footage (footage) or break down a reference video (breakdown)")
     p.add_argument("args", nargs=argparse.REMAINDER)
     p.set_defaults(fn=cmd_probe)

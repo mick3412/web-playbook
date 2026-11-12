@@ -16,6 +16,12 @@ python3 "$WB" <command>
 
 If `~/.config/web-playbook/home` does not exist, tell the user to run `python3 "<repo>/pb.py" setup` once and stop.
 
+## Three layers: strategy → shared tags → tools
+
+- **Strategy first when there is a goal.** `strategy --from "<goal with period and numbers>" [--save]` (any book; the global `playbook strategy` runs it in marketing-playbook) drafts a strategy card in `<project>/.strategy/`: goal and KPI, audience, each platform's role in the funnel, a short/mid/long content stack and the design genes (style plus shared design attributes) every medium will share. Anything the goal does not state becomes a question; never invent audiences or numbers. `strategy --works` splits the card into work orders (W01…), each naming the book, the medium and the next command.
+- **Shared tags.** `data/shared.json` is identical in all four books: the nine situation facets, nine cross-medium design attributes (色彩方案, 字體性格, 形狀語言, 線條, 深度與光影, 紋理, 版面密度, 構成, 動態性格) and one 風格 hierarchy (12 families, 40 sub-styles). Each value says how it lands in video, image and web, so one style gives the same shared numbers everywhere. Edit it in web-playbook and copy it to the other three (a test compares them). A book's own facets.json holds only its 工作項目 plus 停用分面／停用同義詞. `style <name>` shows one style across media.
+- **Tools.** `plan --work W01` and `spec --work W01` build from a work order. Called on their own, `spec --from` reuses the project's strategy card when there is one (marked 沿用策略卡) and otherwise asks at most three questions (who, which platform, which tone) and carries on with defaults. Cards, thumbnails and carousels land as images: no camera moves or transitions.
+
 ## From a request to a plan (start here)
 
 This handbook is only useful if requests are built from it. For every new request, before proposing anything:
