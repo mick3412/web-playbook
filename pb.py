@@ -30,6 +30,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import urllib.parse
 from collections import Counter, defaultdict
@@ -951,7 +952,9 @@ def plan_ids_for_stage(work: str | None, key: str) -> list[dict]:
 
 
 # ---------------------------------------------------------------- spec cards: one shot spec → three sets of instructions
-SPEC_META = {"編號", "秒數", "內容", "台詞", "備註", "過場到下一鏡", "英文描述"}
+SPEC_META = {"編號", "秒數", "內容", "台詞", "備註", "過場到下一鏡", "英文描述", "畫面類型"}
+SHOT_KINDS = ("實拍", "AI 生成", "動態圖形")      # 動態圖形 = screen graphics, UI, text cards: no camera or light
+CAMERA_DIMS = {"運鏡", "視角與機位", "鏡頭與攝影機", "布光"}
 SPEC_SINGLE_DIMS = {"景別", "視角與機位", "運鏡", "過場", "氛圍", "剪輯節奏"}          # one value per shot
 SPEC_CONTENT_DIMS = {"動態圖像", "聲音設計", "文字與字幕", "主體動作與表演", "材質描寫"}  # tone presets only suggest these
 PROMPT_ORDER = ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "主體", "構圖", "布光", "色彩", "質感", "材質描寫", "氛圍"]
@@ -991,6 +994,9 @@ def spec_check(card: dict, V: dict) -> tuple[list[str], list[str]]:
     total = round(sum(float(s.get("秒數", 0)) for s in shots), 2)
     if card.get("片長") and abs(total - float(card["片長"])) > 0.2:
         errors.append(f"每鏡秒數加總 {total} 秒，和片長 {card['片長']} 秒不符")
+    for s in [card, *shots]:
+        if s.get("畫面類型") and s["畫面類型"] not in SHOT_KINDS:
+            errors.append(f"畫面類型「{s['畫面類型']}」要是 {'、'.join(SHOT_KINDS)} 之一")
     tone = card.get("調性")
     if tone and tone not in V.get("調性預設", {}):
         errors.append(f"調性「{tone}」沒有預設規格")
@@ -1011,8 +1017,11 @@ def spec_fill(card: dict, V: dict) -> list[dict]:
         for k, v in card.get("全片", {}).items():
             full.setdefault(k, (as_list(v), "全片"))
         last = s is card.get("鏡頭", [])[-1]
+        kind = shot_kind(card, s)
         hints = {}
         for k, v in preset.items():
+            if kind == "動態圖形" and k in CAMERA_DIMS:   # no camera or lights in screen graphics
+                continue
             if k in SPEC_CONTENT_DIMS:          # depends on what the shot holds: suggest, never apply
                 if k not in full:
                     hints[k] = as_list(v)
@@ -1020,8 +1029,12 @@ def spec_fill(card: dict, V: dict) -> list[dict]:
             if k == "過場" and last:
                 continue
             full.setdefault(k, (as_list(v)[:1] if k in SPEC_SINGLE_DIMS else as_list(v)[:2], "預設"))
-        out.append({"shot": s, "full": full, "hints": hints})
+        out.append({"shot": s, "full": full, "hints": hints, "kind": kind})
     return out
+
+
+def shot_kind(card: dict, s: dict) -> str:
+    return s.get("畫面類型") or card.get("畫面類型") or ""
 
 
 def spec_render(card: dict, V: dict) -> str:
@@ -1031,14 +1044,19 @@ def spec_render(card: dict, V: dict) -> str:
     if errors:
         return "規格卡有錯，先修正：\n" + "\n".join(f"- {e}" for e in errors) + "\n"
     rows = spec_fill(card, V)
+    kinds = sorted({r["kind"] for r in rows if r["kind"]})
     out = [f"# 規格：{card.get('片名', '未命名')}", "",
-           f"畫幅 {card.get('畫幅', '—')}｜格率 {card.get('格率', 30)}｜片長 {card.get('片長', '—')} 秒｜調性 {card.get('調性', '—')}", ""]
+           f"畫幅 {card.get('畫幅', '—')}｜格率 {card.get('格率', 30)}｜片長 {card.get('片長', '—')} 秒｜調性 {card.get('調性', '—')}"
+           + (f"｜畫面類型 {'、'.join(kinds)}" if kinds else ""), ""]
     out += [f"警告：{w}" for w in warns] + ([""] if warns else [])
     def en(dim, vals):
         return [dims[dim][x]["寫法"]["AI 生成"] if dims[dim][x]["寫法"]["AI 生成"] not in ("", "—") else dims[dim][x]["英文"] for x in vals]
     out += ["## 一、AI 生成提示詞（英文，固定順序：景別→視角→運鏡→鏡頭→主體→構圖→布光→色彩→質感→氛圍）", ""]
     for r in rows:
         s, full = r["shot"], r["full"]
+        if r["kind"] == "動態圖形":
+            out.append(f"- 第 {s.get('編號')} 鏡：動態圖形，不用 AI 生成，看第二部分")
+            continue
         parts = []
         for dim in PROMPT_ORDER:
             if dim == "主體":
@@ -1056,6 +1074,10 @@ def spec_render(card: dict, V: dict) -> str:
         s, full = r["shot"], r["full"]
         n = round(float(s.get("秒數", 0)) * fps)
         out.append(f"- 第 {s.get('編號')} 鏡：第 {frame}–{frame + n - 1} 格（{n} 格）｜{s.get('內容', '')}")
+        if s.get("台詞"):
+            out.append(f"  - 台詞：{s['台詞']}")
+        if s.get("備註"):
+            out.append(f"  - 備註：{s['備註']}")
         if "文字與字幕" in full and "大字在頭後" in full["文字與字幕"][0]:
             out.append("  - 圖層：背景 → 大字 → 去背的人 → 字幕（S5-32）")
         for dim in ["運鏡", "動態圖像", "文字與字幕", "過場", "聲音設計", "色彩", "質感"]:
@@ -1074,6 +1096,8 @@ def spec_render(card: dict, V: dict) -> str:
         s, full = r["shot"], r["full"]
         items = [f"{dim}：{x}（{dims[dim][x]['寫法']['實拍']}）" for dim in ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "構圖", "布光"]
                  if dim in full for x in full[dim][0] if dims[dim][x]["寫法"]["實拍"] not in ("", "—")]
+        if r["kind"] in ("動態圖形", "AI 生成"):
+            items = []
         out.append(f"- 第 {s.get('編號')} 鏡：" + ("；".join(items) or "無實拍需求（全程式或素材）"))
     out += ["", "## 四、審片對照表", "", "| 鏡 | 維度 | 規格 | 來源 | 怎麼檢查 |", "|---|---|---|---|---|"]
     for r in rows:
@@ -1084,7 +1108,8 @@ def spec_render(card: dict, V: dict) -> str:
 
 def spec_template(V: dict) -> dict:
     tone = next(iter(V.get("調性預設", {})), "")
-    return {"片名": "（片名）", "畫幅": "直式 9:16", "格率": 30, "片長": 10, "調性": tone, "全片": {"色彩": [], "質感": []},
+    return {"片名": "（片名）", "畫幅": "直式 9:16", "格率": 30, "片長": 10, "調性": tone, "畫面類型": "實拍",
+            "全片": {"色彩": [], "質感": []},
             "鏡頭": [{"編號": 1, "秒數": 5, "內容": "（這一鏡發生什麼）", "英文描述": "", "台詞": "", "景別": "", "運鏡": "", "過場到下一鏡": ""},
                      {"編號": 2, "秒數": 5, "內容": "", "景別": ""}]}
 
@@ -1587,6 +1612,17 @@ def cmd_spec(a) -> int:
     return 1 if text.startswith("規格卡有錯") else 0
 
 
+def cmd_probe(a) -> int:
+    """Raw footage → inventory and draft spec card; reference video → breakdown card. Only books that ship bin/video_probe.py."""
+    tool = DATA.parent / "bin" / "video_probe.py"
+    if not tool.is_file():
+        sys.exit("這本手冊沒有影片量測工具（bin/video_probe.py 在 production-playbook）。")
+    if not a.args:
+        sys.exit("用法：pb.py probe footage <毛片> [--asr-python <有 faster-whisper 的 python>] [--lang zh] [--out 資料夾]\n"
+                 "      pb.py probe breakdown <參考片> [--out 資料夾]；填好拆解卡後 pb.py probe breakdown --to-spec <拆解卡>")
+    return subprocess.call([sys.executable, str(tool), *a.args])
+
+
 def cmd_review(_a) -> int:
     print(review_text())
     return 0
@@ -1692,6 +1728,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out")
     p.add_argument("--template", action="store_true")
     p.set_defaults(fn=cmd_spec)
+    p = sub.add_parser("probe", help="measure raw footage (footage) or break down a reference video (breakdown)")
+    p.add_argument("args", nargs=argparse.REMAINDER)
+    p.set_defaults(fn=cmd_probe)
     p = sub.add_parser("facets")
     p.add_argument("--suggest", help="guess the facets of a need from its words")
     p.set_defaults(fn=cmd_facets)
