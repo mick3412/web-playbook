@@ -42,3 +42,6 @@
 "S66","WCAG 2.2（W3C）：對比 1.4.3、焦點可見 2.4.7、目標尺寸最小 2.5.8（24×24 CSS px）","https://www.w3.org/TR/WCAG22/","2026-11-12","網站語彙無障礙維度的數字依據"
 "S67","web.dev Core Web Vitals：LCP ≤ 2.5 秒、INP ≤ 200 毫秒、CLS ≤ 0.1（第 75 百分位）","https://web.dev/articles/vitals","2026-11-12","網站語彙效能維度的門檻"
 "S68","Component Gallery（component.gallery）：元件名稱與別名對照","https://component.gallery/","2026-11-12","網站語彙元件維度的名稱；S60 實驗引用"
+"S69","八套開源設計系統的 token 檔（Material 3、IBM Carbon、GitHub Primer、Shopify Polaris、Radix Colors、Tailwind v4、Open Props、Ant Design）與跨系統共識","https://github.com/material-components/material-web ；https://github.com/carbon-design-system/carbon ；https://github.com/primer/primitives ；https://github.com/tailwindlabs/tailwindcss","2026-11-12","數字都取自原始 token 檔（2026-11-12）；Polaris 為 MIT 加 Shopify 附加限制、repo 已封存，只參考數字不抄視覺"
+"S70","nextlevelbuilder/ui-ux-pro-max-skill（MIT）資料檔：89 個帶 CSS 數值的風格、34 種頁面模式、120 條 UX 規範、字體配對與色板","https://github.com/nextlevelbuilder/ui-ux-pro-max-skill","2026-11-12","作者整理的經驗值，不是規範；風格與頁面模式拿來補子類"
+"S71","google-labs-code/design.md（Apache-2.0）DESIGN.md 段落格式，與 VoltAgent/awesome-design-md（MIT）範例","https://github.com/google-labs-code/design.md ；https://github.com/VoltAgent/awesome-design-md","2026-11-12","範例改了品牌名，只借結構，不抄品牌視覺"
