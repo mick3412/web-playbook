@@ -131,6 +131,15 @@ class PlaybookTest(unittest.TestCase):
                 out = self.pb("plan", c["need"], *(["--type", c["type"]] if c.get("type") else []))
                 self.assertIn(f"## 方案 1：{c['recipe']} ", out, f"「{c['need']}」的第一個方案不是 {c['recipe']}")
 
+    def test_tags_are_callable_and_latin_synonyms_match_whole_words(self):
+        out = self.pb("facets", "--audit")
+        rate = int(out.split("可調用率")[1].split("：")[1].split("%")[0])
+        self.assertGreaterEqual(rate, 95, out[:400])
+        self.assertIn("缺工作項目：0", out)
+        self.assertIn("標籤自相衝突：0", out)
+        self.assertNotIn("平台=IG", self.pb("facets", "--suggest", "redesign the company site"))
+        self.assertIn("平台=IG", self.pb("facets", "--suggest", "發 IG 貼文"))
+
     def test_rules_file_leaves_items_out(self):
         c = self._golden()["cases"][0]
         rules = self.tmp / "rules.txt"

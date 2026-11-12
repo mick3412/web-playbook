@@ -195,12 +195,22 @@ def expand(facet: str, vals: set[str], F: dict) -> set[str]:
     return out
 
 
+def term_in(word: str, low: str) -> bool:
+    """Chinese terms match as substrings; Latin terms only as whole words, so "ig" does not fire inside "design"."""
+    w = word.lower()
+    if not w:
+        return False
+    if re.fullmatch(r"[a-z0-9][a-z0-9 .+/&'-]*", w):
+        return re.search(r"(?<![a-z0-9])" + re.escape(w) + r"(?![a-z0-9])", low) is not None
+    return w in low
+
+
 def suggest_ctx(text: str, F: dict) -> dict[str, set[str]]:
     low = text.lower()
     out: dict[str, set[str]] = {}
     for facet, vals in F["分面"].items():
         for v, m in vals.items():
-            if any(w and w.lower() in low for w in [v, *m.get("同義詞", [])]):
+            if any(term_in(w, low) for w in [v, *m.get("同義詞", [])]):
                 out.setdefault(facet, set()).add(v)
     for facet, vals in out.items():  # keep the most specific value: drop ancestors of other matches
         tree = F["分面"][facet]
@@ -212,6 +222,11 @@ def suggest_ctx(text: str, F: dict) -> dict[str, set[str]]:
                 p = tree.get(p, {}).get("上層")
         out[facet] = vals - anc
     return out
+
+
+def value_overlap(row_ctx: dict[str, set[str]], need: dict[str, set[str]], F: dict) -> int:
+    """How many of the need's values the row carries (each value counts with its ancestors and descendants)."""
+    return sum(1 for facet, vals in need.items() for v in vals if expand(facet, {v}, F) & row_ctx.get(facet, set()))
 
 
 def facet_score(row_ctx: dict[str, set[str]], need: dict[str, set[str]], F: dict) -> float:
@@ -418,6 +433,9 @@ def validate() -> list[str]:
     ctx_rows = [(r["id"], r["情境"]) for r in entries()] + [(t["id"], t["情境"]) for t in tools()] + \
                [(f"recipes.csv {rc['id']}", rc["情境"]) for rc in recipes()]
     errors += validate_facets(facet_dict(), ctx_rows)
+    A = audit_report(reach=False)
+    errors += [f"情境：{i} 沒有標工作項目" for i in A["no_work"]] + [f"情境：{d}（上層和下層一起標）" for d in A["dupes"]] + \
+              [f"情境：{d}" for d in A["selfc"]]
     V = vocab()
     for tone, dims in V.get("調性預設", {}).items():
         for dim, vals in dims.items():
@@ -863,9 +881,10 @@ def plan_options(need: str, asset: str | None = None, rules: list[str] | None = 
         for r in list(entries()) + list(tools()):
             if r["狀態"] in ("避開", "未採用", "參考", "待查") or not for_asset(r, asset):
                 continue
-            fs = facet_score(parse_ctx(r["情境"]), need_ctx, F)
-            if fs > 0:
-                pool[r["id"]] = pool.get(r["id"], 0) + 0.12 * fs
+            row_ctx = parse_ctx(r["情境"])
+            fs = facet_score(row_ctx, need_ctx, F)
+            if fs > 0:   # same facet score: the row matching more of the need's values comes first
+                pool[r["id"]] = pool.get(r["id"], 0) + 0.12 * fs + 0.03 * value_overlap(row_ctx, need_ctx, F)
     matched = [rows[i] for i, s in sorted(pool.items(), key=lambda x: -x[1]) if s >= 0.08 and i in rows]
     excluded: dict[str, tuple[dict, str]] = {}
 
@@ -1275,6 +1294,9 @@ def cmd_check(_a) -> int:
     untagged = [r for r in entries() + tools() if r["情境"] == "" and r["狀態"] not in ("避開", "未採用")]
     if facet_dict()["分面"] and untagged:
         print(f"提醒：{len(untagged)} 個項目還沒標情境（`pb.py facets` 看各值的使用數）。")
+    broad = audit_report(reach=False)["broad"] if facet_dict()["分面"] else []
+    if broad:
+        print(f"提醒：{len(broad)} 個標籤值太廣（{'、'.join(v for v, _ in broad)}），改標更具體的值；`pb.py facets --audit` 看完整健檢。")
     unused = unused_by_recipes()
     if recipes() and unused:
         print(f"提醒：{len(unused)} 個採用或待試的項目沒被任何配方用到（`pb.py plan --unused` 看清單）。")
@@ -1634,8 +1656,78 @@ def cmd_bench(a) -> int:
     return 0
 
 
+LIVE = ("已內建", "採用", "待試", "已整合", "已安裝")
+BROAD_SHARE = 0.15
+
+
+def facet_tree_dupes(ctx: dict[str, set[str]], F: dict) -> list[str]:
+    """Values tagged together with one of their ancestors (the ancestor adds nothing)."""
+    out = []
+    for f, vals in ctx.items():
+        tree = F["分面"].get(f, {})
+        for v in vals:
+            p = tree.get(v, {}).get("上層")
+            while p:
+                if p in vals:
+                    out.append(f"{f}={p} 和 {v}")
+                p = tree.get(p, {}).get("上層")
+    return out
+
+
+def audit_report(F: dict | None = None, reach: bool = True) -> dict:
+    """Tag health: coverage, too-broad values, values a need can't trigger, and items that tags alone can't call up."""
+    F = F or facet_dict()
+    live = [r for r in entries() + tools() if r["狀態"] in LIVE] + [r for r in recipes() if r["id"] != BASE_RECIPE]
+    used: Counter = Counter()
+    no_work, dupes, untagged, selfc = [], [], [], []
+    for r in live:
+        ctx = parse_ctx(r["情境"])
+        if not ctx:
+            untagged.append(r["id"])
+        elif "工作項目" in F["分面"] and "工作項目" not in ctx:
+            no_work.append(r["id"])
+        dupes += [f"{r['id']}：{d}" for d in facet_tree_dupes(ctx, F)]
+        why = conflict(r, ctx, F)
+        if why:
+            selfc.append(f"{r['id']}：自己的標籤互相衝突（{why}）")
+        for f, vs in ctx.items():
+            for v in vs:
+                used[(f, v)] += 1
+    n = max(1, len(live))
+    broad = [(f"{f}={v}", c) for (f, v), c in used.most_common() if c / n > BROAD_SHARE and c > 12]   # more than two screens of extras
+    deaf = []
+    for (f, v) in used:
+        hit = suggest_ctx(v, F).get(f, set())
+        if not (expand(f, {v}, F) & hit):
+            deaf.append(f"{f}={v}")
+    unreachable = []
+    base = set(split(next((rc["項目"] for rc in recipes() if rc["id"] == BASE_RECIPE), "")))   # applied to every plan
+    if reach:
+        for r in live:
+            if r["id"].startswith("R-") or not r["情境"] or r["id"] in base:
+                continue
+            res = plan_options("", facets=ctx_text(parse_ctx(r["情境"])))
+            shown = {x["id"] for o in res["options"] for x in o["items"] + o["extras"]}
+            if r["id"] not in shown:
+                unreachable.append(r["id"])
+    tagged = [r for r in live if r["情境"]]
+    return {"live": len(live), "tagged": len(tagged), "untagged": untagged, "no_work": no_work, "dupes": dupes, "selfc": selfc,
+            "avg": round(sum(len(parse_ctx(r["情境"])) for r in tagged) / max(1, len(tagged)), 2),
+            "broad": broad, "deaf": sorted(deaf), "unreachable": unreachable,
+            "reach_rate": round(1 - len(unreachable) / max(1, len([r for r in tagged if not r["id"].startswith("R-") and r["id"] not in base])), 3)}
+
+
 def cmd_facets(a) -> int:
     F = facet_dict()
+    if a.audit:
+        A = audit_report(F)
+        print(f"在用項目 {A['live']}，已標 {A['tagged']}，平均 {A['avg']} 個分面")
+        print(f"可調用率（只用自己的標籤當需求，有沒有出現在方案裡；{BASE_RECIPE} 的項目每次都套用，不計）：{A['reach_rate']:.0%}")
+        for title, xs in (("沒標情境", A["untagged"]), ("缺工作項目", A["no_work"]), ("上層和下層一起標", A["dupes"]), ("標籤自相衝突", A["selfc"]),
+                          ("過廣的值（超過 15% 且超過 12 項共用）", [f"{v}（{c}）" for v, c in A["broad"]]),
+                          ("需求寫了名稱或同義詞也推不出來的值", A["deaf"]), ("叫不出來的項目", A["unreachable"])):
+            print(f"\n{title}：{len(xs)}" + ("\n- " + "\n- ".join(xs) if xs else ""))
+        return 0
     if a.suggest:
         print(ctx_text(suggest_ctx(a.suggest, F)) or "（沒有對到任何分面值）")
         return 0
@@ -1818,6 +1910,7 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(fn=cmd_probe)
     p = sub.add_parser("facets")
     p.add_argument("--suggest", help="guess the facets of a need from its words")
+    p.add_argument("--audit", action="store_true", help="tag health: coverage, broad values, deaf values, unreachable items")
     p.set_defaults(fn=cmd_facets)
     p = sub.add_parser("bench")
     p.add_argument("--group")
