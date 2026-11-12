@@ -16,6 +16,19 @@ python3 "$WB" <command>
 
 If `~/.config/web-playbook/home` does not exist, tell the user to run `python3 "<repo>/pb.py" setup` once and stop.
 
+## Where to start (decide this first)
+
+| Situation | First | Then |
+|---|---|---|
+| An overall goal with a period and numbers | `strategy --from "<goal>" --save` | `strategy --works`, then for each work order `blueprint --work W01` in the book it names |
+| One piece of work | `blueprint "<need>"`: the full plan (needs and questions, recipe, deliverable spec with numbers, every stage with its items, steps and gates, approvals, trials, risks, other books' recipes, success measure) | work stage by stage with `card <stage> --brief`; `blueprint ... --save` records it |
+| Raw footage to edit (video book) | `probe footage <clip>` | draft card → `spec` |
+| A reference to imitate (video book) | `probe breakdown <video>` | fill the breakdown card → `--to-spec` → `spec` |
+| Only a style or exact numbers | `style <name>` or `spec --from "<need>"` | — |
+| New material to file (link, screenshot, PDF) | the intake steps below | `check`, `facets --audit` |
+
+Always cite ids. When a blueprint lists another book's recipe under 跨本交接, open that book's plan before producing.
+
 ## Three layers: strategy → shared tags → tools
 
 - **Strategy first when there is a goal.** `strategy --from "<goal with period and numbers>" [--save]` (any book; the global `playbook strategy` runs it in marketing-playbook) drafts a strategy card in `<project>/.strategy/`: goal and KPI, audience, each platform's role in the funnel, a short/mid/long content stack and the design genes (style plus shared design attributes) every medium will share. Anything the goal does not state becomes a question; never invent audiences or numbers. `strategy --works` splits the card into work orders (W01…), each naming the book, the medium and the next command.

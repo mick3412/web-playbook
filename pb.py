@@ -539,7 +539,7 @@ def validate() -> list[str]:
                 for k, x in vals.items():
                     for m in media():
                         for d, xs in x.get("落地", {}).get(m, {}).get("值", {}).items():
-                            errors += [f"shared.json {kind}/{k}：{m} 落地 {d}「{y}」不在本書語彙" for y in xs if d not in own or y not in own[d]]
+                            errors += [f"shared.json {kind}/{k}：{m} 落地 {d}「{y}」不在本書語彙" for y in xs if d in own and y not in own[d]]
                     for d, vs in x.get("設計屬性", {}).items():
                         errors += [f"shared.json 風格/{k}：設計屬性 {d}「{y}」不存在" for y in vs if y not in S["設計屬性"].get(d, {})]
     for dim, vals in V["維度"].items():
@@ -1063,13 +1063,15 @@ def plan_text(res: dict) -> str:
         n = len(split(base["項目"]))
         out.append(f"每個方案都另外套用 {BASE_RECIPE} {base['名稱']}（{n} 項：核准、授權、資安、協作習慣），`pb.py show` 各代號或看 data/recipes.csv。")
     if res["options"]:
-        out.append("選好後：`pb.py plan \"<需求>\" --pick <方案編號> --save` 記進目前的作品；之後 `card --brief` 會先列方案裡的項目。")
+        out.append("沒列出的階段照底座 " + BASE_RECIPE + " 和階段卡（`pb.py card <階段>`）做，不是跳過。")
+        out.append("下一步：`pb.py blueprint \"<需求>\"` 產出完整計畫書（交付規格、逐階段步驟與過關、核准點、待試、風險、跨本交接、成效）；"
+                   "選好方案用 `pb.py plan \"<需求>\" --pick <編號> --save` 記進作品。")
         V = vocab()
         if V["維度"] and V.get("規格卡"):
-            out.append(f"架構定好後：每頁填規格卡（`pb.py spec --template`，一個{V['規格卡'].get('單位', '區塊')}一列），"
-                       f"跑 `pb.py spec <卡>` 產生{'、'.join(x['標題'].split('（')[0].split('、', 1)[-1] for x in V['規格卡'].get('輸出', []))}和審查對照表。")
+            unit = V["規格卡"].get("單位", "區塊")
+            out.append(f"要精準規格：`pb.py spec --from \"<需求>\"`（有作品單加 `--work W01`），存成卡片補每一{unit}，再跑 `pb.py spec <卡>`。")
         elif V["維度"]:
-            out.append("分鏡後：每鏡填規格卡（`pb.py spec --template`），跑 `pb.py spec <卡>` 產生 AI 提示詞、程式動畫規格、拍攝單和審片對照表。")
+            out.append("要精準規格：`pb.py spec --from \"<需求>\"`（有作品單加 `--work W01`）；分鏡後每鏡補內容，再跑 `pb.py spec <卡>`。")
     return "\n".join(out) + "\n"
 
 
@@ -1422,8 +1424,8 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
         kind = next(nums["畫面類型"] for _, _, nums in layers if nums.get("畫面類型"))
     full = {d: [x for x, _ in pairs] if d not in C["單選"] else pairs[0][0] for d, pairs in chosen.items()}
     if V.get("規格卡"):
-        card = {"頁面": need[:24], "調性": tones[0] if tones else "", C["全域"]: full,
-                C["清單"]: [{"編號": 1, "名稱": "首屏", "內容": ""}, {"編號": 2, "名稱": "", "內容": ""}]}
+        card = {(C.get("表頭") or ["頁面"])[0]: need[:24], "調性": tones[0] if tones else "", C["全域"]: full,
+                C["清單"]: [{"編號": 1, "名稱": "（第一個" + C["單位"] + "）", "內容": ""}, {"編號": 2, "名稱": "", "內容": ""}]}
     else:
         m = re.search(r"(\d+)\s*秒", need)
         length = int(m[1]) if m else 15
@@ -1871,6 +1873,10 @@ def cmd_plan(a) -> int:
     cur = state["items"].get(state.get("current") or "", {})
     asset = a.type or cur.get("type")
     res = plan_options(a.need, asset, load_rules(a.rules), a.facets)
+    if getattr(a, "json", False):
+        print(json.dumps({"options": [{"id": o["id"], "名稱": o["名稱"], "score": o["score"], "適用需求": o["適用需求"]} for o in res["options"]]},
+                         ensure_ascii=False))
+        return 0
     print(plan_text(res), end="")
     if a.save:
         if not res["options"]:
@@ -2286,6 +2292,184 @@ def cmd_style(a) -> int:
     return 0
 
 
+# ---------------------------------------------------------------- blueprint: one production / development plan from a need
+SIBLINGS = ("production-playbook", "marketing-playbook", "web-playbook", "engineering-playbook")
+BOOK_ZH = {"production-playbook": "影片", "marketing-playbook": "行銷", "web-playbook": "網站", "engineering-playbook": "開發"}
+
+
+def sibling_options(need: str, facets: str | None) -> list[tuple[str, dict]]:
+    """Other books' best recipe for the same need (their own engine and data, via the paths saved by `setup`)."""
+    out = []
+    for book in SIBLINGS:
+        if book == NAME:
+            continue
+        f = Path.home() / ".config" / book / "home"
+        home = Path(f.read_text().strip()) if f.is_file() else None
+        if not home or not (home / "pb.py").is_file():
+            continue
+        args = [sys.executable, str(home / "pb.py"), "plan", need, "--json"] + (["--facets", facets] if facets else [])
+        env = {k: v for k, v in os.environ.items() if k != CONF["home_env"]}
+        try:
+            r = subprocess.run(args, capture_output=True, text=True, timeout=60, env=env, cwd=home)
+            opts = json.loads(r.stdout or "{}").get("options", [])
+        except Exception:
+            continue
+        if opts and opts[0]["id"] not in ("自組", BASE_RECIPE) and opts[0]["score"] >= 0.3:
+            out.append((book, opts[0]))
+    return out
+
+
+def blueprint(need: str, work: dict | None = None, pick_n: int = 1, rules: list[str] | None = None) -> dict:
+    F = facet_dict()
+    card = strategy_card()
+    source = "需求"
+    ctx = suggest_ctx(need, F)
+    if work:
+        ctx = {**ctx, **parse_ctx(work.get("情境", ""))}
+        for d, v in work.get("設計基因", {}).items():
+            ctx[d] = set(as_list(v))
+        source = f"作品單 {work.get('編號', '')}"
+    elif card:
+        for k in ("受眾", "調性"):
+            if card.get(k) and k not in ctx:
+                ctx[k] = set(card[k])
+        for d, v in card.get("設計基因", {}).items():
+            ctx.setdefault(d, set(as_list(v)))
+        source = "需求＋沿用策略卡"
+    facets = ctx_text(ctx) if ctx else None
+    res = plan_options(need, None, rules or [], facets)
+    opts = [o for o in res["options"] if o["id"] != "自組"] or res["options"]
+    chosen = opts[min(max(pick_n, 1), len(opts)) - 1] if opts else None
+    asks = [] if work or card else [q for f, q in (("受眾", "給誰看？"), ("平台", "放在哪個平台？"), ("調性", "什麼調性？（或直接指定風格）"))
+                                    if not ctx.get(f) and not (f == "調性" and ctx.get("風格"))][:3]
+    V = vocab()
+    spec = spec_from(need, V, work or ({"情境": ctx_text({k: v for k, v in ctx.items() if k in ("受眾", "調性")}), "設計基因": card.get("設計基因", {}), "編號": "策略卡"} if card else None)) if V["維度"] else None
+    return {"need": need, "source": source, "ctx": ctx, "asks": asks, "res": res, "chosen": chosen, "opts": opts, "spec": spec,
+            "siblings": sibling_options(need, facets), "card": card, "work": work}
+
+
+def blueprint_text(B: dict) -> str:
+    st, rows = stages(), {r["id"]: r for r in entries() + tools()}
+    S = shared()
+    o, res = B["chosen"], B["res"]
+    out = [f"# 計畫書：{B['need']}", "", f"手冊：{NAME}｜依據：{B['source']}｜日期：{today()}", ""]
+    # 1
+    out += ["## 1. 需求與情境", "", f"- 分面：{ctx_text(B['ctx']) or '（沒有推測到分面）'}"]
+    out += [f"- 待補問題：{'　'.join(B['asks'])}（答不出來就照下面的預設做）"] if B["asks"] else []
+    out.append("")
+    # 2
+    out += ["## 2. 推薦方案", ""]
+    if o:
+        out.append(f"- **{o['id']} {o['名稱']}**（符合度 {o['score']:.2f}）：{o['適用需求']}" + (f"｜不適用：{o['不適用']}" if o.get("不適用") else ""))
+        out += [f"- 備選：{x['id']} {x['名稱']}（{x['score']:.2f}）" for x in B["opts"] if x is not o][:2]
+    else:
+        out.append("- 沒有對應的配方：照階段卡從頭走（`pb.py card 0`），並考慮新增配方。")
+    out.append("")
+    # 3
+    out += ["## 3. 交付物與規格", ""]
+    plats = [p for p in sorted(B["ctx"].get("平台", set())) if p in S.get("平台規格", {})]
+    for p in plats:
+        out.append(f"- {p}：" + "；".join(f"{k} {v}" for k, v in S["平台規格"][p].items()))
+    if B["ctx"].get("篇幅"):
+        out.append(f"- 篇幅：{'、'.join(sorted(B['ctx']['篇幅']))}")
+    R = B["spec"]
+    if R:
+        bits = ([f"媒材 {R['medium']}"] if R.get("medium") else []) + ([f"風格 {'、'.join(R['styles'])}"] if R.get("styles") else [])
+        out.append("- 規格（`spec --from`）：" + ("；".join(bits) or "依本書規格卡"))
+        for k, (v, src, alt) in list(R["effective"].items())[:12]:
+            out.append(f"  - {k}：{v}（{src}）")
+        for x in R["options"]:
+            out.append(f"  - 要選：{x}")
+        out.append("  - 完整規格：`pb.py spec --from \"<需求>\"" + (f" --work {B['work']['編號']}" if B.get("work") else "") + " --out 卡.json`，補內容後 `pb.py spec 卡.json`")
+    if not plats and not R:
+        out.append("- （這本沒有數值規格；交付物依推薦方案的第 0 階段定）")
+    out.append("")
+    # 4
+    out += ["## 4. 逐階段步驟", ""]
+    base = next((rc for rc in recipes() if rc["id"] == BASE_RECIPE), None)
+    base_ids = split(base["項目"]) if base else []
+    mine = [r for r in (o["items"] if o else [])] + [r for r in (o["extras"] if o else [])]
+    for s in st["stages"]:
+        k = str(s["id"])
+        own = [r for r in mine if (split(r["階段"]) or [""])[0] == k]
+        b = [rows[i] for i in base_ids if i in rows and (split(rows[i]["階段"]) or [""])[0] == k]
+        line = "；".join(f"{r['id']} {item_name(r)[:26]}{mark(r)}" for r in own) or ("照底座 " + BASE_RECIPE + "：" + "；".join(f"{r['id']} {item_name(r)[:20]}" for r in b[:4]) if b else "照階段卡做")
+        out.append(f"- **{s['id']} {s['name']}**：{s.get('purpose', '')}")
+        out.append("  - 步驟：" + "／".join(f"{x['id']} {x['name']}" for x in s.get("steps", [])))
+        out.append(f"  - 項目：{line}")
+        if s.get("gates"):
+            out.append("  - 過關：" + "；".join(f"{g['id']} {g['text']}" for g in s["gates"]))
+    out.append("")
+    # 5
+    approve = [r for r in mine + [rows[i] for i in base_ids if i in rows]
+               if "需要人核准" in r.get("情境", "") or "核准" in (r.get("要點") or "")]
+    out += ["## 5. 要負責人提供的與核准點", ""]
+    out += [f"- {r['id']} {item_name(r)[:40]}" for r in {r['id']: r for r in approve}.values()][:8] or ["- 第 0 階段過關前，請負責人確認目的、範圍和素材來源"]
+    if B["asks"]:
+        out.append("- 回答第 1 節的待補問題")
+    out.append("")
+    # 6
+    out += ["## 6. 這件作品順便測的待試項目", ""]
+    ids = {r["id"] for r in mine}
+    picked = [r for k, (p, _) in trial_pick(None, "blueprint", set()).items() for r in p if r["id"] in ids]
+    pending = [r for r in mine if r["狀態"] == "待試" and r.get("試法") == "實戰" and r not in picked]
+    for r in (picked + pending)[:6]:
+        out.append(f"- {r['id']} {item_name(r)[:30]}：{(r.get('測試方法') or '照條目的測試方法')[:120]}")
+    if not picked and not pending:
+        out.append("- 這個方案沒有實戰待試項目")
+    out.append("")
+    # 7
+    out += ["## 7. 風險", ""]
+    risks = [f"排除：{r['id']} {item_name(r)[:20]}（{k}）" for r, k in res.get("excluded", [])]
+    risks += [f"提醒：{w}" for w in res.get("warns", [])]
+    if R:
+        risks += [f"規格衝突：{w}" for w in R.get("warns", [])]
+        if R.get("medium") == "圖片":
+            risks.append("靜態圖：不帶運鏡、過場")
+    if o and o.get("不適用"):
+        risks.append(f"不適用情況：{o['不適用']}")
+    out += [f"- {x}" for x in risks] or ["- 沒有偵測到衝突或排除項"]
+    out.append("")
+    # 8
+    out += ["## 8. 跨本交接", ""]
+    out += [f"- {BOOK_ZH.get(b, b)}手冊 {x['id']} {x['名稱']}（符合度 {x['score']:.2f}）：`playbook plan {BOOK_ZH.get(b, b)} \"{B['need']}\"`"
+            for b, x in B["siblings"]] or ["- 其他手冊沒有符合度 ≥ 0.3 的配方"]
+    out.append("")
+    # 9
+    out += ["## 9. 成效與回顧", ""]
+    c = B.get("card")
+    out.append(f"- 指標：{'；'.join(c['指標'])}（策略卡）" if c and c.get("指標") else "- 指標：（待補：這件作品用什麼數字算成功）")
+    out.append("- 完成時：`pb.py done` 列出方案裡還沒記結果的項目，用 `pb.py run-log` 記有效、無效或需調整")
+    return "\n".join(out) + "\n"
+
+
+def cmd_blueprint(a) -> int:
+    work = load_work(a.work) if a.work else None
+    need = a.need or (work["作品"] if work else None)
+    if not need:
+        sys.exit("用法：pb.py blueprint \"<需求>\" [--work W01] [--pick N] [--rules 規則檔] [--save]")
+    B = blueprint(need, work, a.pick or 1, load_rules(a.rules))
+    text = blueprint_text(B)
+    print(text, end="")
+    if a.save:
+        d = strategy_dir() / "計畫"
+        d.mkdir(parents=True, exist_ok=True)
+        name = (work["編號"] + "-" if work else "") + re.sub(r"[\\/:*?\"<>|\s]+", "_", need)[:40]
+        (d / f"{name}.md").write_text(text, encoding="utf-8")
+        print(f"\n已存到 {d / (name + '.md')}")
+        if B["chosen"] and B["chosen"]["id"] != "自組":
+            import contextlib, io
+            ns = argparse.Namespace(unused=False, need=need, type=None, rules=a.rules, pick=(B["opts"].index(B["chosen"]) + 1), save=True,
+                                    name=None, facets=ctx_text(B["ctx"]) or None, work=None, json=False)
+            try:
+                with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                    cmd_plan(ns)
+                print(f"也已把 {B['chosen']['id']} 記進目前的作品（`card --brief` 會先列方案項目）。")
+            except SystemExit:
+                print(f"還沒有進行中的作品，所以只存了計畫書；`pb.py start <名稱>` 開案後再跑一次 `--save` 就會記進作品。")
+    return 0
+
+
 def cmd_review(_a) -> int:
     print(review_text())
     return 0
@@ -2382,7 +2566,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--unused", action="store_true", help="list live items no recipe uses")
     p.add_argument("--facets", help="the need as facets: 目的=名單；調性=安靜高級 (default: guessed from the text)")
     p.add_argument("--work", help="a work order from `strategy --works` (W01 or a path): its facets and design genes become the need")
+    p.add_argument("--json", action="store_true", help="print the options as JSON (used by blueprint across books)")
     p.set_defaults(fn=cmd_plan)
+    p = sub.add_parser("blueprint", help="a full production / development plan from a need or a work order")
+    p.add_argument("need", nargs="?")
+    p.add_argument("--work")
+    p.add_argument("--pick", type=int)
+    p.add_argument("--rules")
+    p.add_argument("--save", action="store_true")
+    p.set_defaults(fn=cmd_blueprint)
     p = sub.add_parser("vocab")
     p.add_argument("dim", nargs="?")
     p.add_argument("--tone")
