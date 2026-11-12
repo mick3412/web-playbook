@@ -39,3 +39,6 @@
 "S63","Notion〈Github 10 大 AI 專案〉（chiara）","https://app.notion.com/p/Github-10-AI-3d8b7e19746a8066bb3ac54a45105c32","2026-11-11","網站手冊只收 NotFair Plugin"
 "S64","GoogleChrome/modern-web-guidance（Chrome、Edge、Firefox、MDN 共同維護的 coding agent 技能，Apache-2.0）","https://github.com/GoogleChrome/modern-web-guidance","2026-11-12","使用者提供的貼文截圖；查證日 2026-11-12，4.4 千星"
 "S65","IG Reel〈別只跟 AI 說做高級一點〉（cs2pm_ghost；整理 Scrolltide 公開的 143 個範例描述與標籤，頁面紀錄 2026-11-08）","https://www.instagram.com/reel/DfmHC3qp_10/","2026-11-12","Scrolltide 完整提示多數付費，免費 7 項：https://www.scrolltide.co/free"
+"S66","WCAG 2.2（W3C）：對比 1.4.3、焦點可見 2.4.7、目標尺寸最小 2.5.8（24×24 CSS px）","https://www.w3.org/TR/WCAG22/","2026-11-12","網站語彙無障礙維度的數字依據"
+"S67","web.dev Core Web Vitals：LCP ≤ 2.5 秒、INP ≤ 200 毫秒、CLS ≤ 0.1（第 75 百分位）","https://web.dev/articles/vitals","2026-11-12","網站語彙效能維度的門檻"
+"S68","Component Gallery（component.gallery）：元件名稱與別名對照","https://component.gallery/","2026-11-12","網站語彙元件維度的名稱；S60 實驗引用"

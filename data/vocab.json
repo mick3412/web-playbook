@@ -1,0 +1,2333 @@
+{
+ "說明": "網站製作語彙：每個值有英文、定義、效果、參數和兩種寫法（設計提示詞給建站 agent；程式實作寫 token 或 CSS）。來源欄：S/CO 開頭是本手冊條目；S66 WCAG 2.2、S67 web.dev Core Web Vitals、S68 Component Gallery。",
+ "維度": {
+  "頁面模式": {
+   "說服": {
+    "英文": "persuade (marketing / landing / pricing)",
+    "定義": "要讓人採取行動的頁面",
+    "效果": "大膽、有觀點；需要時用真實影像",
+    "參數": "首屏一個主張＋一個主要 CTA",
+    "寫法": {
+     "設計提示詞": "persuasion page: bold point of view, one primary call to action per screen",
+     "程式實作": "首屏 h1 一個、主要按鈕一個；其餘 CTA 用次要樣式"
+    },
+    "對應": [],
+    "來源": [
+     "S2-05",
+     "S1-01"
+    ]
+   },
+   "操作": {
+    "英文": "operate (app / dashboard / settings)",
+    "定義": "使用者來完成工作的介面",
+    "效果": "好掃讀、一致、符合習慣，品牌只在細節",
+    "參數": "資訊密度中高；表格等寬數字",
+    "寫法": {
+     "設計提示詞": "product UI for getting work done: scannable, consistent, conventional patterns, brand only in details",
+     "程式實作": "用元件庫；表格 font-variant-numeric: tabular-nums"
+    },
+    "對應": [],
+    "來源": [
+     "S2-05"
+    ]
+   },
+   "閱讀": {
+    "英文": "read (docs / article / help)",
+    "定義": "內容要被讀完的頁面",
+    "效果": "先讓人看懂，再讓閱讀值得停留",
+    "參數": "單欄、行長 65–75 字元",
+    "寫法": {
+     "設計提示詞": "reading page: single readable column, generous line height, clear heading hierarchy",
+     "程式實作": "max-width: 68ch; line-height 1.6–1.8"
+    },
+    "對應": [],
+    "來源": [
+     "S2-05",
+     "S5-07"
+    ]
+   },
+   "體驗": {
+    "英文": "showcase (portfolio / product story)",
+    "定義": "讓作品或產品領頭的頁面",
+    "效果": "第一屏就是作品，介面退後",
+    "參數": "作品占首屏 ≥60%",
+    "寫法": {
+     "設計提示詞": "showcase page: the work leads from the first screen, interface recedes",
+     "程式實作": "首屏滿版作品；導覽縮小、半透明"
+    },
+    "對應": [],
+    "來源": [
+     "S2-05"
+    ]
+   }
+  },
+  "區塊類型": {
+   "首屏": {
+    "英文": "hero",
+    "定義": "進站第一屏：主張、證據、主要行動",
+    "效果": "5 秒內說清楚給誰、做什麼、下一步",
+    "參數": "實際螢幕塞得下（S5-03 ⑤）；h1 ≤ 12 字",
+    "寫法": {
+     "設計提示詞": "hero: one clear promise, one supporting line, one primary button, real image",
+     "程式實作": "<section> 高度 ≤ 100svh；h1＋p＋主要按鈕"
+    },
+    "對應": [],
+    "來源": [
+     "S5-02",
+     "S5-03"
+    ]
+   },
+   "社會證明": {
+    "英文": "social proof / logo strip",
+    "定義": "客戶標誌、數字、媒體露出",
+    "效果": "降低疑慮",
+    "參數": "只放屬實、可查的；數字附單位與期間",
+    "寫法": {
+     "設計提示詞": "social proof strip: real client logos or verified numbers with unit and period",
+     "程式實作": "灰階標誌列、等高；數字 tabular-nums"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03",
+     "S6-05"
+    ]
+   },
+   "特色並列": {
+    "英文": "feature grid",
+    "定義": "並列幾個重點能力",
+    "效果": "快速掃讀",
+    "參數": "3–4 項；不用同尺寸圖示卡片牆當整頁結構",
+    "寫法": {
+     "設計提示詞": "feature section: 3–4 benefits, varied layout, no identical icon-card wall",
+     "程式實作": "grid 2–3 欄；避免巢狀卡片"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   },
+   "步驟流程": {
+    "英文": "how it works / steps",
+    "定義": "按順序說明怎麼開始",
+    "效果": "降低開始門檻",
+    "參數": "3–5 步，每步一句",
+    "寫法": {
+     "設計提示詞": "how-it-works: 3–5 numbered steps, one sentence each",
+     "程式實作": "<ol>；步驟編號用大號數字"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "對照比較": {
+    "英文": "comparison table",
+    "定義": "和其他做法並排比較",
+    "效果": "幫助決定",
+    "參數": "欄數 ≤ 4；自己的欄位標示清楚",
+    "寫法": {
+     "設計提示詞": "comparison table: few columns, own column highlighted, honest rows",
+     "程式實作": "<table> 加 <caption>；手機改成卡片或橫向捲動"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "價格方案": {
+    "英文": "pricing",
+    "定義": "方案與價格",
+    "效果": "讓人選一個",
+    "參數": "2–3 方案，推薦一個",
+    "寫法": {
+     "設計提示詞": "pricing: 2–3 plans, one recommended, clear what is included",
+     "程式實作": "推薦方案用重點色邊框；價格 tabular-nums"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "見證": {
+    "英文": "testimonials",
+    "定義": "真實使用者的話",
+    "效果": "建立信任",
+    "參數": "署名、身分；不編造",
+    "寫法": {
+     "設計提示詞": "testimonials: real quotes with name and role, no fabricated reviews",
+     "程式實作": "<figure><blockquote>＋<figcaption>"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   },
+   "常見問題": {
+    "英文": "FAQ",
+    "定義": "回答購買前的疑問",
+    "效果": "排除障礙、被 AI 引用",
+    "參數": "H2/H3 用問句，第一句直接回答（S6-04）",
+    "寫法": {
+     "設計提示詞": "FAQ: questions as headings, first sentence answers directly",
+     "程式實作": "<details><summary> 或標題＋段落；內容在原始 HTML"
+    },
+    "對應": [],
+    "來源": [
+     "S6-04",
+     "S6-03"
+    ]
+   },
+   "行動呼籲": {
+    "英文": "call to action band",
+    "定義": "收尾的行動區",
+    "效果": "把讀到這裡的人帶到下一步",
+    "參數": "一個動作；按鈕寫動作",
+    "寫法": {
+     "設計提示詞": "closing CTA band: one action, button text names the action",
+     "程式實作": "全寬色帶；按鈕最小 44px 高"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "表單": {
+    "英文": "form",
+    "定義": "收集資料的區塊",
+    "效果": "完成率",
+    "參數": "欄位最少；錯誤寫問題和補救；真的送出才顯示成功",
+    "寫法": {
+     "設計提示詞": "form: minimal fields, visible labels, inline errors that say how to fix",
+     "程式實作": "<label for>；aria-describedby 接錯誤；送出成功才換狀態"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03",
+     "S7-02"
+    ]
+   },
+   "數據圖表": {
+    "英文": "data / chart section",
+    "定義": "用圖表說明數字",
+    "效果": "讓證據看得懂",
+    "參數": "註明來源與期間；圖表有文字替代",
+    "寫法": {
+     "設計提示詞": "data section: one chart, labelled axes, source and period stated",
+     "程式實作": "SVG 或 canvas＋表格替代"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "故事敘事": {
+    "英文": "story / editorial section",
+    "定義": "用文字與影像說一段經過",
+    "效果": "建立情感連結",
+    "參數": "圖文交錯；一段一個重點",
+    "寫法": {
+     "設計提示詞": "story section: alternating image and text, one point per beat",
+     "程式實作": "grid 交錯；圖片 aspect-ratio 固定"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "頁尾": {
+    "英文": "footer",
+    "定義": "導覽、聯絡、法律資訊",
+    "效果": "找得到、合規",
+    "參數": "公司資訊與地址電話各處一致（S8-04）",
+    "寫法": {
+     "設計提示詞": "footer: navigation, contact details consistent with other listings, legal links",
+     "程式實作": "<footer>；NAP 與結構化資料一致"
+    },
+    "對應": [],
+    "來源": [
+     "S8-04"
+    ]
+   }
+  },
+  "版型網格": {
+   "12 欄網格": {
+    "英文": "12-column grid",
+    "定義": "以 12 欄分配內容寬度",
+    "效果": "整齊、可變化",
+    "參數": "容器 1200–1280px；欄距 24px",
+    "寫法": {
+     "設計提示詞": "12-column grid, 1200px container, 24px gutters",
+     "程式實作": "display:grid; grid-template-columns: repeat(12, 1fr); gap: 24px"
+    },
+    "對應": [],
+    "來源": [
+     "S3-05"
+    ]
+   },
+   "單欄置中": {
+    "英文": "single centred column",
+    "定義": "內容集中在一欄",
+    "效果": "專注、適合閱讀",
+    "參數": "max-width 68ch（文字）或 720px",
+    "寫法": {
+     "設計提示詞": "single centred column, narrow measure",
+     "程式實作": "max-width: 68ch; margin-inline: auto"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "不對稱分欄": {
+    "英文": "asymmetric split",
+    "定義": "左右寬度不同的兩欄",
+    "效果": "有張力、引導視線",
+    "參數": "5/7 或 4/8；不對稱要有目的",
+    "寫法": {
+     "設計提示詞": "asymmetric 5/7 split with purpose, text narrow, image wide",
+     "程式實作": "grid-template-columns: 5fr 7fr"
+    },
+    "對應": [],
+    "來源": [
+     "S3-05"
+    ]
+   },
+   "分割畫面": {
+    "英文": "split screen",
+    "定義": "左右各半",
+    "效果": "對照、並列",
+    "參數": "手機改成上下",
+    "寫法": {
+     "設計提示詞": "50/50 split screen, stacks on mobile",
+     "程式實作": "grid 1fr 1fr；@media 改單欄"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "便當格": {
+    "英文": "bento grid",
+    "定義": "大小不一的格子拼成一面",
+    "效果": "一眼看多項重點",
+    "參數": "4–6 格；最大格放主角",
+    "寫法": {
+     "設計提示詞": "bento grid of 4–6 tiles, one hero tile larger",
+     "程式實作": "grid-template-areas；格子圓角一致"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "滿版出血": {
+    "英文": "full-bleed",
+    "定義": "影像或色塊延伸到螢幕邊",
+    "效果": "開闊、有份量",
+    "參數": "文字仍留在容器內",
+    "寫法": {
+     "設計提示詞": "full-bleed image with text kept inside the content container",
+     "程式實作": "width: 100vw 或 grid 的 full-bleed 欄"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "雜誌編排": {
+    "英文": "editorial layout",
+    "定義": "像雜誌的大標、欄、引言",
+    "效果": "有個性、適合品牌故事",
+    "參數": "大標跨欄；引言放大",
+    "寫法": {
+     "設計提示詞": "editorial layout: oversized headline across columns, pull quotes, varied column widths",
+     "程式實作": "grid 命名欄；引言 font-size 2em"
+    },
+    "對應": [],
+    "來源": [
+     "S2-02"
+    ]
+   },
+   "側欄加內容": {
+    "英文": "sidebar + content",
+    "定義": "固定側欄與主內容",
+    "效果": "操作與文件常用",
+    "參數": "側欄 240–280px",
+    "寫法": {
+     "設計提示詞": "sidebar 260px with main content, sticky navigation",
+     "程式實作": "grid-template-columns: 260px 1fr; position: sticky"
+    },
+    "對應": [],
+    "來源": []
+   }
+  },
+  "字體排印": {
+   "襯線標題": {
+    "英文": "serif display headings",
+    "定義": "標題用襯線字",
+    "效果": "沉穩、編輯感",
+    "參數": "標題襯線、內文無襯線",
+    "寫法": {
+     "設計提示詞": "serif display headings paired with a clean sans body",
+     "程式實作": "--font-display: 襯線；--font-body: 無襯線"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "無襯線": {
+    "英文": "sans-serif throughout",
+    "定義": "全站無襯線",
+    "效果": "清楚、通用",
+    "參數": "最多 2 個字重",
+    "寫法": {
+     "設計提示詞": "sans-serif throughout, two weights only",
+     "程式實作": "font-family: 系統或指定無襯線；400/600"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "超大標題": {
+    "英文": "oversized display type",
+    "定義": "首屏標題特別大",
+    "效果": "有存在感",
+    "參數": "最大 6rem；字距 ≥ -0.04em",
+    "寫法": {
+     "設計提示詞": "oversized display headline, tight but not cramped tracking",
+     "程式實作": "font-size: clamp(2.5rem, 6vw, 6rem); letter-spacing: -0.03em"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "流體字級": {
+    "英文": "fluid type scale",
+    "定義": "字級隨視窗寬度連續變化",
+    "效果": "各尺寸都比例對",
+    "參數": "比例 1.2–1.333；用 clamp()",
+    "寫法": {
+     "設計提示詞": "fluid modular type scale (ratio 1.25) with clamp()",
+     "程式實作": "--step-0: clamp(1rem, 0.95rem + 0.25vw, 1.125rem) …"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "內文行長": {
+    "英文": "comfortable measure",
+    "定義": "一行字數控制在易讀範圍",
+    "效果": "讀得久",
+    "參數": "英文 65–75 字元；中文 30–40 字",
+    "寫法": {
+     "設計提示詞": "body text measure 65–75 characters, line-height 1.6",
+     "程式實作": "max-width: 68ch; line-height: 1.6"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "等寬數字": {
+    "英文": "tabular numerals",
+    "定義": "數字等寬對齊",
+    "效果": "表格與價格好比較",
+    "參數": "同畫面數字格式統一",
+    "寫法": {
+     "設計提示詞": "tabular numerals for prices and tables",
+     "程式實作": "font-variant-numeric: tabular-nums"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   },
+   "中英混排": {
+    "英文": "CJK + Latin mixed setting",
+    "定義": "中文與英文數字混排",
+    "效果": "字面大小一致、間距自然",
+    "參數": "中英之間留空或用 text-autospace",
+    "寫法": {
+     "設計提示詞": "mixed CJK and Latin: matched x-height, small gap between scripts",
+     "程式實作": "text-autospace: normal（支援時）；中文字型放後備"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "標題層級清楚": {
+    "英文": "clear heading hierarchy",
+    "定義": "h1–h3 大小與間距分明",
+    "效果": "掃讀容易",
+    "參數": "每頁一個 h1；標題上方空間大於下方",
+    "寫法": {
+     "設計提示詞": "clear heading hierarchy, more space above headings than below",
+     "程式實作": "h2 margin-block: 2.5em 0.75em"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07",
+     "S1-01"
+    ]
+   }
+  },
+  "色彩": {
+   "單一重點色": {
+    "英文": "single accent colour",
+    "定義": "中性底加一個重點色",
+    "效果": "重點清楚、不雜",
+    "參數": "重點色整頁出現 ≤ 3–5 次",
+    "寫法": {
+     "設計提示詞": "neutral palette with one accent colour used sparingly",
+     "程式實作": "--accent 只用在主要按鈕、連結、焦點框"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03",
+     "S2-02"
+    ]
+   },
+   "中性底色": {
+    "英文": "warm or cool neutral base",
+    "定義": "背景與文字用中性色階",
+    "效果": "安靜、讓內容領頭",
+    "參數": "9–11 階灰；帶一點色溫",
+    "寫法": {
+     "設計提示詞": "tinted neutral scale (11 steps) as the base",
+     "程式實作": "--gray-50…--gray-950"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "深色模式": {
+    "英文": "dark mode",
+    "定義": "深色背景版本",
+    "效果": "夜間閱讀、科技感",
+    "參數": "重新定義 token，不是反轉；兩模式各量對比",
+    "寫法": {
+     "設計提示詞": "dark theme with redefined tokens, not inverted colours",
+     "程式實作": "@media (prefers-color-scheme: dark) 重新賦值 --bg、--fg"
+    },
+    "對應": [],
+    "來源": [
+     "S5-01"
+    ]
+   },
+   "品牌雙色": {
+    "英文": "two brand colours",
+    "定義": "兩個品牌色搭配",
+    "效果": "辨識度",
+    "參數": "一主一輔；輔色只做點綴",
+    "寫法": {
+     "設計提示詞": "two brand colours, primary for actions, secondary for accents only",
+     "程式實作": "--brand-1、--brand-2"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "高對比": {
+    "英文": "high contrast",
+    "定義": "文字與背景反差大",
+    "效果": "清楚、權威",
+    "參數": "內文 ≥ 7:1",
+    "寫法": {
+     "設計提示詞": "high-contrast palette, body text at least 7:1",
+     "程式實作": "以 AAA 為目標量對比"
+    },
+    "對應": [],
+    "來源": [
+     "S2-02"
+    ]
+   },
+   "柔和低飽和": {
+    "英文": "muted low-saturation",
+    "定義": "顏色偏灰柔",
+    "效果": "安靜、高級",
+    "參數": "仍要達 AA 對比",
+    "寫法": {
+     "設計提示詞": "muted low-saturation palette that still meets AA contrast",
+     "程式實作": "色彩 token 用 OKLCH，chroma 0.02–0.06"
+    },
+    "對應": [],
+    "來源": [
+     "S5-01"
+    ]
+   },
+   "語意色": {
+    "英文": "semantic colours",
+    "定義": "成功、警告、錯誤、資訊各一色",
+    "效果": "狀態一看就懂",
+    "參數": "不只靠顏色，加圖示或文字",
+    "寫法": {
+     "設計提示詞": "semantic colours for success, warning, error and info, never colour alone",
+     "程式實作": "--success、--warning、--danger、--info"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "漸層與光暈": {
+    "英文": "gradient glow",
+    "定義": "紫藍漸層、發光、色暈",
+    "效果": "容易顯得像 AI 模板",
+    "參數": "除非品牌要求，改成單一底色加一個重點色",
+    "寫法": {
+     "設計提示詞": "avoid purple-blue gradients and glows unless the brand requires them",
+     "程式實作": "移除 box-shadow 0 0 Npx 彩色光暈"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   }
+  },
+  "間距": {
+   "8pt 間距系統": {
+    "英文": "8-point spacing scale",
+    "定義": "所有間距是 8（或 4）的倍數",
+    "效果": "一致、有秩序",
+    "參數": "4, 8, 12, 16, 24, 32, 48, 64, 96, 128",
+    "寫法": {
+     "設計提示詞": "8pt spacing scale, every gap a token",
+     "程式實作": "--space-1: 4px … --space-10: 128px"
+    },
+    "對應": [],
+    "來源": [
+     "S3-05"
+    ]
+   },
+   "寬鬆留白": {
+    "英文": "generous whitespace",
+    "定義": "區塊間距大",
+    "效果": "高級、從容",
+    "參數": "區塊間距 96–160px（桌機）",
+    "寫法": {
+     "設計提示詞": "generous section spacing, 120px between sections on desktop",
+     "程式實作": "section { padding-block: clamp(64px, 10vw, 160px) }"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "緊湊資訊密度": {
+    "英文": "compact density",
+    "定義": "間距小、資訊多",
+    "效果": "操作效率",
+    "參數": "列高 32–40px",
+    "寫法": {
+     "設計提示詞": "compact density for data-heavy screens, 36px rows",
+     "程式實作": "--row-h: 36px; 間距用 4/8"
+    },
+    "對應": [],
+    "來源": [
+     "S2-05"
+    ]
+   },
+   "組內緊組間鬆": {
+    "英文": "proximity grouping",
+    "定義": "相關的靠近、不相關的拉開",
+    "效果": "不用框線也分得出組",
+    "參數": "組間距 ≥ 組內距 2 倍",
+    "寫法": {
+     "設計提示詞": "group related items tightly, separate groups by at least twice the inner gap",
+     "程式實作": "gap 內 8–12px、組間 24–48px"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07",
+     "S3-05"
+    ]
+   },
+   "垂直節奏": {
+    "英文": "vertical rhythm",
+    "定義": "上下間距依固定基準",
+    "效果": "讀起來有節奏",
+    "參數": "基準 8px；標題上方 > 下方",
+    "寫法": {
+     "設計提示詞": "consistent vertical rhythm on an 8px baseline",
+     "程式實作": "margin-block 用 token；lh 單位對齊"
+    },
+    "對應": [],
+    "來源": [
+     "S3-05"
+    ]
+   }
+  },
+  "形狀": {
+   "直角": {
+    "英文": "sharp corners",
+    "定義": "不做圓角",
+    "效果": "嚴謹、編輯感",
+    "參數": "radius 0",
+    "寫法": {
+     "設計提示詞": "sharp 0px corners",
+     "程式實作": "--radius: 0"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "小圓角": {
+    "英文": "subtle radius",
+    "定義": "小幅圓角",
+    "效果": "友善但專業",
+    "參數": "4–8px，全站一致",
+    "寫法": {
+     "設計提示詞": "subtle 6px corner radius, consistent everywhere",
+     "程式實作": "--radius: 6px"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "大圓角": {
+    "英文": "large radius",
+    "定義": "明顯圓角",
+    "效果": "親切、玩趣",
+    "參數": "16–24px；巢狀元素內圓角＝外圓角−間距",
+    "寫法": {
+     "設計提示詞": "large 20px radius, nested radius = outer minus padding",
+     "程式實作": "--radius-lg: 20px"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "膠囊": {
+    "英文": "pill shapes",
+    "定義": "按鈕和標籤做成膠囊",
+    "效果": "輕快",
+    "參數": "radius 9999px",
+    "寫法": {
+     "設計提示詞": "pill-shaped buttons and tags",
+     "程式實作": "border-radius: 9999px"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "細框線": {
+    "英文": "hairline borders",
+    "定義": "用 1px 線分隔",
+    "效果": "清爽、資訊感",
+    "參數": "1px、低對比",
+    "寫法": {
+     "設計提示詞": "1px hairline borders instead of boxes and shadows",
+     "程式實作": "border: 1px solid var(--line)"
+    },
+    "對應": [],
+    "來源": [
+     "S3-05"
+    ]
+   },
+   "柔和陰影": {
+    "英文": "soft layered shadow",
+    "定義": "有偏移與柔邊的陰影",
+    "效果": "層次",
+    "參數": "至少兩層；有 y 偏移；不做零偏移彩色光暈",
+    "寫法": {
+     "設計提示詞": "soft layered shadows with real offset, no coloured glow",
+     "程式實作": "box-shadow: 0 1px 2px …, 0 8px 24px …"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "無框無陰影": {
+    "英文": "flat, no boxes",
+    "定義": "不用卡片框和陰影，用間距分組",
+    "效果": "安靜、編輯感",
+    "參數": "靠間距與對齊",
+    "寫法": {
+     "設計提示詞": "flat layout, grouping by spacing not boxes",
+     "程式實作": "移除卡片 border 與 shadow"
+    },
+    "對應": [],
+    "來源": [
+     "S3-05",
+     "S5-03"
+    ]
+   }
+  },
+  "影像處理": {
+   "真實攝影": {
+    "英文": "real photography",
+    "定義": "用真實照片",
+    "效果": "可信",
+    "參數": "比例正確（S3-02）；同一套色調",
+    "寫法": {
+     "設計提示詞": "real photography, consistent grade, no stock clichés",
+     "程式實作": "<img> 加 width/height；object-fit: cover"
+    },
+    "對應": [],
+    "來源": [
+     "S3-03",
+     "S3-02"
+    ]
+   },
+   "產品截圖": {
+    "英文": "product screenshots",
+    "定義": "實際介面截圖",
+    "效果": "看得到產品",
+    "參數": "放在簡單外框；文字可讀",
+    "寫法": {
+     "設計提示詞": "real product screenshots in a simple frame, legible at size",
+     "程式實作": "srcset 2x；外框用 CSS"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "去背物件": {
+    "英文": "cut-out objects",
+    "定義": "去背的人或物",
+    "效果": "聚焦主體",
+    "參數": "邊緣乾淨；投影一致",
+    "寫法": {
+     "設計提示詞": "cut-out subject with clean edges and a grounded shadow",
+     "程式實作": "PNG/WebP 透明；drop-shadow"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "滿版影像": {
+    "英文": "full-bleed imagery",
+    "定義": "影像占滿寬度",
+    "效果": "沉浸",
+    "參數": "文字壓在影像上要有遮罩保對比",
+    "寫法": {
+     "設計提示詞": "full-bleed image with a scrim behind any text",
+     "程式實作": "linear-gradient 遮罩＋文字"
+    },
+    "對應": [],
+    "來源": [
+     "S5-01"
+    ]
+   },
+   "雙色調影像": {
+    "英文": "duotone images",
+    "定義": "照片轉成兩色",
+    "效果": "統一、品牌感",
+    "參數": "用品牌兩色",
+    "寫法": {
+     "設計提示詞": "duotone photos in the two brand colours",
+     "程式實作": "CSS filter 或預先處理"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "線條插圖": {
+    "英文": "line illustrations",
+    "定義": "線稿插圖",
+    "效果": "輕鬆，但容易撐不起版面",
+    "參數": "只在說明概念時用；不拿來撐版面",
+    "寫法": {
+     "設計提示詞": "use line illustrations only to explain a concept, never as filler",
+     "程式實作": "SVG inline"
+    },
+    "對應": [],
+    "來源": [
+     "S3-03"
+    ]
+   },
+   "網頁 3D": {
+    "英文": "WebGL 3D object",
+    "定義": "可互動的 3D 物件",
+    "效果": "印象深刻但吃效能",
+    "參數": "一頁一個 WebGL 重點；DRACO、KTX2；看不見時暫停",
+    "寫法": {
+     "設計提示詞": "one WebGL hero object with PBR materials, paused when off-screen",
+     "程式實作": "three.js；IntersectionObserver 暫停"
+    },
+    "對應": [],
+    "來源": [
+     "S3-06"
+    ]
+   },
+   "影片背景": {
+    "英文": "background video",
+    "定義": "背景播放影片",
+    "效果": "動態氛圍",
+    "參數": "靜音、≤ 10 秒循環、海報圖先顯示；尊重減少動態",
+    "寫法": {
+     "設計提示詞": "muted short looping background video with a poster frame",
+     "程式實作": "<video muted playsinline loop poster>；reduced-motion 時只放海報"
+    },
+    "對應": [],
+    "來源": [
+     "S3-01"
+    ]
+   }
+  },
+  "圖示": {
+   "線條圖示": {
+    "英文": "outline icons",
+    "定義": "一套線條圖示",
+    "效果": "清爽",
+    "參數": "同一套、同線寬 1.5–2px、24px 網格",
+    "寫法": {
+     "設計提示詞": "one outline icon set, 1.5px stroke, 24px grid",
+     "程式實作": "Lucide / Phosphor 等同一套"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   },
+   "實心圖示": {
+    "英文": "filled icons",
+    "定義": "實心圖示",
+    "效果": "份量重、好辨識",
+    "參數": "選中狀態可用實心",
+    "寫法": {
+     "設計提示詞": "filled icons for selected states",
+     "程式實作": "同套圖示的 filled 版本"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "動態圖示": {
+    "英文": "animated icons",
+    "定義": "滑過或點擊時會動的圖示",
+    "效果": "回饋感",
+    "參數": "動一次、≤ 400ms；尊重減少動態",
+    "寫法": {
+     "設計提示詞": "icons animate once on hover, under 400ms",
+     "程式實作": "PulsoIcon 或 SVG＋CSS"
+    },
+    "對應": [],
+    "來源": [
+     "S3-01"
+    ]
+   },
+   "不用圖示": {
+    "英文": "no icons",
+    "定義": "只用文字",
+    "效果": "編輯感、避免圖示卡片牆",
+    "參數": "標題與文字自己說明",
+    "寫法": {
+     "設計提示詞": "no decorative icons, let text and layout carry meaning",
+     "程式實作": "—"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   },
+   "圖示按鈕": {
+    "英文": "icon button",
+    "定義": "只有圖示的按鈕",
+    "效果": "省空間",
+    "參數": "一定要有 aria-label；觸控目標 ≥ 24px（建議 44px）",
+    "寫法": {
+     "設計提示詞": "icon-only buttons with accessible names",
+     "程式實作": "<button aria-label>"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   }
+  },
+  "元件": {
+   "Modal": {
+    "英文": "modal dialog",
+    "定義": "蓋住頁面，要先處理才能回去",
+    "效果": "強制決定",
+    "參數": "可用 Esc 關；焦點鎖在裡面",
+    "寫法": {
+     "設計提示詞": "Modal: covers the page, must be handled before returning",
+     "程式實作": "<dialog> showModal()；關閉後焦點回到觸發處"
+    },
+    "對應": [],
+    "來源": [
+     "S4-02",
+     "S68"
+    ]
+   },
+   "Popover": {
+    "英文": "popover",
+    "定義": "點一下出現，裡面可放按鈕",
+    "效果": "就地補充",
+    "參數": "點外面關閉",
+    "寫法": {
+     "設計提示詞": "Popover: opens on click, can hold buttons",
+     "程式實作": "popover 屬性或錨點定位"
+    },
+    "對應": [],
+    "來源": [
+     "S4-02",
+     "S68"
+    ]
+   },
+   "Tooltip": {
+    "英文": "tooltip",
+    "定義": "滑過或聚焦時出現的說明",
+    "效果": "補充提示",
+    "參數": "不放可點的東西；鍵盤聚焦也要出現",
+    "寫法": {
+     "設計提示詞": "Tooltip: appears on hover and focus, text only",
+     "程式實作": "aria-describedby；focus 也顯示"
+    },
+    "對應": [],
+    "來源": [
+     "S4-02",
+     "S68"
+    ]
+   },
+   "Toast": {
+    "英文": "toast",
+    "定義": "短暫浮在頁面上的通知",
+    "效果": "回饋結果",
+    "參數": "4–6 秒；重要的不能只靠它",
+    "寫法": {
+     "設計提示詞": "Toast: brief notification that does not block",
+     "程式實作": "role=\"status\"；aria-live=\"polite\""
+    },
+    "對應": [],
+    "來源": [
+     "S4-02",
+     "S68"
+    ]
+   },
+   "Tabs": {
+    "英文": "tabs",
+    "定義": "同一區塊切換多個面板",
+    "效果": "省空間、同層比較",
+    "參數": "2–6 個分頁",
+    "寫法": {
+     "設計提示詞": "Tabs: switch panels in the same place",
+     "程式實作": "role=tablist/tab/tabpanel；方向鍵切換"
+    },
+    "對應": [],
+    "來源": [
+     "S68"
+    ]
+   },
+   "Accordion": {
+    "英文": "accordion",
+    "定義": "點標題展開內容",
+    "效果": "長內容收合",
+    "參數": "預設可全部收起",
+    "寫法": {
+     "設計提示詞": "Accordion: headings expand their content",
+     "程式實作": "<details><summary>"
+    },
+    "對應": [],
+    "來源": [
+     "S68"
+    ]
+   },
+   "Drawer": {
+    "英文": "drawer / sheet",
+    "定義": "從邊緣滑出的面板",
+    "效果": "手機導覽、篩選",
+    "參數": "手機從下或側滑出",
+    "寫法": {
+     "設計提示詞": "Drawer: slides from the edge, for navigation or filters",
+     "程式實作": "<dialog> 定位在側邊"
+    },
+    "對應": [],
+    "來源": [
+     "S68"
+    ]
+   },
+   "Carousel": {
+    "英文": "carousel",
+    "定義": "輪播多張內容",
+    "效果": "省空間，但常被略過",
+    "參數": "要有暫停與上一張下一張；不自動播放重要內容",
+    "寫法": {
+     "設計提示詞": "Carousel: user-controlled, no auto-advance for key content",
+     "程式實作": "scroll-snap＋按鈕"
+    },
+    "對應": [],
+    "來源": [
+     "S68"
+    ]
+   },
+   "Pagination": {
+    "英文": "pagination",
+    "定義": "分頁導覽",
+    "效果": "長列表",
+    "參數": "顯示目前頁與總頁數",
+    "寫法": {
+     "設計提示詞": "Pagination with current page and total",
+     "程式實作": "<nav aria-label>"
+    },
+    "對應": [],
+    "來源": [
+     "S68"
+    ]
+   },
+   "Dropdown menu": {
+    "英文": "dropdown menu",
+    "定義": "點按鈕展開選項清單",
+    "效果": "收合動作",
+    "參數": "方向鍵可移動",
+    "寫法": {
+     "設計提示詞": "Dropdown menu: button opens a list of actions",
+     "程式實作": "role=menu 或 popover＋按鈕"
+    },
+    "對應": [],
+    "來源": [
+     "S68"
+    ]
+   }
+  },
+  "互動與狀態": {
+   "滑過": {
+    "英文": "hover state",
+    "定義": "游標經過時的變化",
+    "效果": "可點擊的暗示",
+    "參數": "只換顏色或位移 1–2px；手機不能依賴",
+    "寫法": {
+     "設計提示詞": "visible hover state on every interactive element",
+     "程式實作": ":hover 只改 color/transform"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "焦點框": {
+    "英文": "focus-visible ring",
+    "定義": "鍵盤聚焦時的外框",
+    "效果": "鍵盤可用",
+    "參數": "2px 以上、與背景對比 ≥ 3:1",
+    "寫法": {
+     "設計提示詞": "clear focus-visible ring, 2px, high contrast",
+     "程式實作": ":focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "按下": {
+    "英文": "active / pressed",
+    "定義": "按下時的回饋",
+    "效果": "確認有按到",
+    "參數": "縮小到 0.97–0.98",
+    "寫法": {
+     "設計提示詞": "pressed state scales to 0.98",
+     "程式實作": ":active { transform: scale(.98) }"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "停用": {
+    "英文": "disabled",
+    "定義": "暫時不能用",
+    "效果": "避免誤按",
+    "參數": "說明為什麼不能用",
+    "寫法": {
+     "設計提示詞": "disabled state with a reason nearby",
+     "程式實作": "disabled 屬性＋說明文字"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "載入中": {
+    "英文": "loading",
+    "定義": "等待資料時",
+    "效果": "知道系統在動",
+    "參數": "骨架或進度；按鈕載入時保持寬度",
+    "寫法": {
+     "設計提示詞": "loading state with skeletons, buttons keep their width",
+     "程式實作": "aria-busy；骨架高度與真內容一致（避免 CLS）"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "空白": {
+    "英文": "empty state",
+    "定義": "沒有資料時",
+    "效果": "告訴人下一步",
+    "參數": "一句說明＋一個動作",
+    "寫法": {
+     "設計提示詞": "empty state: one line and one action",
+     "程式實作": "條件渲染空白元件"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "錯誤": {
+    "英文": "error state",
+    "定義": "出錯時",
+    "效果": "能補救",
+    "參數": "寫問題和怎麼補救",
+    "寫法": {
+     "設計提示詞": "error state says what went wrong and how to fix it",
+     "程式實作": "role=\"alert\"；欄位 aria-invalid"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07"
+    ]
+   },
+   "成功": {
+    "英文": "success state",
+    "定義": "完成時",
+    "效果": "放心",
+    "參數": "真的完成才顯示",
+    "寫法": {
+     "設計提示詞": "success state only after the action really completes",
+     "程式實作": "依伺服器回應切換"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03"
+    ]
+   },
+   "磁吸按鈕": {
+    "英文": "magnetic button",
+    "定義": "游標靠近時按鈕被吸過去",
+    "效果": "有質感的互動",
+    "參數": "位移 ≤ 8px；只在有游標的裝置",
+    "寫法": {
+     "設計提示詞": "magnetic CTA, max 8px pull, pointer devices only",
+     "程式實作": "@media (hover:hover) and (pointer:fine)"
+    },
+    "對應": [],
+    "來源": [
+     "S3-04"
+    ]
+   }
+  },
+  "動效": {
+   "淡入上移": {
+    "英文": "fade-up reveal",
+    "定義": "透明度加小幅上移出現",
+    "效果": "內容進場的標準做法",
+    "參數": "位移 8–16px；opacity 300ms、位移 500ms；cubic-bezier(0.22,1,0.36,1)",
+    "寫法": {
+     "設計提示詞": "fade-up reveal, 12px, 500ms ease-out-quint",
+     "程式實作": "transform+opacity；同一條緩動"
+    },
+    "對應": [],
+    "來源": [
+     "S3-01"
+    ]
+   },
+   "錯開進場": {
+    "英文": "staggered reveal",
+    "定義": "一組元素依序出現",
+    "效果": "控制資訊速度",
+    "參數": "間隔 40–80ms；最多 6 個",
+    "寫法": {
+     "設計提示詞": "staggered reveal, 60ms between items, max 6",
+     "程式實作": "transition-delay: calc(var(--i) * 60ms)"
+    },
+    "對應": [],
+    "來源": [
+     "S3-04",
+     "S3-01"
+    ]
+   },
+   "捲動出現": {
+    "英文": "scroll-triggered reveal",
+    "定義": "捲到才出現",
+    "效果": "引導閱讀",
+    "參數": "觸發點約視窗 80%；只觸發一次；內容在 HTML 裡",
+    "寫法": {
+     "設計提示詞": "reveal on scroll once, content already in the HTML",
+     "程式實作": "IntersectionObserver 或 animation-timeline: view()"
+    },
+    "對應": [],
+    "來源": [
+     "S3-01",
+     "S6-03"
+    ]
+   },
+   "頁面轉場": {
+    "英文": "page transition",
+    "定義": "換頁時的過渡",
+    "效果": "維持同一段體驗",
+    "參數": "≤ 400ms；不擋操作",
+    "寫法": {
+     "設計提示詞": "subtle cross-fade page transitions under 400ms",
+     "程式實作": "View Transitions API"
+    },
+    "對應": [],
+    "來源": [
+     "S3-04"
+    ]
+   },
+   "視差": {
+    "英文": "parallax",
+    "定義": "前後景以不同速度捲動",
+    "效果": "深度感；過頭惹人厭",
+    "參數": "位移 ≤ 10%；減少動態時關閉",
+    "寫法": {
+     "設計提示詞": "restrained parallax, under 10% offset",
+     "程式實作": "animation-timeline: scroll()；reduced-motion 關閉"
+    },
+    "對應": [],
+    "來源": [
+     "S3-04"
+    ]
+   },
+   "數字跳動": {
+    "英文": "count-up numbers",
+    "定義": "數字從 0 跳到目標",
+    "效果": "強調成果",
+    "參數": "≤ 1.2 秒；最後值在 HTML 裡",
+    "寫法": {
+     "設計提示詞": "numbers count up once, final value in the HTML",
+     "程式實作": "requestAnimationFrame；tabular-nums"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "橫向捲動敘事": {
+    "英文": "horizontal scroll story",
+    "定義": "直捲時內容橫移",
+    "效果": "說故事",
+    "參數": "只用在敘事段；手機改直排",
+    "寫法": {
+     "設計提示詞": "horizontal scroll section for a story, vertical on mobile",
+     "程式實作": "position: sticky＋translateX"
+    },
+    "對應": [],
+    "來源": [
+     "S3-04"
+    ]
+   },
+   "減少動態替代": {
+    "英文": "reduced-motion fallback",
+    "定義": "使用者要求減少動態時的版本",
+    "效果": "可及性",
+    "參數": "改成單純淡入或不動",
+    "寫法": {
+     "設計提示詞": "every motion has a reduced-motion fallback (simple fade)",
+     "程式實作": "@media (prefers-reduced-motion: reduce)"
+    },
+    "對應": [],
+    "來源": [
+     "S3-01"
+    ]
+   }
+  },
+  "響應式": {
+   "手機優先": {
+    "英文": "mobile-first",
+    "定義": "先設計手機再放大",
+    "效果": "主要流量在手機",
+    "參數": "基準 360–390px 寬",
+    "寫法": {
+     "設計提示詞": "mobile-first layout, designed at 375px then scaled up",
+     "程式實作": "min-width media queries"
+    },
+    "對應": [],
+    "來源": [
+     "S5-05"
+    ]
+   },
+   "三個斷點": {
+    "英文": "three breakpoints",
+    "定義": "手機、平板、桌機三種版面",
+    "效果": "可控",
+    "參數": "約 640、1024、1280px",
+    "寫法": {
+     "設計提示詞": "three breakpoints: 640, 1024, 1280",
+     "程式實作": "@media (min-width: 640px) …"
+    },
+    "對應": [],
+    "來源": [
+     "S2-02"
+    ]
+   },
+   "流體容器": {
+    "英文": "fluid container",
+    "定義": "寬度與邊距隨視窗連續變化",
+    "效果": "各寬度都好看",
+    "參數": "邊距 clamp(16px, 5vw, 64px)",
+    "寫法": {
+     "設計提示詞": "fluid container with clamp() side padding",
+     "程式實作": "padding-inline: clamp(16px, 5vw, 64px)"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "容器查詢": {
+    "英文": "container queries",
+    "定義": "元件依自己的寬度換版",
+    "效果": "元件可重用",
+    "參數": "卡片、側欄元件優先用",
+    "寫法": {
+     "設計提示詞": "components adapt to their container width",
+     "程式實作": "container-type: inline-size; @container"
+    },
+    "對應": [],
+    "來源": [
+     "S64"
+    ]
+   },
+   "手機底部固定列": {
+    "英文": "sticky mobile action bar",
+    "定義": "手機底部常駐的主要行動",
+    "效果": "轉換",
+    "參數": "高 56–64px；不擋內容",
+    "寫法": {
+     "設計提示詞": "sticky bottom action bar on mobile",
+     "程式實作": "position: sticky; bottom: 0；env(safe-area-inset-bottom)"
+    },
+    "對應": [],
+    "來源": []
+   },
+   "不橫向捲動": {
+    "英文": "no horizontal overflow",
+    "定義": "任何寬度都不出現橫向捲軸",
+    "效果": "基本品質",
+    "參數": "320px 也要過",
+    "寫法": {
+     "設計提示詞": "no horizontal scroll at any width down to 320px",
+     "程式實作": "overflow-wrap: anywhere；測 320px"
+    },
+    "對應": [],
+    "來源": [
+     "S5-05"
+    ]
+   }
+  },
+  "無障礙": {
+   "AA 對比": {
+    "英文": "WCAG AA contrast",
+    "定義": "文字與背景對比達 AA",
+    "效果": "看得清楚",
+    "參數": "一般文字 4.5:1、大字與圖形 3:1；深淺模式都量",
+    "寫法": {
+     "設計提示詞": "all text meets WCAG AA contrast in both themes",
+     "程式實作": "對比工具量 token 組合"
+    },
+    "對應": [],
+    "來源": [
+     "S5-01",
+     "S5-07",
+     "S66"
+    ]
+   },
+   "鍵盤可操作": {
+    "英文": "keyboard operable",
+    "定義": "不用滑鼠也能用",
+    "效果": "可及性基本",
+    "參數": "Tab 順序合理；沒有鍵盤陷阱",
+    "寫法": {
+     "設計提示詞": "everything reachable and usable by keyboard",
+     "程式實作": "原生元素優先；tabindex 只用 0/-1"
+    },
+    "對應": [],
+    "來源": [
+     "S66"
+    ]
+   },
+   "焦點可見": {
+    "英文": "visible focus",
+    "定義": "鍵盤焦點看得見",
+    "效果": "知道在哪",
+    "參數": "不要 outline: none 而不補",
+    "寫法": {
+     "設計提示詞": "focus is always visible",
+     "程式實作": ":focus-visible 樣式"
+    },
+    "對應": [],
+    "來源": [
+     "S5-07",
+     "S66"
+    ]
+   },
+   "替代文字": {
+    "英文": "alt text",
+    "定義": "圖片的文字描述",
+    "效果": "看不到圖也懂",
+    "參數": "裝飾圖 alt=\"\"；資訊圖寫重點",
+    "寫法": {
+     "設計提示詞": "meaningful alt text, empty alt for decoration",
+     "程式實作": "<img alt>"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03",
+     "S66"
+    ]
+   },
+   "表單標籤": {
+    "英文": "form labels",
+    "定義": "每個欄位有看得見的名稱",
+    "效果": "填得對",
+    "參數": "不用 placeholder 當標籤",
+    "寫法": {
+     "設計提示詞": "every field has a visible label",
+     "程式實作": "<label for>"
+    },
+    "對應": [],
+    "來源": [
+     "S5-03",
+     "S66"
+    ]
+   },
+   "語意標題": {
+    "英文": "semantic headings and landmarks",
+    "定義": "用正確的標題層級與地標",
+    "效果": "螢幕閱讀器好導覽",
+    "參數": "一個 h1；不跳級；header/nav/main/footer",
+    "寫法": {
+     "設計提示詞": "semantic landmarks and an unbroken heading outline",
+     "程式實作": "<main>、<nav>、h1→h2→h3"
+    },
+    "對應": [],
+    "來源": [
+     "S66"
+    ]
+   },
+   "觸控目標": {
+    "英文": "target size",
+    "定義": "可點區域夠大",
+    "效果": "好點",
+    "參數": "至少 24×24px（WCAG 2.2 AA），建議 44×44px",
+    "寫法": {
+     "設計提示詞": "touch targets at least 44px",
+     "程式實作": "min-block-size: 44px"
+    },
+    "對應": [],
+    "來源": [
+     "S66"
+    ]
+   }
+  },
+  "效能": {
+   "LCP ≤ 2.5 秒": {
+    "英文": "Largest Contentful Paint ≤ 2.5 s",
+    "定義": "最大內容出現時間",
+    "效果": "首屏快",
+    "參數": "首屏圖 fetchpriority=high、不延遲載入",
+    "寫法": {
+     "設計提示詞": "hero image prioritised, LCP under 2.5 s",
+     "程式實作": "<img fetchpriority=\"high\">；預載字型"
+    },
+    "對應": [],
+    "來源": [
+     "S67"
+    ]
+   },
+   "INP ≤ 200 毫秒": {
+    "英文": "Interaction to Next Paint ≤ 200 ms",
+    "定義": "互動到畫面回應的時間",
+    "效果": "點了馬上有反應",
+    "參數": "長任務拆小；少用重型腳本",
+    "寫法": {
+     "設計提示詞": "interactions respond within 200 ms",
+     "程式實作": "拆長任務；事件處理輕量"
+    },
+    "對應": [],
+    "來源": [
+     "S67"
+    ]
+   },
+   "CLS ≤ 0.1": {
+    "英文": "Cumulative Layout Shift ≤ 0.1",
+    "定義": "版面跳動量",
+    "效果": "不會點錯",
+    "參數": "圖片給尺寸；字型 swap 時尺寸相近",
+    "寫法": {
+     "設計提示詞": "no layout shift: sized media, stable fonts",
+     "程式實作": "width/height 或 aspect-ratio；size-adjust"
+    },
+    "對應": [],
+    "來源": [
+     "S67"
+    ]
+   },
+   "新式圖片格式": {
+    "英文": "AVIF / WebP with srcset",
+    "定義": "壓縮好的圖片與多尺寸",
+    "效果": "載得快",
+    "參數": "首屏圖 ≤ 200KB；給 srcset/sizes",
+    "寫法": {
+     "設計提示詞": "responsive AVIF/WebP images with srcset",
+     "程式實作": "<picture> 或框架的影像元件"
+    },
+    "對應": [],
+    "來源": [
+     "S67"
+    ]
+   },
+   "字型子集": {
+    "英文": "font subsetting + swap",
+    "定義": "只載用到的字",
+    "效果": "中文字型尤其重要",
+    "參數": "中文字型子集或系統字；font-display: swap",
+    "寫法": {
+     "設計提示詞": "subset fonts, swap display, CJK via system or subset",
+     "程式實作": "unicode-range；font-display: swap"
+    },
+    "對應": [],
+    "來源": [
+     "S67"
+    ]
+   },
+   "延遲載入": {
+    "英文": "lazy loading",
+    "定義": "首屏以外的圖片和元件晚點載",
+    "效果": "省頻寬",
+    "參數": "首屏不要 lazy",
+    "寫法": {
+     "設計提示詞": "lazy-load below-the-fold media only",
+     "程式實作": "loading=\"lazy\"（首屏除外）"
+    },
+    "對應": [],
+    "來源": [
+     "S67"
+    ]
+   },
+   "內容在原始 HTML": {
+    "英文": "content in server HTML",
+    "定義": "重要文字和圖片在原始 HTML",
+    "效果": "AI 爬蟲與搜尋看得到",
+    "參數": "關掉 JavaScript 仍看得到主要內容",
+    "寫法": {
+     "設計提示詞": "critical content rendered on the server, visible without JavaScript",
+     "程式實作": "SSR/SSG；curl 看得到內容"
+    },
+    "對應": [],
+    "來源": [
+     "S6-03",
+     "S67"
+    ]
+   }
+  }
+ },
+ "衝突": [
+  {
+   "a": "頁面模式=閱讀",
+   "b": "版型網格=便當格",
+   "說明": "閱讀頁要單欄和穩定行長，便當格打斷閱讀"
+  },
+  {
+   "a": "頁面模式=操作",
+   "b": "字體排印=超大標題",
+   "說明": "操作介面要掃讀，超大標題浪費空間"
+  },
+  {
+   "a": "頁面模式=操作",
+   "b": "動效=視差",
+   "說明": "工作介面不需要視差，會干擾操作"
+  },
+  {
+   "a": "影像處理=影片背景",
+   "b": "效能=LCP ≤ 2.5 秒",
+   "說明": "影片背景拖慢首屏；改用海報圖先顯示"
+  },
+  {
+   "a": "色彩=柔和低飽和",
+   "b": "色彩=高對比",
+   "說明": "兩者方向相反，擇一"
+  },
+  {
+   "a": "色彩=漸層與光暈",
+   "b": "色彩=單一重點色",
+   "說明": "漸層光暈是 AI 模板痕跡（S5-03），和單一重點色互斥"
+  },
+  {
+   "a": "形狀=直角",
+   "b": "形狀=膠囊",
+   "說明": "同一頁形狀語言要一致"
+  },
+  {
+   "a": "影像處理=網頁 3D",
+   "b": "影像處理=影片背景",
+   "說明": "一頁只放一個重的視覺重點（S3-06）"
+  }
+ ],
+ "調性預設": {
+  "安靜高級": {
+   "字體排印": [
+    "襯線標題",
+    "內文行長"
+   ],
+   "色彩": [
+    "柔和低飽和",
+    "中性底色"
+   ],
+   "間距": [
+    "寬鬆留白",
+    "組內緊組間鬆"
+   ],
+   "形狀": [
+    "直角",
+    "無框無陰影"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "影像處理": [
+    "真實攝影"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "極簡": {
+   "字體排印": [
+    "無襯線",
+    "內文行長"
+   ],
+   "色彩": [
+    "單一重點色",
+    "中性底色"
+   ],
+   "間距": [
+    "寬鬆留白",
+    "8pt 間距系統"
+   ],
+   "形狀": [
+    "小圓角",
+    "無框無陰影"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "圖示": [
+    "不用圖示"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "奢華": {
+   "字體排印": [
+    "襯線標題",
+    "超大標題"
+   ],
+   "色彩": [
+    "中性底色",
+    "深色模式"
+   ],
+   "間距": [
+    "寬鬆留白"
+   ],
+   "形狀": [
+    "直角"
+   ],
+   "影像處理": [
+    "滿版影像",
+    "真實攝影"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "溫暖親切": {
+   "字體排印": [
+    "無襯線",
+    "標題層級清楚"
+   ],
+   "色彩": [
+    "品牌雙色",
+    "中性底色"
+   ],
+   "形狀": [
+    "大圓角",
+    "柔和陰影"
+   ],
+   "影像處理": [
+    "真實攝影"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "活潑": {
+   "字體排印": [
+    "超大標題",
+    "無襯線"
+   ],
+   "色彩": [
+    "品牌雙色"
+   ],
+   "形狀": [
+    "膠囊",
+    "大圓角"
+   ],
+   "動效": [
+    "錯開進場",
+    "減少動態替代"
+   ],
+   "互動與狀態": [
+    "按下",
+    "滑過"
+   ],
+   "版型網格": [
+    "便當格"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "幽默": {
+   "字體排印": [
+    "超大標題"
+   ],
+   "色彩": [
+    "品牌雙色"
+   ],
+   "形狀": [
+    "大圓角"
+   ],
+   "動效": [
+    "錯開進場",
+    "減少動態替代"
+   ],
+   "圖示": [
+    "動態圖示"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "權威專業": {
+   "字體排印": [
+    "標題層級清楚",
+    "等寬數字"
+   ],
+   "色彩": [
+    "高對比",
+    "單一重點色"
+   ],
+   "形狀": [
+    "小圓角",
+    "細框線"
+   ],
+   "間距": [
+    "8pt 間距系統"
+   ],
+   "版型網格": [
+    "12 欄網格"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "編輯風": {
+   "版型網格": [
+    "雜誌編排"
+   ],
+   "字體排印": [
+    "襯線標題",
+    "超大標題"
+   ],
+   "色彩": [
+    "中性底色",
+    "單一重點色"
+   ],
+   "形狀": [
+    "直角",
+    "無框無陰影"
+   ],
+   "圖示": [
+    "不用圖示"
+   ],
+   "影像處理": [
+    "真實攝影"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "電影感": {
+   "版型網格": [
+    "滿版出血"
+   ],
+   "色彩": [
+    "深色模式"
+   ],
+   "影像處理": [
+    "滿版影像"
+   ],
+   "字體排印": [
+    "超大標題"
+   ],
+   "動效": [
+    "頁面轉場",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "紀實": {
+   "影像處理": [
+    "真實攝影",
+    "產品截圖"
+   ],
+   "字體排印": [
+    "無襯線",
+    "內文行長"
+   ],
+   "色彩": [
+    "中性底色"
+   ],
+   "形狀": [
+    "直角"
+   ],
+   "動效": [
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "手作感": {
+   "字體排印": [
+    "襯線標題"
+   ],
+   "色彩": [
+    "柔和低飽和"
+   ],
+   "形狀": [
+    "大圓角"
+   ],
+   "影像處理": [
+    "真實攝影"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "可愛": {
+   "色彩": [
+    "品牌雙色"
+   ],
+   "形狀": [
+    "膠囊",
+    "大圓角"
+   ],
+   "字體排印": [
+    "無襯線"
+   ],
+   "圖示": [
+    "實心圖示",
+    "動態圖示"
+   ],
+   "動效": [
+    "錯開進場",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "科技感": {
+   "色彩": [
+    "深色模式",
+    "單一重點色"
+   ],
+   "字體排印": [
+    "無襯線",
+    "等寬數字"
+   ],
+   "形狀": [
+    "細框線",
+    "小圓角"
+   ],
+   "版型網格": [
+    "便當格"
+   ],
+   "動效": [
+    "錯開進場",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "未來感": {
+   "色彩": [
+    "深色模式"
+   ],
+   "影像處理": [
+    "網頁 3D"
+   ],
+   "字體排印": [
+    "超大標題"
+   ],
+   "形狀": [
+    "細框線"
+   ],
+   "動效": [
+    "捲動出現",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "復古": {
+   "字體排印": [
+    "襯線標題"
+   ],
+   "色彩": [
+    "柔和低飽和"
+   ],
+   "影像處理": [
+    "雙色調影像"
+   ],
+   "形狀": [
+    "直角"
+   ],
+   "動效": [
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "大膽撞色": {
+   "色彩": [
+    "品牌雙色",
+    "高對比"
+   ],
+   "字體排印": [
+    "超大標題"
+   ],
+   "形狀": [
+    "直角"
+   ],
+   "版型網格": [
+    "不對稱分欄"
+   ],
+   "動效": [
+    "錯開進場",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  },
+  "深色": {
+   "色彩": [
+    "深色模式",
+    "單一重點色"
+   ],
+   "形狀": [
+    "細框線"
+   ],
+   "字體排印": [
+    "無襯線"
+   ],
+   "動效": [
+    "淡入上移",
+    "減少動態替代"
+   ],
+   "無障礙": [
+    "AA 對比",
+    "焦點可見"
+   ],
+   "響應式": [
+    "手機優先",
+    "不橫向捲動"
+   ],
+   "互動與狀態": [
+    "滑過",
+    "焦點框"
+   ],
+   "效能": [
+    "LCP ≤ 2.5 秒",
+    "CLS ≤ 0.1"
+   ]
+  }
+ },
+ "規格卡": {
+  "清單": "區塊",
+  "全域": "全頁",
+  "單位": "區塊",
+  "欄位": [
+   "編號",
+   "名稱",
+   "內容",
+   "文案",
+   "備註"
+  ],
+  "表頭": [
+   "頁面",
+   "調性",
+   "網址"
+  ],
+  "單選": [
+   "頁面模式",
+   "區塊類型",
+   "版型網格"
+  ],
+  "內容": [
+   "區塊類型",
+   "元件",
+   "影像處理"
+  ],
+  "輸出": [
+   {
+    "標題": "一、設計提示詞（給建站 agent；照 S2-02 八段的精神，每區塊一段）",
+    "寫法": "設計提示詞",
+    "格式": "段落",
+    "說明": "先附品牌 token 檔路徑；字型、色碼、間距一律讀 token，找不到就停下回報。只借參考的結構與數值，不抄文字（S2-01）。"
+   },
+   {
+    "標題": "二、Token 與實作規格（給工程）",
+    "寫法": "程式實作",
+    "格式": "清單",
+    "說明": "全站一條減速曲線 cubic-bezier(0.22,1,0.36,1)，只動 transform 和 opacity（S3-01）；間距、圓角、顏色都用 token。"
+   }
+  ],
+  "審查": {
+   "頁面模式": "說出這頁屬於哪種模式，大膽程度相符（S2-05）",
+   "區塊類型": "每區塊一個目的；首屏在實際螢幕塞得下（S5-03）",
+   "版型網格": "整頁截圖疊網格，看欄線與外邊距（S3-05）",
+   "字體排印": "量行長、比對字級表、字距不小於 -0.04em（S5-07）",
+   "色彩": "深淺兩模式各量對比；數重點色出現次數（S5-01）",
+   "間距": "抽查間距都是 token；組間距 ≥ 組內距 2 倍",
+   "形狀": "全站圓角與陰影值一致；沒有零偏移彩色光暈",
+   "影像處理": "真實素材、比例沒變形（S3-02）",
+   "圖示": "同一套、同線寬；圖示按鈕有名稱",
+   "元件": "名稱與行為符合（S4-02），Esc 與焦點回位",
+   "互動與狀態": "逐一觸發滑過、焦點、按下、停用、載入、空白、錯誤、成功（S5-07）",
+   "動效": "只動 transform/opacity、緩動一致、開減少動態再看一次（S3-01）",
+   "響應式": "320、375、768、1024、1440 整頁截圖，沒有橫向捲動（S5-05）",
+   "無障礙": "鍵盤走一遍；axe 或 Lighthouse 無障礙無嚴重項",
+   "效能": "PageSpeed Insights 實測 LCP、INP、CLS"
+  },
+  "範本": {
+   "頁面": "（頁面名稱）",
+   "網址": "/",
+   "調性": "安靜高級",
+   "全頁": {
+    "頁面模式": "說服",
+    "色彩": [],
+    "字體排印": []
+   },
+   "區塊": [
+    {
+     "編號": 1,
+     "名稱": "首屏",
+     "內容": "（這一區要讓人知道或做什麼）",
+     "文案": "",
+     "區塊類型": "首屏",
+     "版型網格": "不對稱分欄",
+     "影像處理": [
+      "真實攝影"
+     ]
+    },
+    {
+     "編號": 2,
+     "名稱": "",
+     "內容": "",
+     "區塊類型": "社會證明"
+    }
+   ]
+  }
+ }
+}

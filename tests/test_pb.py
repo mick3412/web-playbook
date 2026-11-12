@@ -160,6 +160,22 @@ class PlaybookTest(unittest.TestCase):
         w.writeheader(); w.writerows(rows)
         self.assertIn("不在 facets.json", self.pb("check", ok=False))
 
+    def test_web_spec_card_shares_page_values_and_warns_preset_conflicts(self):
+        import json
+        card = {"頁面": "t", "調性": "安靜高級", "全頁": {"頁面模式": "說服"},
+                "區塊": [{"編號": 1, "名稱": "首屏", "區塊類型": "首屏", "版型網格": "不對稱分欄"},
+                         {"編號": 2, "名稱": "預約", "區塊類型": "表單", "影像處理": ["影片背景"]}]}
+        p = self.tmp / "web.json"; p.write_text(json.dumps(card, ensure_ascii=False), encoding="utf-8")
+        out = self.pb("spec", str(p))
+        for part in ("## 一、設計提示詞", "## 二、Token 與實作規格", "## 審查對照表", "- 全部區塊共用"):
+            self.assertIn(part, out)
+        self.assertIn("影像處理=影片背景（指定）和 效能=LCP ≤ 2.5 秒（預設）衝突", out)
+        self.assertIn("grid-template-columns: 5fr 7fr", out)
+        self.assertIn("不在語彙裡", self.pb("spec", str(p).replace("web.json", "bad.json"), ok=False) if
+                      (self.tmp / "bad.json").write_text(json.dumps({**card, "區塊": [{"編號": 1, "版型網格": "九宮格"}]},
+                                                                     ensure_ascii=False), encoding="utf-8") else "")
+        self.assertIn('"區塊"', self.pb("spec", "--template"))
+
 
 if __name__ == "__main__":
     unittest.main()

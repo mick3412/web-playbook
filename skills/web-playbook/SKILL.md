@@ -27,6 +27,13 @@ This handbook is only useful if requests are built from it. For every new reques
 5. **Cite ids.** Every recommendation, five-line summary and review names the ids it comes from, so the user can see what came from the handbook and what did not.
 6. **Prefer proven items.** Use 已內建／採用／已整合 items first. 待試 items enter a real piece of work only through `trials` (at most three per stage, two tools per work, 實戰 items first); 桌上 items are cleared on the bench (below).
 
+## From page structure to exact instructions: vocabulary and spec card
+
+Plans say which methods to use; a spec card says exactly how each section is built.
+
+- **Vocabulary.** `vocab [dimension]` lists the 15 web dimensions (頁面模式, 區塊類型, 版型網格, 字體排印, 色彩, 間距, 形狀, 影像處理, 圖示, 元件, 互動與狀態, 動效, 響應式, 無障礙, 效能), each value with its English term, definition, parameters and two ways to write it (a design prompt for the building agent, and the token or CSS). `vocab --tone <調性>` shows the tone preset; every preset also carries the floor (AA contrast, visible focus, mobile-first, no horizontal scroll, LCP and CLS).
+- **Spec card.** Once the page structure is set, fill one card per page (`spec --template`): 頁面, 調性, 全頁 values (頁面模式 at least), and one row per section with 名稱, 內容, 文案 and the values that matter. `spec <card.json> [--out spec.md]` checks the values, warns on conflicts (including ones the tone preset creates, such as 影片背景 against LCP), fills the gaps from the preset (marked 預設), prints the values every section shares once, and writes a design prompt, a token and implementation spec, and a review table. Hand part one to the agent that builds the page, part two to whoever writes the CSS, and check the result against the table.
+
 ## Bench: clearing 待試 items without a real project
 
 Items marked 試法＝桌上 can be judged with a sample kit (a short talking-head clip, a sample page, a sample draft, a small repo). `bench [--group <name>] [--stage <n>] [--batch 12]` lists the next batch, comparison groups first (`data/bench.json`: items that do the same job; test them on the same sample and keep one). Record each result with `run-log --bench --entries <id> --result <有效|無效|需調整> --note "<what you measured>"`, then run `review` and show the user the suggested upgrades and downgrades. Change statuses only after the user agrees.

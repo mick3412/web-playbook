@@ -937,7 +937,11 @@ def plan_text(res: dict) -> str:
         out.append(f"每個方案都另外套用 {BASE_RECIPE} {base['名稱']}（{n} 項：核准、授權、資安、協作習慣），`pb.py show` 各代號或看 data/recipes.csv。")
     if res["options"]:
         out.append("選好後：`pb.py plan \"<需求>\" --pick <方案編號> --save` 記進目前的作品；之後 `card --brief` 會先列方案裡的項目。")
-        if vocab()["維度"]:
+        V = vocab()
+        if V["維度"] and V.get("規格卡"):
+            out.append(f"架構定好後：每頁填規格卡（`pb.py spec --template`，一個{V['規格卡'].get('單位', '區塊')}一列），"
+                       f"跑 `pb.py spec <卡>` 產生{'、'.join(x['標題'].split('（')[0].split('、', 1)[-1] for x in V['規格卡'].get('輸出', []))}和審查對照表。")
+        elif V["維度"]:
             out.append("分鏡後：每鏡填規格卡（`pb.py spec --template`），跑 `pb.py spec <卡>` 產生 AI 提示詞、程式動畫規格、拍攝單和審片對照表。")
     return "\n".join(out) + "\n"
 
@@ -970,27 +974,37 @@ def as_list(x) -> list[str]:
     return [x] if isinstance(x, str) else list(x or [])
 
 
+def spec_conf(V: dict) -> dict:
+    """The card's shape. Production uses the built-in shot card; another book describes its own in vocab.json 「規格卡」."""
+    c = V.get("規格卡")
+    if not c:
+        return {"清單": "鏡頭", "全域": "全片", "單位": "鏡", "欄位": SPEC_META, "單選": SPEC_SINGLE_DIMS, "內容": SPEC_CONTENT_DIMS}
+    return {**c, "欄位": set(c.get("欄位", [])) | {"編號", "內容", "備註"}, "單選": set(c.get("單選", [])), "內容": set(c.get("內容", []))}
+
+
 def spec_check(card: dict, V: dict) -> tuple[list[str], list[str]]:
     errors, warns = [], []
     dims = V["維度"]
+    C = spec_conf(V)
+    meta = C["欄位"]
     def check_vals(where: str, d: dict):
         for k, val in d.items():
-            if k in SPEC_META and k != "過場到下一鏡":
+            if k in meta and k != "過場到下一鏡":
                 continue
             dim = "過場" if k == "過場到下一鏡" else k
             if dim not in dims:
                 errors.append(f"{where}：沒有「{k}」這個維度（`pb.py vocab` 看清單）")
                 continue
             errors.extend(f"{where}：{dim}「{x}」不在語彙裡" for x in as_list(val) if x not in dims[dim])
-    check_vals("全片", card.get("全片", {}))
-    shots = card.get("鏡頭", [])
+    check_vals(C["全域"], card.get(C["全域"], {}))
+    shots = card.get(C["清單"], [])
     for s in shots:
-        check_vals(f"第 {s.get('編號', '?')} 鏡", s)
-        have = {f"{('過場' if k == '過場到下一鏡' else k)}={x}" for k, v in {**card.get("全片", {}), **s}.items()
-                if k not in SPEC_META or k == "過場到下一鏡" for x in as_list(v)}
+        check_vals(f"第 {s.get('編號', '?')} {C['單位']}", s)
+        have = {f"{('過場' if k == '過場到下一鏡' else k)}={x}" for k, v in {**card.get(C["全域"], {}), **s}.items()
+                if k not in meta or k == "過場到下一鏡" for x in as_list(v)}
         for c in V.get("衝突", []):
             if c["a"] in have and c["b"] in have:
-                warns.append(f"第 {s.get('編號', '?')} 鏡：{c['a']} 和 {c['b']} 衝突（{c['說明']}）")
+                warns.append(f"第 {s.get('編號', '?')} {C['單位']}：{c['a']} 和 {c['b']} 衝突（{c['說明']}）")
     total = round(sum(float(s.get("秒數", 0)) for s in shots), 2)
     if card.get("片長") and abs(total - float(card["片長"])) > 0.2:
         errors.append(f"每鏡秒數加總 {total} 秒，和片長 {card['片長']} 秒不符")
@@ -1006,29 +1020,30 @@ def spec_check(card: dict, V: dict) -> tuple[list[str], list[str]]:
 def spec_fill(card: dict, V: dict) -> list[dict]:
     """Each shot's full spec: shot values first, then 全片, then the tone's presets (marked 預設)."""
     preset = V.get("調性預設", {}).get(card.get("調性", ""), {})
+    C = spec_conf(V)
     out = []
-    for s in card.get("鏡頭", []):
+    for s in card.get(C["清單"], []):
         full: dict[str, tuple[list[str], str]] = {}
         for k, v in s.items():
-            if k not in SPEC_META:
+            if k not in C["欄位"]:
                 full[k] = (as_list(v), "指定")
         if "過場到下一鏡" in s:
             full["過場"] = (as_list(s["過場到下一鏡"]), "指定")
-        for k, v in card.get("全片", {}).items():
-            full.setdefault(k, (as_list(v), "全片"))
-        last = s is card.get("鏡頭", [])[-1]
+        for k, v in card.get(C["全域"], {}).items():
+            full.setdefault(k, (as_list(v), C["全域"]))
+        last = s is card.get(C["清單"], [])[-1]
         kind = shot_kind(card, s)
         hints = {}
         for k, v in preset.items():
             if kind == "動態圖形" and k in CAMERA_DIMS:   # no camera or lights in screen graphics
                 continue
-            if k in SPEC_CONTENT_DIMS:          # depends on what the shot holds: suggest, never apply
+            if k in C["內容"]:                  # depends on what the shot holds: suggest, never apply
                 if k not in full:
                     hints[k] = as_list(v)
                 continue
             if k == "過場" and last:
                 continue
-            full.setdefault(k, (as_list(v)[:1] if k in SPEC_SINGLE_DIMS else as_list(v)[:2], "預設"))
+            full.setdefault(k, (as_list(v)[:1] if k in C["單選"] else as_list(v)[:2], "預設"))
         out.append({"shot": s, "full": full, "hints": hints, "kind": kind})
     return out
 
@@ -1037,17 +1052,85 @@ def shot_kind(card: dict, s: dict) -> str:
     return s.get("畫面類型") or card.get("畫面類型") or ""
 
 
+def filled_conflicts(rows: list[dict], V: dict, unit: str) -> list[str]:
+    """Conflicts that only appear once tone presets are filled in (spec_check already covers values written on the card)."""
+    out = []
+    for r in rows:
+        have = {f"{d}={x}": src for d, (vals, src) in r["full"].items() for x in vals}
+        for c in V.get("衝突", []):
+            if c["a"] in have and c["b"] in have and "預設" in (have[c["a"]], have[c["b"]]):
+                out.append(f"第 {r['shot'].get('編號', '?')} {unit}：{c['a']}（{have[c['a']]}）和 {c['b']}（{have[c['b']]}）衝突（{c['說明']}）")
+    return out
+
+
+def spec_render_generic(card: dict, V: dict) -> str:
+    """A book's own card (vocab.json 「規格卡」): values shared by every unit print once, then each unit's own values,
+    one section per writing style the card names, then the review table."""
+    dims, C = V["維度"], spec_conf(V)
+    rows = spec_fill(card, V)
+    errors, warns = spec_check(card, V)
+    warns += filled_conflicts(rows, V, C["單位"])
+    order = list(dims)
+    pairs = [{(d, x, src) for d, (vals, src) in r["full"].items() for x in vals} for r in rows]
+    shared = set.intersection(*pairs) if pairs else set()
+    def sort(items):
+        return sorted(items, key=lambda t: (order.index(t[0]) if t[0] in order else 99, t[1]))
+    out = [f"# 規格：{card.get('名稱') or card.get('頁面') or card.get('片名', '未命名')}", "",
+           "｜".join(f"{k} {card[k]}" for k in C.get("表頭", []) if card.get(k)), ""]
+    out += [f"警告：{w}" for w in warns] + ([""] if warns else [])
+    for sec in C.get("輸出", []):
+        out += [f"## {sec['標題']}", ""]
+        if sec.get("說明"):
+            out += [sec["說明"], ""]
+        def emit(head, items):
+            if sec.get("格式") == "段落":
+                parts = [dims[d][x]["寫法"].get(sec["寫法"]) or dims[d][x]["英文"] for d, x, _ in items]
+                out.append(head + ("\n  " + "; ".join(p for p in parts if p and p != "—") + "." if parts else ""))
+            else:
+                out.append(head)
+                for d, x, src in items:
+                    w = dims[d][x]["寫法"].get(sec["寫法"], "")
+                    if w and w != "—":
+                        out.append(f"  - {d}＝{x}（{src}）：{w}｜參數 {dims[d][x]['參數']}")
+        if shared:
+            emit(f"- 全部{C['單位']}共用", sort(shared))
+        for r, own in zip(rows, pairs):
+            s = r["shot"]
+            emit(f"- {C['單位']} {s.get('編號')}「{s.get('名稱', '')}」" + (f"：{s['內容']}" if s.get("內容") else ""), sort(own - shared))
+            if s.get("文案"):
+                out.append(f"  - 文案：{s['文案']}")
+            if s.get("備註"):
+                out.append(f"  - 備註：{s['備註']}")
+            if r.get("hints"):
+                out.append("  - 可考慮（調性建議，沒自動套用）：" + "；".join(f"{k}＝{'、'.join(v)}" for k, v in r["hints"].items()))
+        out.append("")
+    out += ["## 審查對照表", "", f"| {C['單位']} | 維度 | 規格 | 來源 | 怎麼檢查 |", "|---|---|---|---|---|"]
+    def rows_of(label, items):
+        by = {}
+        for d, x, src in sort(items):
+            by.setdefault((d, src), []).append(x)
+        return [f"| {label} | {d} | {'、'.join(xs)} | {src} | {C.get('審查', {}).get(d, '對照規格')} |" for (d, src), xs in by.items()]
+    if shared:
+        out += rows_of("全部", shared)
+    for r, own in zip(rows, pairs):
+        out += rows_of(str(r["shot"].get("編號")), own - shared)
+    return "\n".join(out) + "\n"
+
+
 def spec_render(card: dict, V: dict) -> str:
     dims = V["維度"]
     fps = float(card.get("格率", 30))
     errors, warns = spec_check(card, V)
     if errors:
         return "規格卡有錯，先修正：\n" + "\n".join(f"- {e}" for e in errors) + "\n"
+    if V.get("規格卡"):
+        return spec_render_generic(card, V)
     rows = spec_fill(card, V)
     kinds = sorted({r["kind"] for r in rows if r["kind"]})
     out = [f"# 規格：{card.get('片名', '未命名')}", "",
            f"畫幅 {card.get('畫幅', '—')}｜格率 {card.get('格率', 30)}｜片長 {card.get('片長', '—')} 秒｜調性 {card.get('調性', '—')}"
            + (f"｜畫面類型 {'、'.join(kinds)}" if kinds else ""), ""]
+    warns += filled_conflicts(rows, V, "鏡")
     out += [f"警告：{w}" for w in warns] + ([""] if warns else [])
     def en(dim, vals):
         return [dims[dim][x]["寫法"]["AI 生成"] if dims[dim][x]["寫法"]["AI 生成"] not in ("", "—") else dims[dim][x]["英文"] for x in vals]
@@ -1107,6 +1190,8 @@ def spec_render(card: dict, V: dict) -> str:
 
 
 def spec_template(V: dict) -> dict:
+    if V.get("規格卡", {}).get("範本"):
+        return V["規格卡"]["範本"]
     tone = next(iter(V.get("調性預設", {})), "")
     return {"片名": "（片名）", "畫幅": "直式 9:16", "格率": 30, "片長": 10, "調性": tone, "畫面類型": "實拍",
             "全片": {"色彩": [], "質感": []},
@@ -1582,7 +1667,7 @@ def cmd_vocab(a) -> int:
     if not a.dim:
         for dim, vals in V["維度"].items():
             print(f"{dim}（{len(vals)}）：{'、'.join(vals)}")
-        print("\n看某一維：pb.py vocab 運鏡；看調性預設：pb.py vocab --tone 安靜高級")
+        print(f"\n看某一維：pb.py vocab {next(iter(V['維度']))}；看調性預設：pb.py vocab --tone {next(iter(V.get('調性預設', {})), '安靜高級')}")
         return 0
     vals = V["維度"].get(a.dim)
     if not vals:
