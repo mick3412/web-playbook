@@ -143,9 +143,20 @@ def bench_groups() -> dict[str, list[str]]:
 
 
 # ---------------------------------------------------------------- situation facets (data/facets.json)
+def vocab() -> dict:
+    p = DATA / "vocab.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"維度": {}, "衝突": [], "調性預設": {}}
+
+
 def facet_dict() -> dict:
+    """facets.json, plus every production-vocabulary dimension as a facet (its English term counts as a synonym),
+    so an item can be tagged 過場=甩鏡 and a need that says "whip pan" finds it."""
     p = DATA / "facets.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"分面": {}, "關聯": [], "衝突": []}
+    F = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"分面": {}, "關聯": [], "衝突": []}
+    for dim, vals in vocab()["維度"].items():
+        if dim not in F["分面"]:
+            F["分面"][dim] = {k: {"同義詞": [x["英文"]] if x.get("英文") else []} for k, x in vals.items()}
+    return F
 
 
 def parse_ctx(text: str) -> dict[str, set[str]]:
@@ -406,6 +417,15 @@ def validate() -> list[str]:
     ctx_rows = [(r["id"], r["情境"]) for r in entries()] + [(t["id"], t["情境"]) for t in tools()] + \
                [(f"recipes.csv {rc['id']}", rc["情境"]) for rc in recipes()]
     errors += validate_facets(facet_dict(), ctx_rows)
+    V = vocab()
+    for tone, dims in V.get("調性預設", {}).items():
+        for dim, vals in dims.items():
+            errors += [f"vocab.json 調性預設 {tone}：{dim}「{x}」不在語彙裡" for x in vals if x not in V["維度"].get(dim, {})]
+    for c in V.get("衝突", []):
+        for side in (c["a"], c["b"]):
+            dim, val = side.split("=", 1)
+            if val not in V["維度"].get(dim, {}):
+                errors.append(f"vocab.json 衝突：「{side}」不在語彙裡")
     return errors
 
 
@@ -916,6 +936,8 @@ def plan_text(res: dict) -> str:
         out.append(f"每個方案都另外套用 {BASE_RECIPE} {base['名稱']}（{n} 項：核准、授權、資安、協作習慣），`pb.py show` 各代號或看 data/recipes.csv。")
     if res["options"]:
         out.append("選好後：`pb.py plan \"<需求>\" --pick <方案編號> --save` 記進目前的作品；之後 `card --brief` 會先列方案裡的項目。")
+        if vocab()["維度"]:
+            out.append("分鏡後：每鏡填規格卡（`pb.py spec --template`），跑 `pb.py spec <卡>` 產生 AI 提示詞、程式動畫規格、拍攝單和審片對照表。")
     return "\n".join(out) + "\n"
 
 
@@ -926,6 +948,145 @@ def plan_ids_for_stage(work: str | None, key: str) -> list[dict]:
     ids = (item.get("plan") or {}).get("ids", [])
     rows = {r["id"]: r for r in entries()} | {t["id"]: t for t in tools()}
     return [rows[i] for i in ids if i in rows and key in split(rows[i]["階段"])]
+
+
+# ---------------------------------------------------------------- spec cards: one shot spec → three sets of instructions
+SPEC_META = {"編號", "秒數", "內容", "台詞", "備註", "過場到下一鏡", "英文描述"}
+SPEC_SINGLE_DIMS = {"景別", "視角與機位", "運鏡", "過場", "氛圍", "剪輯節奏"}          # one value per shot
+SPEC_CONTENT_DIMS = {"動態圖像", "聲音設計", "文字與字幕", "主體動作與表演", "材質描寫"}  # tone presets only suggest these
+PROMPT_ORDER = ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "主體", "構圖", "布光", "色彩", "質感", "材質描寫", "氛圍"]
+REVIEW_HOW = {"景別": "抽格總覽看取景範圍", "視角與機位": "看定格的鏡頭高度與角度", "運鏡": "逐格條看位移方向和速度",
+              "鏡頭與攝影機": "定格看景深、透視和格率", "構圖": "定格疊三分線檢查主體位置", "布光": "定格看光向、光比和陰影邊緣",
+              "色彩": "和參考定格並排比色", "質感": "放大 200% 看顆粒和高光", "氛圍": "整鏡看完說得出同樣的感覺",
+              "主體動作與表演": "看表演是否照寫", "剪輯節奏": "量每鏡秒數", "過場": "看過場中間那一格（S6-02）",
+              "動態圖像": "逐格條看進場時長、緩動和錯開", "文字與字幕": "檢查安全區、行長、逐字時間", "聲音設計": "量響度並戴耳機和手機各聽一次（S7-09）",
+              "材質描寫": "放大看材質反光"}
+
+
+def as_list(x) -> list[str]:
+    return [x] if isinstance(x, str) else list(x or [])
+
+
+def spec_check(card: dict, V: dict) -> tuple[list[str], list[str]]:
+    errors, warns = [], []
+    dims = V["維度"]
+    def check_vals(where: str, d: dict):
+        for k, val in d.items():
+            if k in SPEC_META and k != "過場到下一鏡":
+                continue
+            dim = "過場" if k == "過場到下一鏡" else k
+            if dim not in dims:
+                errors.append(f"{where}：沒有「{k}」這個維度（`pb.py vocab` 看清單）")
+                continue
+            errors.extend(f"{where}：{dim}「{x}」不在語彙裡" for x in as_list(val) if x not in dims[dim])
+    check_vals("全片", card.get("全片", {}))
+    shots = card.get("鏡頭", [])
+    for s in shots:
+        check_vals(f"第 {s.get('編號', '?')} 鏡", s)
+        have = {f"{('過場' if k == '過場到下一鏡' else k)}={x}" for k, v in {**card.get("全片", {}), **s}.items()
+                if k not in SPEC_META or k == "過場到下一鏡" for x in as_list(v)}
+        for c in V.get("衝突", []):
+            if c["a"] in have and c["b"] in have:
+                warns.append(f"第 {s.get('編號', '?')} 鏡：{c['a']} 和 {c['b']} 衝突（{c['說明']}）")
+    total = round(sum(float(s.get("秒數", 0)) for s in shots), 2)
+    if card.get("片長") and abs(total - float(card["片長"])) > 0.2:
+        errors.append(f"每鏡秒數加總 {total} 秒，和片長 {card['片長']} 秒不符")
+    tone = card.get("調性")
+    if tone and tone not in V.get("調性預設", {}):
+        errors.append(f"調性「{tone}」沒有預設規格")
+    return errors, warns
+
+
+def spec_fill(card: dict, V: dict) -> list[dict]:
+    """Each shot's full spec: shot values first, then 全片, then the tone's presets (marked 預設)."""
+    preset = V.get("調性預設", {}).get(card.get("調性", ""), {})
+    out = []
+    for s in card.get("鏡頭", []):
+        full: dict[str, tuple[list[str], str]] = {}
+        for k, v in s.items():
+            if k not in SPEC_META:
+                full[k] = (as_list(v), "指定")
+        if "過場到下一鏡" in s:
+            full["過場"] = (as_list(s["過場到下一鏡"]), "指定")
+        for k, v in card.get("全片", {}).items():
+            full.setdefault(k, (as_list(v), "全片"))
+        last = s is card.get("鏡頭", [])[-1]
+        hints = {}
+        for k, v in preset.items():
+            if k in SPEC_CONTENT_DIMS:          # depends on what the shot holds: suggest, never apply
+                if k not in full:
+                    hints[k] = as_list(v)
+                continue
+            if k == "過場" and last:
+                continue
+            full.setdefault(k, (as_list(v)[:1] if k in SPEC_SINGLE_DIMS else as_list(v)[:2], "預設"))
+        out.append({"shot": s, "full": full, "hints": hints})
+    return out
+
+
+def spec_render(card: dict, V: dict) -> str:
+    dims = V["維度"]
+    fps = float(card.get("格率", 30))
+    errors, warns = spec_check(card, V)
+    if errors:
+        return "規格卡有錯，先修正：\n" + "\n".join(f"- {e}" for e in errors) + "\n"
+    rows = spec_fill(card, V)
+    out = [f"# 規格：{card.get('片名', '未命名')}", "",
+           f"畫幅 {card.get('畫幅', '—')}｜格率 {card.get('格率', 30)}｜片長 {card.get('片長', '—')} 秒｜調性 {card.get('調性', '—')}", ""]
+    out += [f"警告：{w}" for w in warns] + ([""] if warns else [])
+    def en(dim, vals):
+        return [dims[dim][x]["寫法"]["AI 生成"] if dims[dim][x]["寫法"]["AI 生成"] not in ("", "—") else dims[dim][x]["英文"] for x in vals]
+    out += ["## 一、AI 生成提示詞（英文，固定順序：景別→視角→運鏡→鏡頭→主體→構圖→布光→色彩→質感→氛圍）", ""]
+    for r in rows:
+        s, full = r["shot"], r["full"]
+        parts = []
+        for dim in PROMPT_ORDER:
+            if dim == "主體":
+                subj = s.get("英文描述") or s.get("內容", "")
+                act = en("主體動作與表演", full["主體動作與表演"][0]) if "主體動作與表演" in full else []
+                parts += [x for x in [subj, *act] if x]
+            elif dim in full and dim in dims:
+                parts += en(dim, full[dim][0])
+        out.append(f"- 第 {s.get('編號')} 鏡（{s.get('秒數')} 秒）：{', '.join(parts)}.")
+    out += ["", "負面描述（直接列不要的東西，不寫 no）：watermark, extra text, distorted hands, warped face, flicker", ""]
+    out += ["## 二、程式動畫規格（HyperFrames／Remotion，照 S3-21 四段）", "",
+            f"① 基本要求：{card.get('畫幅', '—')}、{int(fps)} fps；字型與色碼讀品牌設定，找不到就停下回報；先給每鏡關鍵格定格，核准後再輸出。", ""]
+    frame = 0
+    for r in rows:
+        s, full = r["shot"], r["full"]
+        n = round(float(s.get("秒數", 0)) * fps)
+        out.append(f"- 第 {s.get('編號')} 鏡：第 {frame}–{frame + n - 1} 格（{n} 格）｜{s.get('內容', '')}")
+        if "文字與字幕" in full and "大字在頭後" in full["文字與字幕"][0]:
+            out.append("  - 圖層：背景 → 大字 → 去背的人 → 字幕（S5-32）")
+        for dim in ["運鏡", "動態圖像", "文字與字幕", "過場", "聲音設計", "色彩", "質感"]:
+            if dim in full:
+                for x in full[dim][0]:
+                    d = dims[dim][x]
+                    code = d["寫法"]["程式動畫"]
+                    mp = (" " + " ".join(d["對應"])) if d["對應"] else ""
+                    out.append(f"  - {dim}＝{x}（{full[dim][1]}）：{code if code not in ('', '—') else d['定義']}｜參數 {d['參數']}{mp}")
+        if r.get("hints"):
+            out.append("  - 可考慮（調性建議，沒自動套用）：" + "；".join(f"{k}＝{'、'.join(v)}" for k, v in r["hints"].items()))
+        frame += n
+    out += ["", "② 對時間：觸發點用逐字時間（S5-16，每個字對到音量起點）。③ 去背：需要時草稿用 u2net、定稿用 birefnet-portrait（T-13）。④ 做不好時，每次只改一個參數。", ""]
+    out += ["## 三、實拍拍攝單（給負責人）", ""]
+    for r in rows:
+        s, full = r["shot"], r["full"]
+        items = [f"{dim}：{x}（{dims[dim][x]['寫法']['實拍']}）" for dim in ["景別", "視角與機位", "運鏡", "鏡頭與攝影機", "構圖", "布光"]
+                 if dim in full for x in full[dim][0] if dims[dim][x]["寫法"]["實拍"] not in ("", "—")]
+        out.append(f"- 第 {s.get('編號')} 鏡：" + ("；".join(items) or "無實拍需求（全程式或素材）"))
+    out += ["", "## 四、審片對照表", "", "| 鏡 | 維度 | 規格 | 來源 | 怎麼檢查 |", "|---|---|---|---|---|"]
+    for r in rows:
+        for dim, (vals, src) in r["full"].items():
+            out.append(f"| {r['shot'].get('編號')} | {dim} | {'、'.join(vals)} | {src} | {REVIEW_HOW.get(dim, '對照規格')} |")
+    return "\n".join(out) + "\n"
+
+
+def spec_template(V: dict) -> dict:
+    tone = next(iter(V.get("調性預設", {})), "")
+    return {"片名": "（片名）", "畫幅": "直式 9:16", "格率": 30, "片長": 10, "調性": tone, "全片": {"色彩": [], "質感": []},
+            "鏡頭": [{"編號": 1, "秒數": 5, "內容": "（這一鏡發生什麼）", "英文描述": "", "台詞": "", "景別": "", "運鏡": "", "過場到下一鏡": ""},
+                     {"編號": 2, "秒數": 5, "內容": "", "景別": ""}]}
 
 
 # ---------------------------------------------------------------- review
@@ -1381,6 +1542,51 @@ def cmd_facets(a) -> int:
     return 0
 
 
+def cmd_vocab(a) -> int:
+    V = vocab()
+    if not V["維度"]:
+        print("這本手冊沒有製作語彙（data/vocab.json）。")
+        return 0
+    if a.tone:
+        p = V.get("調性預設", {}).get(a.tone)
+        if not p:
+            sys.exit(f"沒有「{a.tone}」的預設；有：{'、'.join(V.get('調性預設', {}))}")
+        for dim, vals in p.items():
+            print(f"{dim}：{'、'.join(vals)}")
+        return 0
+    if not a.dim:
+        for dim, vals in V["維度"].items():
+            print(f"{dim}（{len(vals)}）：{'、'.join(vals)}")
+        print("\n看某一維：pb.py vocab 運鏡；看調性預設：pb.py vocab --tone 安靜高級")
+        return 0
+    vals = V["維度"].get(a.dim)
+    if not vals:
+        sys.exit(f"沒有「{a.dim}」；有：{'、'.join(V['維度'])}")
+    for k, x in vals.items():
+        mp = (" " + " ".join(x["對應"])) if x["對應"] else ""
+        print(f"{k}｜{x['英文']}｜{x['定義']}｜效果：{x['效果']}｜參數：{x['參數']}{mp}")
+    return 0
+
+
+def cmd_spec(a) -> int:
+    V = vocab()
+    if not V["維度"]:
+        sys.exit("這本手冊沒有製作語彙（data/vocab.json）。")
+    if a.template:
+        print(json.dumps(spec_template(V), ensure_ascii=False, indent=1))
+        return 0
+    if not a.card:
+        sys.exit("用法：pb.py spec <規格卡.json> [--out 檔案]；空白範本：pb.py spec --template")
+    card = json.loads(Path(a.card).expanduser().read_text(encoding="utf-8"))
+    text = spec_render(card, V)
+    if a.out:
+        Path(a.out).expanduser().write_text(text, encoding="utf-8")
+        print(f"已寫到 {a.out}")
+    else:
+        print(text, end="")
+    return 1 if text.startswith("規格卡有錯") else 0
+
+
 def cmd_review(_a) -> int:
     print(review_text())
     return 0
@@ -1477,6 +1683,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--unused", action="store_true", help="list live items no recipe uses")
     p.add_argument("--facets", help="the need as facets: 目的=名單；調性=安靜高級 (default: guessed from the text)")
     p.set_defaults(fn=cmd_plan)
+    p = sub.add_parser("vocab")
+    p.add_argument("dim", nargs="?")
+    p.add_argument("--tone")
+    p.set_defaults(fn=cmd_vocab)
+    p = sub.add_parser("spec")
+    p.add_argument("card", nargs="?")
+    p.add_argument("--out")
+    p.add_argument("--template", action="store_true")
+    p.set_defaults(fn=cmd_spec)
     p = sub.add_parser("facets")
     p.add_argument("--suggest", help="guess the facets of a need from its words")
     p.set_defaults(fn=cmd_facets)
