@@ -957,6 +957,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "單一重點色",
+     "英文": [
+      "single accent",
+      "accent color"
+     ],
+     "簡中": "单一重点色",
+     "其他說法": [
+      "一個重點色"
+     ]
     }
    },
    "雙色": {
@@ -990,6 +1001,15 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "雙色",
+     "英文": [
+      "duotone / two colours",
+      "two-tone"
+     ],
+     "簡中": "双色",
+     "其他說法": []
     }
    },
    "三原色": {
@@ -1029,6 +1049,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "三原色",
+     "英文": [
+      "primary colours",
+      "primary colors"
+     ],
+     "簡中": "三原色",
+     "其他說法": [
+      "紅黃藍"
+     ]
     }
    },
    "低飽和": {
@@ -1064,6 +1095,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "低飽和",
+     "英文": [
+      "muted"
+     ],
+     "簡中": "低饱和",
+     "其他說法": [
+      "莫蘭迪",
+      "低彩度"
+     ]
     }
    },
    "高飽和撞色": {
@@ -1101,6 +1143,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "高飽和撞色",
+     "英文": [
+      "vivid clash",
+      "vivid"
+     ],
+     "簡中": "高饱和撞色",
+     "其他說法": [
+      "撞色",
+      "鮮豔"
+     ]
     }
    },
    "黑白": {
@@ -1134,6 +1188,15 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "黑白",
+     "英文": [
+      "black and white",
+      "monochrome"
+     ],
+     "簡中": "黑白",
+     "其他說法": []
     }
    },
    "暗底霓虹": {
@@ -1177,6 +1240,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "暗底霓虹",
+     "英文": [
+      "dark with neon",
+      "neon"
+     ],
+     "簡中": "暗底霓虹",
+     "其他說法": [
+      "霓虹",
+      "暗底"
+     ]
     }
    },
    "暖中性": {
@@ -1215,6 +1290,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "暖中性",
+     "英文": [
+      "warm neutral"
+     ],
+     "簡中": "暖中性",
+     "其他說法": [
+      "米白",
+      "大地色",
+      "暖灰"
+     ]
     }
    }
   },
@@ -1251,6 +1338,16 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "幾何無襯線",
+     "英文": [
+      "geometric sans"
+     ],
+     "簡中": "几何无衬线",
+     "其他說法": [
+      "幾何字"
+     ]
     }
    },
    "人文無襯線": {
@@ -1286,6 +1383,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "人文無襯線",
+     "英文": [
+      "humanist sans",
+      "humanist"
+     ],
+     "簡中": "人文无衬线",
+     "其他說法": [
+      "人文字"
+     ]
     }
    },
    "有襯線": {
@@ -1321,6 +1429,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "有襯線",
+     "英文": [
+      "serif"
+     ],
+     "簡中": "有衬线",
+     "其他說法": [
+      "明體",
+      "宋體"
+     ]
     }
    },
    "等寬": {
@@ -1355,6 +1474,16 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "等寬",
+     "英文": [
+      "monospace"
+     ],
+     "簡中": "等宽",
+     "其他說法": [
+      "程式字"
+     ]
     }
    },
    "手寫": {
@@ -1390,6 +1519,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "手寫",
+     "英文": [
+      "handwritten"
+     ],
+     "簡中": "手写",
+     "其他說法": [
+      "手寫字",
+      "圓體"
+     ]
     }
    },
    "粗重展示": {
@@ -1426,6 +1566,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "粗重展示",
+     "英文": [
+      "heavy display",
+      "display type"
+     ],
+     "簡中": "粗重展示",
+     "其他說法": [
+      "大標",
+      "粗體大字"
+     ]
     }
    }
   },
@@ -1453,6 +1605,15 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "直角",
+     "英文": [
+      "sharp corners",
+      "sharp"
+     ],
+     "簡中": "直角",
+     "其他說法": []
     }
    },
    "小圓角": {
@@ -1476,6 +1637,14 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "小圓角",
+     "英文": [
+      "small radius"
+     ],
+     "簡中": "小圆角",
+     "其他說法": []
     }
    },
    "大圓角": {
@@ -1501,6 +1670,15 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "大圓角",
+     "英文": [
+      "large radius",
+      "rounded"
+     ],
+     "簡中": "大圆角",
+     "其他說法": []
     }
    },
    "膠囊": {
@@ -1526,6 +1704,14 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "膠囊",
+     "英文": [
+      "pill"
+     ],
+     "簡中": "胶囊",
+     "其他說法": []
     }
    },
    "有機形狀": {
@@ -1556,6 +1742,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "有機形狀",
+     "英文": [
+      "organic blob",
+      "blob"
+     ],
+     "簡中": "有机形状",
+     "其他說法": [
+      "有機形"
+     ]
     }
    },
    "幾何構成": {
@@ -1590,6 +1787,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "幾何構成",
+     "英文": [
+      "geometric composition",
+      "geometric shapes"
+     ],
+     "簡中": "几何构成",
+     "其他說法": [
+      "幾何"
+     ]
     }
    }
   },
@@ -1617,6 +1825,16 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "無線條",
+     "英文": [
+      "no outlines"
+     ],
+     "簡中": "无线条",
+     "其他說法": [
+      "無描邊"
+     ]
     }
    },
    "細線": {
@@ -1642,6 +1860,14 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "細線",
+     "英文": [
+      "hairline"
+     ],
+     "簡中": "细线",
+     "其他說法": []
     }
    },
    "粗黑框": {
@@ -1670,6 +1896,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "粗黑框",
+     "英文": [
+      "thick black outline",
+      "thick border"
+     ],
+     "簡中": "粗黑框",
+     "其他說法": [
+      "粗框",
+      "黑框"
+     ]
     }
    },
    "手繪線": {
@@ -1696,6 +1934,15 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "手繪線",
+     "英文": [
+      "hand-drawn line",
+      "sketchy"
+     ],
+     "簡中": "手绘线",
+     "其他說法": []
     }
    },
    "霓虹線": {
@@ -1725,6 +1972,15 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "霓虹線",
+     "英文": [
+      "neon line",
+      "glow line"
+     ],
+     "簡中": "霓虹线",
+     "其他說法": []
     }
    }
   },
@@ -1761,6 +2017,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "純平面",
+     "英文": [
+      "flat",
+      "flat design"
+     ],
+     "簡中": "纯平面",
+     "其他說法": [
+      "扁平"
+     ]
     }
    },
    "柔影": {
@@ -1795,6 +2062,16 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "柔影",
+     "英文": [
+      "soft shadow"
+     ],
+     "簡中": "柔影",
+     "其他說法": [
+      "柔和陰影"
+     ]
     }
    },
    "硬投影": {
@@ -1830,6 +2107,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "硬投影",
+     "英文": [
+      "hard offset shadow",
+      "offset shadow"
+     ],
+     "簡中": "硬投影",
+     "其他說法": [
+      "硬陰影"
+     ]
     }
    },
    "玻璃霧面": {
@@ -1866,6 +2154,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "玻璃霧面",
+     "英文": [
+      "frosted glass",
+      "frosted"
+     ],
+     "簡中": "玻璃雾面",
+     "其他說法": [
+      "毛玻璃"
+     ]
     }
    },
    "寫實光影": {
@@ -1900,6 +2199,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "寫實光影",
+     "英文": [
+      "realistic lighting",
+      "photoreal light"
+     ],
+     "簡中": "写实光影",
+     "其他說法": [
+      "寫實光"
+     ]
     }
    }
   },
@@ -1932,6 +2242,17 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "數位乾淨",
+     "英文": [
+      "clean digital",
+      "clean"
+     ],
+     "簡中": "数位干净",
+     "其他說法": [
+      "乾淨"
+     ]
     }
    },
    "底片顆粒": {
@@ -1963,6 +2284,18 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "底片顆粒",
+     "英文": [
+      "film grain",
+      "grain"
+     ],
+     "簡中": "底片颗粒",
+     "其他說法": [
+      "顆粒",
+      "底片感"
+     ]
     }
    },
    "紙紋": {
@@ -1993,6 +2326,17 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "紙紋",
+     "英文": [
+      "paper texture",
+      "paper"
+     ],
+     "簡中": "纸纹",
+     "其他說法": [
+      "紙感"
+     ]
     }
    },
    "金屬光澤": {
@@ -2023,6 +2367,17 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "金屬光澤",
+     "英文": [
+      "metallic sheen",
+      "chrome"
+     ],
+     "簡中": "金属光泽",
+     "其他說法": [
+      "金屬"
+     ]
     }
    },
    "復古劣化": {
@@ -2054,6 +2409,18 @@
      "網站": {
       "值": {}
      }
+    },
+    "用語": {
+     "中文": "復古劣化",
+     "英文": [
+      "retro degradation",
+      "glitch"
+     ],
+     "簡中": "复古劣化",
+     "其他說法": [
+      "掃描線",
+      "老舊"
+     ]
     }
    }
   },
@@ -2092,6 +2459,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "大量留白",
+     "英文": [
+      "generous whitespace",
+      "whitespace"
+     ],
+     "簡中": "大量留白",
+     "其他說法": [
+      "留白",
+      "空"
+     ]
     }
    },
    "標準密度": {
@@ -2117,6 +2496,14 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "標準密度",
+     "英文": [
+      "standard density"
+     ],
+     "簡中": "标准密度",
+     "其他說法": []
     }
    },
    "緊湊": {
@@ -2153,6 +2540,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "緊湊",
+     "英文": [
+      "compact",
+      "dense"
+     ],
+     "簡中": "紧凑",
+     "其他說法": [
+      "密集",
+      "資訊多"
+     ]
     }
    }
   },
@@ -2189,6 +2588,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "網格對齊",
+     "英文": [
+      "strict grid",
+      "grid"
+     ],
+     "簡中": "网格对齐",
+     "其他說法": [
+      "網格"
+     ]
     }
    },
    "不對稱": {
@@ -2223,6 +2633,14 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "不對稱",
+     "英文": [
+      "asymmetric"
+     ],
+     "簡中": "不对称",
+     "其他說法": []
     }
    },
    "置中對稱": {
@@ -2258,6 +2676,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "置中對稱",
+     "英文": [
+      "centred symmetry",
+      "centered"
+     ],
+     "簡中": "置中对称",
+     "其他說法": [
+      "置中",
+      "對稱"
+     ]
     }
    },
    "拼貼分格": {
@@ -2294,6 +2724,19 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "拼貼分格",
+     "英文": [
+      "collage / panels",
+      "bento"
+     ],
+     "簡中": "拼贴分格",
+     "其他說法": [
+      "拼貼",
+      "便當",
+      "分格"
+     ]
     }
    }
   },
@@ -2329,6 +2772,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "靜止",
+     "英文": [
+      "still"
+     ],
+     "簡中": "静止",
+     "其他說法": [
+      "靜態",
+      "不動"
+     ]
     }
    },
    "慢緩": {
@@ -2367,6 +2821,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "慢緩",
+     "英文": [
+      "slow and calm",
+      "calm"
+     ],
+     "簡中": "慢缓",
+     "其他說法": [
+      "緩慢",
+      "優雅"
+     ]
     }
    },
    "俐落": {
@@ -2404,6 +2870,15 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "俐落",
+     "英文": [
+      "crisp",
+      "snappy"
+     ],
+     "簡中": "俐落",
+     "其他說法": []
     }
    },
    "彈跳": {
@@ -2440,6 +2915,18 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "彈跳",
+     "英文": [
+      "springy",
+      "bouncy",
+      "spring"
+     ],
+     "簡中": "弹跳",
+     "其他說法": [
+      "Q 彈"
+     ]
     }
    },
    "快切": {
@@ -2473,6 +2960,17 @@
        ]
       }
      }
+    },
+    "用語": {
+     "中文": "快切",
+     "英文": [
+      "fast cuts",
+      "fast cut"
+     ],
+     "簡中": "快切",
+     "其他說法": [
+      "快剪"
+     ]
     }
    }
   }
@@ -2485,7 +2983,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "動漫",
+    "英文": [
+     "anime and comics"
+    ],
+    "簡中": "动漫",
+    "其他說法": []
+   }
   },
   "插畫": {
    "英文": "illustration",
@@ -2494,7 +3000,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "插畫",
+    "英文": [
+     "illustration"
+    ],
+    "簡中": "插画",
+    "其他說法": []
+   }
   },
   "3D": {
    "英文": "3D rendering",
@@ -2503,7 +3017,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "3D",
+    "英文": [
+     "3D rendering"
+    ],
+    "簡中": "3D",
+    "其他說法": []
+   }
   },
   "實拍風格": {
    "英文": "live-action look",
@@ -2512,7 +3034,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "實拍風格",
+    "英文": [
+     "live-action look"
+    ],
+    "簡中": "实拍风格",
+    "其他說法": []
+   }
   },
   "復古": {
    "英文": "retro",
@@ -2521,7 +3051,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "復古",
+    "英文": [
+     "retro"
+    ],
+    "簡中": "复古",
+    "其他說法": []
+   }
   },
   "平面設計": {
    "英文": "graphic design movements",
@@ -2530,7 +3068,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "平面設計",
+    "英文": [
+     "graphic design movements"
+    ],
+    "簡中": "平面设计",
+    "其他說法": []
+   }
   },
   "極簡": {
    "英文": "minimal",
@@ -2539,7 +3085,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "極簡",
+    "英文": [
+     "minimal"
+    ],
+    "簡中": "极简",
+    "其他說法": []
+   }
   },
   "粗獷": {
    "英文": "raw and brutalist styles",
@@ -2548,7 +3102,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "粗獷",
+    "英文": [
+     "raw and brutalist styles"
+    ],
+    "簡中": "粗犷",
+    "其他說法": []
+   }
   },
   "質感擬物": {
    "英文": "material and depth",
@@ -2557,7 +3119,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "質感擬物",
+    "英文": [
+     "material and depth"
+    ],
+    "簡中": "质感拟物",
+    "其他說法": []
+   }
   },
   "編輯排版": {
    "英文": "editorial design",
@@ -2566,7 +3136,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "編輯排版",
+    "英文": [
+     "editorial design"
+    ],
+    "簡中": "编辑排版",
+    "其他說法": []
+   }
   },
   "科技": {
    "英文": "tech product",
@@ -2575,7 +3153,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "科技",
+    "英文": [
+     "tech product"
+    ],
+    "簡中": "科技",
+    "其他說法": []
+   }
   },
   "有機柔和": {
    "英文": "organic soft",
@@ -2584,7 +3170,15 @@
    "來源": [
     "S62",
     "S50"
-   ]
+   ],
+   "用語": {
+    "中文": "有機柔和",
+    "英文": [
+     "organic soft"
+    ],
+    "簡中": "有机柔和",
+    "其他說法": []
+   }
   },
   "吉卜力式手繪": {
    "英文": "hand-painted pastoral anime",
@@ -2673,6 +3267,20 @@
       "AI 生成": "2D hand-painted anime, gouache and watercolor painted backgrounds, simple flat-shaded characters with one shadow tone, soft natural daylight, pastoral greens and sky blues, gentle mood"
      }
     }
+   },
+   "用語": {
+    "中文": "吉卜力式手繪",
+    "英文": [
+     "hand-painted pastoral anime",
+     "Ghibli"
+    ],
+    "簡中": "吉卜力式手绘",
+    "其他說法": [
+     "吉卜力",
+     "宮崎駿",
+     "手繪動畫",
+     "田園動畫"
+    ]
    }
   },
   "新海誠式光影寫實": {
@@ -2755,6 +3363,18 @@
       "AI 生成": "anime with photorealistic painted backgrounds, dramatic god rays, lens flare and glistening reflections, vivid saturated sky gradients, clean cel-shaded characters, emotional twilight"
      }
     }
+   },
+   "用語": {
+    "中文": "新海誠式光影寫實",
+    "英文": [
+     "photoreal-background anime with dramatic light",
+     "Shinkai"
+    ],
+    "簡中": "新海诚式光影写实",
+    "其他說法": [
+     "新海誠",
+     "唯美動畫"
+    ]
    }
   },
   "日式賽璐璐": {
@@ -2825,6 +3445,20 @@
       "AI 生成": "Japanese cel-shaded anime style, clean uniform line art, hard-edged single shadow tone and highlight, vivid colors, expressive large eyes"
      }
     }
+   },
+   "用語": {
+    "中文": "日式賽璐璐",
+    "英文": [
+     "Japanese cel-shaded anime",
+     "anime",
+     "cel shading"
+    ],
+    "簡中": "日式赛璐璐",
+    "其他說法": [
+     "賽璐璐",
+     "日本動畫",
+     "二次元"
+    ]
    }
   },
   "美式超英漫畫": {
@@ -2909,6 +3543,21 @@
       "AI 生成": "American superhero comic book art, bold brush inks with varied line weight, heavy black shadows and cross-hatching, dramatic foreshortening, saturated primary colors, halftone dots"
      }
     }
+   },
+   "用語": {
+    "中文": "美式超英漫畫",
+    "英文": [
+     "American superhero comic",
+     "Marvel",
+     "DC",
+     "comic book"
+    ],
+    "簡中": "美式超英漫画",
+    "其他說法": [
+     "美漫",
+     "美式漫畫",
+     "超級英雄"
+    ]
    }
   },
   "歐漫清線派": {
@@ -2979,6 +3628,20 @@
       "AI 生成": "ligne claire comic style, uniform clean outlines, no hatching, flat colors with no shading, detailed realistic backgrounds with simplified characters"
      }
     }
+   },
+   "用語": {
+    "中文": "歐漫清線派",
+    "英文": [
+     "ligne claire",
+     "Tintin"
+    ],
+    "簡中": "欧漫清线派",
+    "其他說法": [
+     "清線",
+     "丁丁",
+     "Hergé",
+     "歐漫"
+    ]
    }
   },
   "Q 版": {
@@ -3046,6 +3709,19 @@
       "AI 生成": "chibi super-deformed style, big head small body (2–3 heads tall), rounded shapes, soft pastel colors, bouncy squash-and-stretch"
      }
     }
+   },
+   "用語": {
+    "中文": "Q 版",
+    "英文": [
+     "chibi / super-deformed",
+     "chibi",
+     "SD"
+    ],
+    "簡中": "Q 版",
+    "其他說法": [
+     "Q版",
+     "大頭"
+    ]
    }
   },
   "扁平向量": {
@@ -3110,6 +3786,19 @@
       "AI 生成": "flat vector illustration, no outlines, solid color shapes, limited palette of 3–5 colors, geometric simplified figures"
      }
     }
+   },
+   "用語": {
+    "中文": "扁平向量",
+    "英文": [
+     "flat vector illustration",
+     "flat illustration",
+     "vector illustration"
+    ],
+    "簡中": "扁平向量",
+    "其他說法": [
+     "扁平插畫",
+     "向量插畫"
+    ]
    }
   },
   "等距插畫": {
@@ -3163,6 +3852,19 @@
       "AI 生成": "isometric illustration, 30-degree axes, no vanishing point, three shades per object for top and sides, clean diagrams"
      }
     }
+   },
+   "用語": {
+    "中文": "等距插畫",
+    "英文": [
+     "isometric illustration",
+     "isometric",
+     "2.5D"
+    ],
+    "簡中": "等距插画",
+    "其他說法": [
+     "等角插畫",
+     "等距視角"
+    ]
    }
   },
   "水彩手繪": {
@@ -3232,6 +3934,18 @@
       "AI 生成": "watercolor illustration, transparent layered washes, wet edges and blooms, visible paper texture, white of the paper as highlights, soft muted colors"
      }
     }
+   },
+   "用語": {
+    "中文": "水彩手繪",
+    "英文": [
+     "watercolor illustration",
+     "watercolor"
+    ],
+    "簡中": "水彩手绘",
+    "其他說法": [
+     "水彩風",
+     "水彩畫"
+    ]
    }
   },
   "剪紙拼貼": {
@@ -3296,6 +4010,19 @@
       "AI 生成": "paper cut-out collage, layered colored paper with fiber texture, small drop shadows between layers, stop-motion feel at 12 fps"
      }
     }
+   },
+   "用語": {
+    "中文": "剪紙拼貼",
+    "英文": [
+     "paper cut-out collage",
+     "paper cut",
+     "collage"
+    ],
+    "簡中": "剪纸拼贴",
+    "其他說法": [
+     "剪紙",
+     "拼貼"
+    ]
    }
   },
   "線稿單色": {
@@ -3349,6 +4076,19 @@
       "AI 生成": "monochrome line art, single-color strokes, hand-drawn line on plain background, hatching for shading"
      }
     }
+   },
+   "用語": {
+    "中文": "線稿單色",
+    "英文": [
+     "monochrome line art",
+     "line art",
+     "doodle"
+    ],
+    "簡中": "线稿单色",
+    "其他說法": [
+     "線稿",
+     "白板手繪"
+    ]
    }
   },
   "皮克斯式卡通 3D": {
@@ -3409,6 +4149,19 @@
       "AI 生成": "stylized 3D cartoon animation, rounded exaggerated characters, subsurface scattering skin, soft global illumination with rim light, warm saturated colors"
      }
     }
+   },
+   "用語": {
+    "中文": "皮克斯式卡通 3D",
+    "英文": [
+     "stylized cartoon 3D",
+     "Pixar"
+    ],
+    "簡中": "皮克斯式卡通 3D",
+    "其他說法": [
+     "皮克斯",
+     "卡通 3D",
+     "3D 動畫"
+    ]
    }
   },
   "黏土定格": {
@@ -3479,6 +4232,20 @@
       "AI 生成": "claymation stop-motion, handmade plasticine characters with fingerprints and tool marks, small studio softbox lighting, 12 fps stepped motion with slight jitter"
      }
     }
+   },
+   "用語": {
+    "中文": "黏土定格",
+    "英文": [
+     "claymation stop-motion",
+     "clay",
+     "stop motion",
+     "Aardman"
+    ],
+    "簡中": "黏土定格",
+    "其他說法": [
+     "黏土",
+     "定格動畫"
+    ]
    }
   },
   "低多邊形": {
@@ -3530,6 +4297,18 @@
       "AI 生成": "low-poly 3D, faceted flat-shaded geometry, each polygon a single color, gradient background"
      }
     }
+   },
+   "用語": {
+    "中文": "低多邊形",
+    "英文": [
+     "low-poly 3D",
+     "low poly"
+    ],
+    "簡中": "低多边形",
+    "其他說法": [
+     "低面數",
+     "多邊形"
+    ]
    }
   },
   "寫實產品渲染": {
@@ -3604,6 +4383,18 @@
       "AI 生成": "photorealistic 3D product render, PBR materials, studio HDRI lighting with softbox reflections, seamless background, crisp detail"
      }
     }
+   },
+   "用語": {
+    "中文": "寫實產品渲染",
+    "英文": [
+     "photoreal product render",
+     "product render",
+     "KeyShot"
+    ],
+    "簡中": "写实产品渲染",
+    "其他說法": [
+     "產品 3D"
+    ]
    }
   },
   "電影感": {
@@ -3683,6 +4474,17 @@
       "AI 生成": "cinematic live-action, anamorphic 2.39:1 frame, shallow depth of field, motivated lighting, filmic color grade, 24 fps motion blur"
      }
     }
+   },
+   "用語": {
+    "中文": "電影感",
+    "英文": [
+     "cinematic"
+    ],
+    "簡中": "电影感",
+    "其他說法": [
+     "電影",
+     "大片"
+    ]
    }
   },
   "紀實": {
@@ -3752,6 +4554,17 @@
       "AI 生成": "documentary style, handheld observational camera, available natural light, unstaged moments, neutral grade"
      }
     }
+   },
+   "用語": {
+    "中文": "紀實",
+    "英文": [
+     "documentary"
+    ],
+    "簡中": "纪实",
+    "其他說法": [
+     "紀錄片",
+     "真實記錄"
+    ]
    }
   },
   "時尚雜誌": {
@@ -3821,6 +4634,17 @@
       "AI 生成": "high-fashion editorial photography, direct flash hard light, bold styling and posing, high contrast, magazine look"
      }
     }
+   },
+   "用語": {
+    "中文": "時尚雜誌",
+    "英文": [
+     "fashion editorial"
+    ],
+    "簡中": "时尚杂志",
+    "其他說法": [
+     "時尚",
+     "雜誌風"
+    ]
    }
   },
   "產品廣告": {
@@ -3895,6 +4719,18 @@
       "AI 生成": "commercial product film, seamless clean background, controlled reflections from softboxes, macro detail shots, slow dolly, high-frame-rate slow motion"
      }
     }
+   },
+   "用語": {
+    "中文": "產品廣告",
+    "英文": [
+     "commercial product film",
+     "commercial"
+    ],
+    "簡中": "产品广告",
+    "其他說法": [
+     "商品廣告",
+     "產品片"
+    ]
    }
   },
   "80 年代合成波": {
@@ -3976,6 +4812,20 @@
       "AI 生成": "1980s synthwave aesthetic, neon magenta and cyan glow, perspective grid horizon, gradient sunset, chrome lettering, scanlines"
      }
     }
+   },
+   "用語": {
+    "中文": "80 年代合成波",
+    "英文": [
+     "80s synthwave",
+     "synthwave",
+     "vaporwave",
+     "80s"
+    ],
+    "簡中": "80 年代合成波",
+    "其他說法": [
+     "蒸氣波",
+     "霓虹"
+    ]
    }
   },
   "90 年代動畫": {
@@ -4044,6 +4894,19 @@
       "AI 生成": "1990s cel anime look, hand-painted cels, film grain, slightly faded colors, 4:3 frame, limited animation"
      }
     }
+   },
+   "用語": {
+    "中文": "90 年代動畫",
+    "英文": [
+     "90s anime",
+     "retro anime"
+    ],
+    "簡中": "90 年代动画",
+    "其他說法": [
+     "90年代動畫",
+     "復古動畫",
+     "老動畫"
+    ]
    }
   },
   "VHS 家用錄影": {
@@ -4108,6 +4971,18 @@
       "AI 生成": "VHS home video look, 4:3, chroma bleeding, tape noise and tracking lines, timestamp overlay, interlaced softness"
      }
     }
+   },
+   "用語": {
+    "中文": "VHS 家用錄影",
+    "英文": [
+     "VHS home video"
+    ],
+    "簡中": "VHS 家用录影",
+    "其他說法": [
+     "錄影帶",
+     "VHS 風",
+     "家庭錄影"
+    ]
    }
   },
   "瑞士國際主義": {
@@ -4215,6 +5090,23 @@
       "程式實作": "--radius:0；h1 font-size ≥ 4× body；只用一個 --accent"
      }
     }
+   },
+   "用語": {
+    "中文": "瑞士國際主義",
+    "英文": [
+     "Swiss International Typographic Style",
+     "Swiss style",
+     "Swiss"
+    ],
+    "簡中": "瑞士国际主义",
+    "其他說法": [
+     "瑞士風",
+     "國際主義",
+     "網格設計",
+     "瑞士極簡",
+     "網格極簡",
+     "瑞士風網頁"
+    ]
    }
   },
   "包浩斯": {
@@ -4269,6 +5161,17 @@
       "AI 生成": "Bauhaus design, primary red yellow blue, circles squares and triangles, bold geometric composition, sans-serif type"
      }
     }
+   },
+   "用語": {
+    "中文": "包浩斯",
+    "英文": [
+     "Bauhaus"
+    ],
+    "簡中": "包浩斯",
+    "其他說法": [
+     "幾何",
+     "三原色"
+    ]
    }
   },
   "孟菲斯": {
@@ -4323,6 +5226,18 @@
       "AI 生成": "Memphis design, clashing pastel colors with black, squiggles, confetti dots and terrazzo patterns, playful scattered geometric shapes"
      }
     }
+   },
+   "用語": {
+    "中文": "孟菲斯",
+    "英文": [
+     "Memphis design",
+     "Memphis"
+    ],
+    "簡中": "孟菲斯",
+    "其他說法": [
+     "撞色圖紋",
+     "80 年代設計"
+    ]
    }
   },
   "雜誌編輯": {
@@ -4416,6 +5331,20 @@
       "程式實作": "grid 命名欄；h1 clamp(3rem, 7vw, 6rem)"
      }
     }
+   },
+   "用語": {
+    "中文": "雜誌編輯",
+    "英文": [
+     "editorial layout",
+     "editorial",
+     "magazine",
+     "editorial web"
+    ],
+    "簡中": "杂志编辑",
+    "其他說法": [
+     "雜誌排版",
+     "編輯風"
+    ]
    }
   },
   "日式留白": {
@@ -4485,6 +5414,19 @@
       "程式實作": "--space-section: 160px；font-weight 300；transition 700ms"
      }
     }
+   },
+   "用語": {
+    "中文": "日式留白",
+    "英文": [
+     "Japanese whitespace minimal",
+     "wabi-sabi"
+    ],
+    "簡中": "日式留白",
+    "其他說法": [
+     "日系極簡",
+     "侘寂",
+     "無印風"
+    ]
    }
   },
   "單色極簡": {
@@ -4542,6 +5484,18 @@
       "程式實作": "只定義一組 --tone-50…--tone-950"
      }
     }
+   },
+   "用語": {
+    "中文": "單色極簡",
+    "英文": [
+     "monochrome minimal",
+     "monochrome"
+    ],
+    "簡中": "单色极简",
+    "其他說法": [
+     "單色",
+     "灰階介面"
+    ]
    }
   },
   "新粗獷": {
@@ -4613,6 +5567,18 @@
       "程式實作": "box-shadow: 6px 6px 0 #000；border: 3px solid #000；:active 移除投影"
      }
     }
+   },
+   "用語": {
+    "中文": "新粗獷",
+    "英文": [
+     "neo-brutalism",
+     "neo brutalism",
+     "neubrutalism"
+    ],
+    "簡中": "新粗犷",
+    "其他說法": [
+     "新野獸派"
+    ]
    }
   },
   "野獸派": {
@@ -4673,6 +5639,18 @@
       "程式實作": "font-family: system-ui, monospace；不加陰影與圓角"
      }
     }
+   },
+   "用語": {
+    "中文": "野獸派",
+    "英文": [
+     "brutalism (raw web)",
+     "brutalism",
+     "brutalist"
+    ],
+    "簡中": "野兽派",
+    "其他說法": [
+     "原始網頁"
+    ]
    }
   },
   "玻璃擬態": {
@@ -4729,6 +5707,17 @@
       "程式實作": "backdrop-filter: blur(24px)；background: rgb(255 255 255 / .2)；文字對比要另外量"
      }
     }
+   },
+   "用語": {
+    "中文": "玻璃擬態",
+    "英文": [
+     "glassmorphism"
+    ],
+    "簡中": "玻璃拟态",
+    "其他說法": [
+     "毛玻璃",
+     "霧面玻璃"
+    ]
    }
   },
   "新擬態": {
@@ -4786,6 +5775,16 @@
       "程式實作": "box-shadow: 8px 8px 16px var(--dark), -8px -8px 16px var(--light)；注意對比常不足"
      }
     }
+   },
+   "用語": {
+    "中文": "新擬態",
+    "英文": [
+     "neumorphism"
+    ],
+    "簡中": "新拟态",
+    "其他說法": [
+     "新擬物"
+    ]
    }
   },
   "擬真物件": {
@@ -4838,6 +5837,17 @@
       "程式實作": "材質用圖片或 CSS 漸層；動效有慣性"
      }
     }
+   },
+   "用語": {
+    "中文": "擬真物件",
+    "英文": [
+     "skeuomorphism"
+    ],
+    "簡中": "拟真物件",
+    "其他說法": [
+     "擬物",
+     "擬真"
+    ]
    }
   },
   "報紙版式": {
@@ -4896,6 +5906,17 @@
       "程式實作": "column-count 3–6；border-right 1px"
      }
     }
+   },
+   "用語": {
+    "中文": "報紙版式",
+    "英文": [
+     "newspaper layout",
+     "newspaper"
+    ],
+    "簡中": "报纸版式",
+    "其他說法": [
+     "報紙風"
+    ]
    }
   },
   "Y2K": {
@@ -4951,6 +5972,17 @@
       "程式實作": "linear-gradient 銀色＋光澤高光層"
      }
     }
+   },
+   "用語": {
+    "中文": "Y2K",
+    "英文": [
+     "Y2K web",
+     "y2k"
+    ],
+    "簡中": "Y2K",
+    "其他說法": [
+     "千禧風"
+    ]
    }
   },
   "90 年代網頁": {
@@ -5004,6 +6036,17 @@
       "程式實作": "image-rendering: pixelated；border-style: outset"
      }
     }
+   },
+   "用語": {
+    "中文": "90 年代網頁",
+    "英文": [
+     "90s web",
+     "geocities"
+    ],
+    "簡中": "90 年代网页",
+    "其他說法": [
+     "像素風網頁"
+    ]
    }
   },
   "暗色科技": {
@@ -5070,6 +6113,19 @@
       "程式實作": "--bg: oklch(15% 0.02 260)；border 1px；accent 一色"
      }
     }
+   },
+   "用語": {
+    "中文": "暗色科技",
+    "英文": [
+     "dark tech product",
+     "dark mode"
+    ],
+    "簡中": "暗色科技",
+    "其他說法": [
+     "暗色",
+     "SaaS 風",
+     "科技風"
+    ]
    }
   },
   "終端機": {
@@ -5126,6 +6182,18 @@
       "程式實作": "font-family: monospace；動效用打字機"
      }
     }
+   },
+   "用語": {
+    "中文": "終端機",
+    "英文": [
+     "terminal / command line",
+     "terminal"
+    ],
+    "簡中": "终端机",
+    "其他說法": [
+     "cli 風",
+     "駭客風"
+    ]
    }
   },
   "柔和手繪": {
@@ -5181,6 +6249,18 @@
       "程式實作": "SVG 手繪框；stroke-dashoffset 描邊動畫"
      }
     }
+   },
+   "用語": {
+    "中文": "柔和手繪",
+    "英文": [
+     "soft hand-drawn",
+     "hand-drawn"
+    ],
+    "簡中": "柔和手绘",
+    "其他說法": [
+     "手繪風",
+     "塗鴉風"
+    ]
    }
   },
   "有機圓潤": {
@@ -5235,6 +6315,1187 @@
      "寫法": {
       "設計提示詞": "organic rounded web design: big radii, blob shapes, warm friendly palette, soft shadows, gentle springy motion",
       "程式實作": "--radius-lg: 28px；blob 用 SVG path"
+     }
+    }
+   },
+   "用語": {
+    "中文": "有機圓潤",
+    "英文": [
+     "organic rounded",
+     "blob"
+    ],
+    "簡中": "有机圆润",
+    "其他說法": [
+     "圓潤風",
+     "親切風"
+    ]
+   }
+  },
+  "繪畫版畫": {
+   "英文": "painting and printmaking",
+   "定義": "繪畫版畫類風格",
+   "落地": {},
+   "來源": [
+    "S58"
+   ],
+   "用語": {
+    "中文": "繪畫版畫",
+    "英文": [
+     "painting and printmaking"
+    ],
+    "簡中": "绘画版画",
+    "其他說法": []
+   }
+  },
+  "數位材質": {
+   "英文": "digital and material crafts",
+   "定義": "數位材質類風格",
+   "落地": {},
+   "來源": [
+    "S58"
+   ],
+   "用語": {
+    "中文": "數位材質",
+    "英文": [
+     "digital and material crafts"
+    ],
+    "簡中": "数位材质",
+    "其他說法": []
+   }
+  },
+  "厚塗油畫": {
+   "英文": "impasto oil painting",
+   "定義": "顏料厚疊，筆刷和刮刀痕跡隆起",
+   "效果": "濃烈、手作",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "筆刷與刮刀痕",
+    "色彩": "飽和、濃重",
+    "形狀": "筆觸塊面",
+    "深度與光影": "顏料凸起的立體光影",
+    "字體": "—",
+    "動態": "慢緩"
+   },
+   "數值": {
+    "筆觸": "可見、厚"
+   },
+   "易混淆": "水彩手繪：後者透明薄塗",
+   "同義詞": [
+    "impasto oil painting",
+    "oil painting",
+    "厚涂油画",
+    "油畫"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "高飽和撞色"
+    ],
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#194"
+   ],
+   "用語": {
+    "中文": "厚塗油畫",
+    "英文": [
+     "impasto oil painting",
+     "oil painting"
+    ],
+    "簡中": "厚涂油画",
+    "其他說法": [
+     "油畫",
+     "油絵（厚塗り）"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "impasto oil painting, thick paint with visible brush and palette-knife ridges, rich dense colors",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "impasto oil painting, thick paint with visible brush and palette-knife ridges, rich dense colors"
+     }
+    }
+   }
+  },
+  "水墨": {
+   "英文": "ink wash painting (sumi-e)",
+   "定義": "只用黑墨的濃淡與暈染",
+   "效果": "東方、留白",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "毛筆線條，濃淡變化",
+    "色彩": "只有黑、灰、紙白",
+    "形狀": "寫意",
+    "深度與光影": "暈染代替陰影",
+    "字體": "—",
+    "動態": "慢緩"
+   },
+   "數值": {
+    "色數": 1
+   },
+   "易混淆": "線稿單色：後者是等粗硬線，沒有暈染",
+   "同義詞": [
+    "ink wash painting",
+    "sumi-e",
+    "水墨畫",
+    "墨染"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "黑白"
+    ],
+    "版面密度": [
+     "大量留白"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#195"
+   ],
+   "用語": {
+    "中文": "水墨",
+    "英文": [
+     "ink wash painting",
+     "sumi-e",
+     "ink wash painting (sumi-e)"
+    ],
+    "簡中": "水墨",
+    "其他說法": [
+     "水墨畫",
+     "墨染",
+     "水墨画"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "ink wash painting, only black ink in dark and pale washes with soft bleeding on rice paper, no color",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "ink wash painting, only black ink in dark and pale washes with soft bleeding on rice paper, no color"
+     }
+    }
+   }
+  },
+  "浮世繪": {
+   "英文": "ukiyo-e woodblock print",
+   "定義": "細而均勻的黑輪廓、平塗色塊、輕微套色錯位",
+   "效果": "日本古典",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "均勻細黑線",
+    "色彩": "平塗、藍靛漸層天空",
+    "形狀": "平面化",
+    "深度與光影": "無陰影",
+    "字體": "—",
+    "動態": "靜止"
+   },
+   "數值": {
+    "套色錯位px": "1–3"
+   },
+   "易混淆": "日式賽璐璐：後者是動畫硬邊陰影",
+   "同義詞": [
+    "ukiyo-e",
+    "woodblock print",
+    "浮世绘",
+    "木版畫"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "線條": [
+     "細線"
+    ],
+    "深度與光影": [
+     "純平面"
+    ],
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#196"
+   ],
+   "用語": {
+    "中文": "浮世繪",
+    "英文": [
+     "ukiyo-e",
+     "woodblock print",
+     "ukiyo-e woodblock print"
+    ],
+    "簡中": "浮世绘",
+    "其他說法": [
+     "木版畫",
+     "浮世絵"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Edo-period ukiyo-e woodblock print, thin even black outlines, flat color areas, slight misregistration, washi texture, indigo gradient sky",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Edo-period ukiyo-e woodblock print, thin even black outlines, flat color areas, slight misregistration, washi texture, indigo gradient sky"
+     }
+    }
+   }
+  },
+  "點描": {
+   "英文": "pointillism",
+   "定義": "只用並排的色點構成畫面",
+   "效果": "印象派、細膩",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "無線條",
+    "色彩": "純色點並置",
+    "形狀": "由點組成",
+    "深度與光影": "色點疏密表示明暗",
+    "字體": "—",
+    "動態": "靜止"
+   },
+   "數值": {
+    "點徑": "小卡上仍看得見"
+   },
+   "易混淆": "水彩手繪：點太小就會像水彩",
+   "同義詞": [
+    "pointillism",
+    "dot painting",
+    "点描",
+    "點畫"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "線條": [
+     "無線條"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#197"
+   ],
+   "用語": {
+    "中文": "點描",
+    "英文": [
+     "pointillism",
+     "dot painting"
+    ],
+    "簡中": "点描",
+    "其他說法": [
+     "點畫"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "pointillism, image made only of visible dots of pure color placed side by side, no lines",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "pointillism, image made only of visible dots of pure color placed side by side, no lines"
+     }
+    }
+   }
+  },
+  "色鉛筆": {
+   "英文": "colored pencil drawing",
+   "定義": "細筆觸層層疊色，紙紋透出白點",
+   "效果": "溫柔、手繪",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "細密排線",
+    "色彩": "疊色、中低飽和",
+    "形狀": "柔和",
+    "深度與光影": "排線疏密表示明暗",
+    "字體": "—",
+    "動態": "慢緩"
+   },
+   "數值": {
+    "紙紋": "透白"
+   },
+   "易混淆": "水彩手繪：後者是透明水痕，不是筆觸",
+   "同義詞": [
+    "colored pencil drawing",
+    "彩铅",
+    "彩色鉛筆"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "線條": [
+     "手繪線"
+    ],
+    "紋理": [
+     "紙紋"
+    ],
+    "色彩方案": [
+     "低飽和"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#198"
+   ],
+   "用語": {
+    "中文": "色鉛筆",
+    "英文": [
+     "colored pencil drawing"
+    ],
+    "簡中": "彩铅",
+    "其他說法": [
+     "彩色鉛筆",
+     "彩铅",
+     "色鉛筆画"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "colored pencil drawing, layered fine strokes, paper grain showing through",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "colored pencil drawing, layered fine strokes, paper grain showing through"
+     }
+    }
+   }
+  },
+  "麻膠版畫": {
+   "英文": "linocut print",
+   "定義": "雕刻版印出的粗黑白線，帶刻痕",
+   "效果": "粗獷、手作",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "粗黑線與刻痕",
+    "色彩": "純黑白",
+    "形狀": "大塊面",
+    "深度與光影": "無漸層",
+    "字體": "—",
+    "動態": "靜止"
+   },
+   "數值": {
+    "灰階": "不用"
+   },
+   "易混淆": "線稿單色：後者細線、沒有刻痕",
+   "同義詞": [
+    "linocut print",
+    "linocut",
+    "麻胶版画",
+    "版畫"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "黑白"
+    ],
+    "線條": [
+     "粗黑框"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#199"
+   ],
+   "用語": {
+    "中文": "麻膠版畫",
+    "英文": [
+     "linocut print",
+     "linocut"
+    ],
+    "簡中": "麻胶版画",
+    "其他說法": [
+     "版畫",
+     "リノカット"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "linocut print, bold pure black and white lines with rough carving marks, no gray or gradients",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "linocut print, bold pure black and white lines with rough carving marks, no gray or gradients"
+     }
+    }
+   }
+  },
+  "彩繪玻璃": {
+   "英文": "stained glass",
+   "定義": "彩色玻璃塊由粗黑鉛條分隔，透光發亮",
+   "效果": "神聖、華麗",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "粗黑鉛條",
+    "色彩": "高飽和寶石色",
+    "形狀": "分割色塊",
+    "深度與光影": "透光發亮",
+    "字體": "—",
+    "動態": "靜止"
+   },
+   "數值": {
+    "鉛條": "粗黑"
+   },
+   "易混淆": "低多邊形：後者是 3D 面",
+   "同義詞": [
+    "stained glass",
+    "彩绘玻璃",
+    "花窗玻璃"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "線條": [
+     "粗黑框"
+    ],
+    "色彩方案": [
+     "高飽和撞色"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#200"
+   ],
+   "用語": {
+    "中文": "彩繪玻璃",
+    "英文": [
+     "stained glass"
+    ],
+    "簡中": "彩绘玻璃",
+    "其他說法": [
+     "花窗玻璃",
+     "ステンドグラス"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "stained glass window, glowing colored glass pieces divided by thick black lead lines",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "stained glass window, glowing colored glass pieces divided by thick black lead lines"
+     }
+    }
+   }
+  },
+  "普普藝術": {
+   "英文": "pop art",
+   "定義": "三原色平塗、粗黑輪廓、少量網點",
+   "效果": "大膽、復古",
+   "上層": "平面設計",
+   "特徵": {
+    "線條": "粗黑輪廓",
+    "色彩": "三原色平塗",
+    "形狀": "平面",
+    "深度與光影": "網點代替陰影",
+    "字體": "粗體",
+    "動態": "快切"
+   },
+   "數值": {
+    "網點": "少量"
+   },
+   "易混淆": "美式超英漫畫：後者有大量排線與黑影",
+   "同義詞": [
+    "pop art",
+    "波普艺术",
+    "普普風"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "三原色"
+    ],
+    "線條": [
+     "粗黑框"
+    ],
+    "深度與光影": [
+     "純平面"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#201"
+   ],
+   "用語": {
+    "中文": "普普藝術",
+    "英文": [
+     "pop art"
+    ],
+    "簡中": "波普艺术",
+    "其他說法": [
+     "普普風",
+     "波普艺术",
+     "ポップアート"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "1960s pop art silkscreen, flat primary colors, bold black outlines, a few halftone dots",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "1960s pop art silkscreen, flat primary colors, bold black outlines, a few halftone dots"
+     }
+    }
+   }
+  },
+  "霓虹燈牌": {
+   "英文": "neon sign",
+   "定義": "暗牆上的發光燈管線條",
+   "效果": "夜生活、吸睛",
+   "上層": "平面設計",
+   "特徵": {
+    "線條": "發光管線",
+    "色彩": "紅黃綠等燈管色，暗底",
+    "形狀": "線條勾形",
+    "深度與光影": "光暈",
+    "字體": "手寫或圓體",
+    "動態": "脈動"
+   },
+   "數值": {
+    "發光模糊px": "8–16"
+   },
+   "易混淆": "80 年代合成波：後者是網格地平線與漸層",
+   "同義詞": [
+    "neon sign",
+    "霓虹灯牌",
+    "霓虹字"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "暗底霓虹"
+    ],
+    "線條": [
+     "霓虹線"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#202"
+   ],
+   "用語": {
+    "中文": "霓虹燈牌",
+    "英文": [
+     "neon sign"
+    ],
+    "簡中": "霓虹灯牌",
+    "其他說法": [
+     "霓虹字",
+     "ネオンサイン"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "neon sign on a dark brick wall, shapes drawn only with glowing tubes, light blooming",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "neon sign on a dark brick wall, shapes drawn only with glowing tubes, light blooming"
+     }
+    }
+   }
+  },
+  "Art Deco": {
+   "英文": "Art Deco",
+   "定義": "金黑配色、放射直線、近乎對稱的幾何裝飾",
+   "效果": "奢華、1920 年代",
+   "上層": "平面設計",
+   "特徵": {
+    "線條": "幾何直線",
+    "色彩": "金與黑",
+    "形狀": "放射與對稱",
+    "深度與光影": "平面",
+    "字體": "幾何襯線或無襯線",
+    "動態": "慢緩"
+   },
+   "數值": {
+    "主色": [
+     "金",
+     "黑"
+    ]
+   },
+   "易混淆": "Art Nouveau：後者是植物曲線",
+   "同義詞": [
+    "装饰艺术",
+    "裝飾藝術"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "構成": [
+     "置中對稱"
+    ],
+    "形狀語言": [
+     "幾何構成"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#203"
+   ],
+   "用語": {
+    "中文": "Art Deco",
+    "英文": [
+     "Art Deco"
+    ],
+    "簡中": "装饰艺术",
+    "其他說法": [
+     "裝飾藝術",
+     "装饰艺术",
+     "アールデコ"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Art Deco 1920s poster, gold and black, radiating straight rays, geometric symmetrical ornament",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Art Deco 1920s poster, gold and black, radiating straight rays, geometric symmetrical ornament"
+     }
+    }
+   }
+  },
+  "Art Nouveau": {
+   "英文": "Art Nouveau",
+   "定義": "流動曲線的植物與花朵框飾",
+   "效果": "優雅、1900 年代",
+   "上層": "平面設計",
+   "特徵": {
+    "線條": "粗而流動的曲線",
+    "色彩": "赭、橄欖、暗朱紅",
+    "形狀": "有機曲線框",
+    "深度與光影": "平面",
+    "字體": "裝飾字",
+    "動態": "慢緩"
+   },
+   "數值": {
+    "主色": [
+     "赭",
+     "橄欖",
+     "暗朱紅"
+    ]
+   },
+   "易混淆": "Art Deco：後者是直線幾何",
+   "同義詞": [
+    "新艺术运动",
+    "新藝術"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "形狀語言": [
+     "有機形狀"
+    ],
+    "色彩方案": [
+     "暖中性"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#204"
+   ],
+   "用語": {
+    "中文": "Art Nouveau",
+    "英文": [
+     "Art Nouveau"
+    ],
+    "簡中": "新艺术运动",
+    "其他說法": [
+     "新藝術",
+     "新艺术运动",
+     "アールヌーボー"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Art Nouveau poster around 1900, thick flowing curved outlines, ornamental vines and flowers, muted ochre olive vermilion",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Art Nouveau poster around 1900, thick flowing curved outlines, ornamental vines and flowers, muted ochre olive vermilion"
+     }
+    }
+   }
+  },
+  "Risograph": {
+   "英文": "Risograph print",
+   "定義": "兩三色油墨疊印、刻意錯位、油墨顆粒",
+   "效果": "獨立出版、文青",
+   "上層": "平面設計",
+   "特徵": {
+    "線條": "無或細",
+    "色彩": "兩三色油墨疊印",
+    "形狀": "平面",
+    "深度與光影": "無",
+    "字體": "粗無襯線",
+    "動態": "靜止"
+   },
+   "數值": {
+    "色數": "2–3",
+    "錯位": "保留"
+   },
+   "易混淆": "雙色調：後者平順漸層、沒有錯位顆粒",
+   "同義詞": [
+    "Risograph print",
+    "riso print",
+    "孔版印刷",
+    "孔版",
+    "理想印刷"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "雙色"
+    ],
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#205"
+   ],
+   "用語": {
+    "中文": "Risograph",
+    "英文": [
+     "Risograph print",
+     "riso print"
+    ],
+    "簡中": "孔版印刷",
+    "其他說法": [
+     "孔版",
+     "理想印刷",
+     "孔版印刷",
+     "リソグラフ"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Risograph stencil print, two or three inks overlapping out of register, ink grain and paper texture",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Risograph stencil print, two or three inks overlapping out of register, ink grain and paper texture"
+     }
+    }
+   }
+  },
+  "像素": {
+   "英文": "pixel art",
+   "定義": "低解析、每個方格像素清楚可見的平面圖",
+   "效果": "遊戲、復古",
+   "上層": "數位材質",
+   "特徵": {
+    "線條": "無線條，像素邊緣",
+    "色彩": "限定色板",
+    "形狀": "方格",
+    "深度與光影": "平面",
+    "字體": "像素字",
+    "動態": "定格動畫感"
+   },
+   "數值": {
+    "解析度": "低",
+    "格子": "方形"
+   },
+   "易混淆": "體素：後者是 3D 方塊",
+   "同義詞": [
+    "pixel art",
+    "8-bit",
+    "點陣圖風"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "深度與光影": [
+     "純平面"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#209"
+   ],
+   "用語": {
+    "中文": "像素",
+    "英文": [
+     "pixel art",
+     "8-bit"
+    ],
+    "簡中": "像素",
+    "其他說法": [
+     "點陣圖風",
+     "ドット絵（ピクセルアート）"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "pixel art, low resolution, every square pixel visible, flat front view",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "pixel art, low resolution, every square pixel visible, flat front view"
+     }
+    }
+   }
+  },
+  "體素": {
+   "英文": "voxel art",
+   "定義": "由小方塊堆成的 3D 模型",
+   "效果": "積木、遊戲",
+   "上層": "數位材質",
+   "特徵": {
+    "線條": "方塊邊",
+    "色彩": "頂面與側面明暗",
+    "形狀": "方塊堆疊",
+    "深度與光影": "俯視三面受光",
+    "字體": "—",
+    "動態": "慢緩"
+   },
+   "數值": {
+    "視角": "略俯視"
+   },
+   "易混淆": "像素：後者是平面",
+   "同義詞": [
+    "voxel art",
+    "体素",
+    "方塊 3D"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "形狀語言": [
+     "幾何構成"
+    ],
+    "深度與光影": [
+     "柔影"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#210"
+   ],
+   "用語": {
+    "中文": "體素",
+    "英文": [
+     "voxel art"
+    ],
+    "簡中": "体素",
+    "其他說法": [
+     "方塊 3D",
+     "ボクセルアート"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "voxel art, 3D model built from small stacked cubes, lit top and side faces, slightly from above",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "voxel art, 3D model built from small stacked cubes, lit top and side faces, slightly from above"
+     }
+    }
+   }
+  },
+  "紙模型": {
+   "英文": "papercraft",
+   "定義": "彩色卡紙剪折黏成的 3D 模型",
+   "效果": "手作、童趣",
+   "上層": "數位材質",
+   "特徵": {
+    "線條": "摺線清楚",
+    "色彩": "卡紙色",
+    "形狀": "立體摺面",
+    "深度與光影": "桌面實拍光",
+    "字體": "—",
+    "動態": "定格動畫感"
+   },
+   "數值": {
+    "細節": "黏貼舌片、白色切邊"
+   },
+   "易混淆": "剪紙拼貼：後者是平面疊層",
+   "同義詞": [
+    "papercraft",
+    "paper model",
+    "纸模型",
+    "紙雕立體"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "紋理": [
+     "紙紋"
+    ],
+    "深度與光影": [
+     "寫實光影"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#212"
+   ],
+   "用語": {
+    "中文": "紙模型",
+    "英文": [
+     "papercraft",
+     "paper model"
+    ],
+    "簡中": "纸模型",
+    "其他說法": [
+     "紙雕立體",
+     "ペーパークラフト"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "papercraft, colored card stock cut folded and glued into 3D models, crisp folds, glue tabs, photo on a desk",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "papercraft, colored card stock cut folded and glued into 3D models, crisp folds, glue tabs, photo on a desk"
+     }
+    }
+   }
+  },
+  "刺繡": {
+   "英文": "embroidery",
+   "定義": "彩色繡線縫在布上，看得到針腳方向",
+   "效果": "溫暖、手作",
+   "上層": "數位材質",
+   "特徵": {
+    "線條": "針腳方向",
+    "色彩": "繡線色",
+    "形狀": "布上圖案",
+    "深度與光影": "布紋與線的微光",
+    "字體": "—",
+    "動態": "靜止"
+   },
+   "數值": {
+    "針腳": "可見"
+   },
+   "易混淆": "剪紙拼貼：後者是紙",
+   "同義詞": [
+    "embroidery",
+    "刺绣",
+    "繡花"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#214"
+   ],
+   "用語": {
+    "中文": "刺繡",
+    "英文": [
+     "embroidery"
+    ],
+    "簡中": "刺绣",
+    "其他說法": [
+     "繡花",
+     "刺繍"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "embroidery, picture stitched with colored thread on fabric, visible stitch direction and cloth weave",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "embroidery, picture stitched with colored thread on fabric, visible stitch direction and cloth weave"
+     }
+    }
+   }
+  },
+  "藍圖": {
+   "英文": "blueprint",
+   "定義": "藍底白細線的技術圖",
+   "效果": "工程、規劃",
+   "上層": "數位材質",
+   "特徵": {
+    "線條": "白色細線，含尺寸線",
+    "色彩": "藍底白線",
+    "形狀": "工程製圖",
+    "深度與光影": "無",
+    "字體": "等寬或工程字",
+    "動態": "描邊繪製"
+   },
+   "數值": {
+    "底色": "藍",
+    "線色": "白"
+   },
+   "易混淆": "線稿單色：後者白底、無尺寸線",
+   "同義詞": [
+    "blueprint",
+    "蓝图",
+    "工程藍圖"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "線條": [
+     "細線"
+    ],
+    "色彩方案": [
+     "單一重點色"
+    ]
+   },
+   "來源": [
+    "S58"
+   ],
+   "對應": [
+    "#216"
+   ],
+   "用語": {
+    "中文": "藍圖",
+    "英文": [
+     "blueprint"
+    ],
+    "簡中": "蓝图",
+    "其他說法": [
+     "工程藍圖",
+     "ブループリント（設計図風）"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "blueprint technical drawing, fine white lines on blue, a few dimension and construction lines",
+      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "blueprint technical drawing, fine white lines on blue, a few dimension and construction lines"
      }
     }
    }

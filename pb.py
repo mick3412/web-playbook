@@ -198,7 +198,7 @@ def localize(x: dict, medium: str, writing_keys: list[str]) -> dict:
     return {"英文": x["英文"], "定義": x.get("定義", ""), "效果": x.get("效果", ""),
             "參數": "；".join(f"{k} {v if not isinstance(v, list) else '／'.join(map(str, v))}" for k, v in nums.items()) or "見子類",
             "數值": nums, "寫法": {k: lw.get(k) or generic.get(k, x["英文"]) for k in writing_keys}, "對應": [], "來源": x.get("來源", []),
-            **{k: x[k] for k in ("上層", "同義詞", "專有名稱", "特徵", "易混淆", "設計屬性") if x.get(k)},
+            **{k: x[k] for k in ("上層", "同義詞", "專有名稱", "特徵", "易混淆", "設計屬性", "用語", "對應") if x.get(k)},
             "預設": landing(x, medium), "落地": x.get("落地", {}), "共用": True}
 
 
@@ -220,6 +220,12 @@ def vocab(medium: str | None = None) -> dict:
     return V
 
 
+def term_words(x: dict) -> list[str]:
+    """Every name a value goes by in its 用語 table (English, Simplified Chinese, other names) — all of them call it up."""
+    t = x.get("用語", {})
+    return list(t.get("英文", [])) + ([t["簡中"]] if t.get("簡中") else []) + list(t.get("其他說法", []))
+
+
 def facet_dict() -> dict:
     """Shared facets and design vocabulary first, then this book's own facets.json (its 工作項目, plus 停用分面／停用同義詞),
     then this book's vocabulary dimensions. English terms count as synonyms, so "whip pan" finds 過場=甩鏡."""
@@ -233,8 +239,8 @@ def facet_dict() -> dict:
     F["關聯"] += B.get("關聯", [])
     F["衝突"] += B.get("衝突", [])
     def as_facet(vals: dict) -> dict:
-        return {k: {"同義詞": ([x["英文"]] if x.get("英文") else []) + x.get("同義詞", []), **({"上層": x["上層"]} if x.get("上層") else {})}
-                for k, x in vals.items()}
+        return {k: {"同義詞": list(dict.fromkeys(w for w in ([x["英文"]] if x.get("英文") else []) + x.get("同義詞", []) + term_words(x) if w and w != k)),
+                    **({"上層": x["上層"]} if x.get("上層") else {})} for k, x in vals.items()}
     for dim, vals in S["設計屬性"].items():
         F["分面"].setdefault(dim, as_facet(vals))
     F["分面"].setdefault("風格", as_facet(S["風格"]))
@@ -296,13 +302,31 @@ def term_in(word: str, low: str) -> bool:
     return w in low
 
 
+def term_spans(word: str, low: str) -> list[tuple[int, int]]:
+    w = word.lower()
+    if not w:
+        return []
+    if re.fullmatch(r"[a-z0-9][a-z0-9 .+/&'-]*", w):
+        return [m.span() for m in re.finditer(r"(?<![a-z0-9])" + re.escape(w) + r"(?![a-z0-9])", low)]
+    return [m.span() for m in re.finditer(re.escape(w), low)]
+
+
 def suggest_ctx(text: str, F: dict) -> dict[str, set[str]]:
+    """Facet values the text names. Longest match wins: a word inside a longer matched word does not count
+    (「dolly zoom」 is not also Zoom the meeting app, 「新野獸派」 is not also 野獸派)."""
     low = text.lower()
-    out: dict[str, set[str]] = {}
+    hits: list[tuple[int, int, str, str]] = []
     for facet, vals in F["分面"].items():
         for v, m in vals.items():
-            if any(term_in(w, low) for w in [v, *m.get("同義詞", [])]):
-                out.setdefault(facet, set()).add(v)
+            for w in [v, *m.get("同義詞", [])]:
+                hits += [(a, b, facet, v) for a, b in term_spans(w, low)]
+    out: dict[str, set[str]] = {}
+    latin = lambda a, b: re.fullmatch(r"[a-z0-9 .+/&'-]+", low[a:b]) is not None
+    for a, b, facet, v in hits:
+        if any(a2 <= a and b <= b2 and (b2 - a2) > (b - a) and v2 != v and (f2 == facet or (latin(a, b) and latin(a2, b2)))
+               for a2, b2, f2, v2 in hits):
+            continue        # inside a longer match of the same facet, or an English word inside a longer English phrase
+        out.setdefault(facet, set()).add(v)
     for facet, vals in out.items():  # keep the most specific value: drop ancestors of other matches
         tree = F["分面"][facet]
         anc = set()
@@ -2019,10 +2043,32 @@ def cmd_facets(a) -> int:
     return 0
 
 
+def terms_table(dim: str, vals: dict) -> list[str]:
+    out = [f"## {dim}", "", "| 中文 | 英文 | 簡中 | 其他說法 | 參照 |", "|---|---|---|---|---|"]
+    for k, x in vals.items():
+        t = x.get("用語", {})
+        out.append(f"| {k} | {'、'.join(t.get('英文', []) or [x.get('英文', '')])} | {t.get('簡中', '')} | {'、'.join(t.get('其他說法', []))} | "
+                   f"{'、'.join(x.get('對應', []))} |")
+    return out + [""]
+
+
 def cmd_vocab(a) -> int:
     V = vocab()
     if not V["維度"]:
         print("這本手冊沒有製作語彙（data/vocab.json）。")
+        return 0
+    if a.terms:
+        dims = list(V["維度"]) if (a.all or not a.dim) else [a.dim]
+        missing = [d for d in dims if d not in V["維度"]]
+        if missing:
+            sys.exit(f"沒有「{missing[0]}」；有：{'、'.join(V['維度'])}")
+        text = "\n".join(["# 用語對照表（" + NAME + "）", "", "英文、簡中和其他說法都會被當成同義詞：需求用哪一種寫法，都叫得出同一個值。", ""]
+                         + [line for d in dims for line in terms_table(d, V["維度"][d])])
+        if a.out:
+            Path(a.out).expanduser().write_text(text + "\n", encoding="utf-8")
+            print(f"已寫到 {a.out}（{len(dims)} 個維度）")
+        else:
+            print(text)
         return 0
     if a.tone:
         p = V.get("調性預設", {}).get(a.tone)
@@ -2661,6 +2707,9 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("vocab")
     p.add_argument("dim", nargs="?")
     p.add_argument("--tone")
+    p.add_argument("--terms", action="store_true", help="the 中文／英文／簡中／其他說法 table")
+    p.add_argument("--all", action="store_true")
+    p.add_argument("--out")
     p.set_defaults(fn=cmd_vocab)
     p = sub.add_parser("spec")
     p.add_argument("card", nargs="?")
