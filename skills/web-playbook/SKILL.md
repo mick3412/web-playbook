@@ -27,7 +27,7 @@ If `~/.config/web-playbook/home` does not exist, tell the user to run `python3 "
 | Only a style or exact numbers | `style <name>` or `spec --from "<need>"` | — |
 | New material to file (link, screenshot, PDF) | the intake steps below | `check`, `facets --audit` |
 
-Always cite ids. When a blueprint lists another book's recipe under 跨本交接, open that book's plan before producing.
+Always cite ids. When a blueprint lists another book's recipe under 跨本交接, open that book's plan before producing. Open questions come in rounds (S49 grilling): each round lists only the questions whose prerequisites are settled, numbered, each with a recommended answer the user accepts with 是 (audience is never recommended, never invented). Add the answers to the need and run again to get the next round; the tree is `提問樹` in data/shared.json, and a book may replace it in its facets.json (engineering asks 完成的定義, 範圍外, 驗收方式, 風險等級).
 
 ## Three layers: strategy → shared tags → tools
 

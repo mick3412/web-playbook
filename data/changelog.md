@@ -38,3 +38,4 @@
 - 2026-11-12 三層架構：strategy --from／--works（策略卡與作品單，存在專案 .strategy/）；plan、spec 加 --work；單獨調用自動沿用策略卡、否則最多問三題；style 跨媒材風格表；全域 playbook 加 strategy、works、style
 - 2026-11-12 計畫書：blueprint 從需求或作品單產出完整製作／開發計畫（9 段、全部階段的步驟與過關、跨本交接、成效）；入口判斷表；行銷文案規格與開發規格；plan 結尾提示更新；Umless 實測紀錄
 - 2026-11-13 收錄 skills.sh 前 10 名：HyperFrames 生態（T-19 補註、media-use）、grilling 決策樹併入 S2-05、術語表與 ADR（S2-06）、agent-browser（待試，與 Playwright 比較）、design-mobile-apps（待查，需 Sleek 帳號）、Reddit 做法（S1-08）與共用平台值 Reddit
+- 2026-11-13 待補問題改成分輪問（S49 grilling）：提問樹放在 shared.json（開發手冊自有一棵），每輪只問前提已確定的題目，附建議答案；用在 blueprint、spec 單獨調用、strategy

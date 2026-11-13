@@ -2072,11 +2072,12 @@ def cmd_spec(a) -> int:
             print(note + "\n")
         print(spec_from_text(need, R), end="")
         if not work:
-            sug = suggest_ctx(need, facet_dict())
-            asks = [q for f, q in (("受眾", "給誰看？"), ("平台", "放在哪個平台？"), ("調性", "什麼調性？（或直接指定風格）"))
-                    if not sug.get(f) and not (f == "調性" and sug.get("風格"))][:3]
-            if asks:
-                print("\n沒有策略卡，先問：" + "　".join(asks) + "（答不出來就照上面的預設做）")
+            known = suggest_ctx(need, facet_dict())
+            for d, pairs in R.get("chosen", {}).items():
+                known.setdefault(d, {x for x, _ in pairs})
+            rt = rounds_text(*question_rounds(need, known, "spec", question_recs(known, None, R)))
+            if rt:
+                print("\n沒有策略卡，這一輪先問（分輪；上面的草稿先照預設）：\n" + "\n".join(rt))
         if a.out:
             Path(a.out).expanduser().write_text(json.dumps(R["card"], ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
             print(f"已寫出規格卡草稿 {a.out}")
@@ -2131,17 +2132,12 @@ def strategy_from(goal: str) -> dict:
     purposes = sorted(ctx.get("目的", set())) or []
     platforms = sorted(ctx.get("平台", set()))
     tones = sorted(ctx.get("調性", set()))
-    questions = []
     kpi = re.findall(r"\d[\d,]*\s*(?:筆|位|人|個|%|萬|元|次|則|支|篇)[^，。；,;]*", goal)
     period = re.findall(r"[一二三四五六七八九十\d]+\s*(?:個月|週|周|天|季|年)", goal)
-    if not purposes:
-        questions.append("主要目的是哪一個：" + "、".join(k for k in rules.get("目的堆疊", {})))
-    if not kpi:
-        questions.append("用什麼數字算成功（例如名單筆數、詢問數、觀看數），期限多久？")
-    if not ctx.get("受眾"):
-        questions.append("主要受眾是誰（身分、處境、他們最在意的一件事）？")
-    if not tones:
-        questions.append("品牌調性是哪一種：" + "、".join(rules.get("調性設計基因", {})))
+    now, later = question_rounds(goal, ctx, "strategy", question_recs(ctx))
+    questions = [f"Q{i}｜{n['id']}：{n['問']}｜建議：{n['建議'] or '沒有建議，這要你決定'}" for i, n in enumerate(now, 1)]
+    if later:
+        questions.append("下一輪（等上面的答案）：" + "、".join(n["id"] for n in later))
     stack: dict[str, list[dict]] = {h: [] for h in HORIZON}
     for pur in purposes or []:
         for h in HORIZON:
@@ -2187,7 +2183,7 @@ def strategy_text(c: dict) -> str:
     out += ["", "## 設計基因（所有媒材共用）", ""]
     out += [f"- {d}：{'、'.join(v)}" for d, v in c["設計基因"].items()] or ["- （待補：先定調性，或直接指定風格）"]
     if c["待補問題"]:
-        out += ["", "## 待補問題（沒有答案前不編）", ""] + [f"- {q}" for q in c["待補問題"]]
+        out += ["", "## 這一輪要問（分輪；沒有答案前不編，答「是」就照建議）", ""] + [f"- {q}" for q in c["待補問題"]]
     out += ["", "下一步：存成策略卡（`--save`），再用 `pb.py strategy --works` 拆成作品單。"]
     return "\n".join(out) + "\n"
 
@@ -2319,6 +2315,87 @@ def sibling_options(need: str, facets: str | None) -> list[tuple[str, dict]]:
     return out
 
 
+# ---------------------------------------------------------------- questions in rounds (S49 grilling): ask only what is unblocked
+def question_tree(use: str) -> list[dict]:
+    p = DATA / "facets.json"
+    own = json.loads(p.read_text(encoding="utf-8")).get("提問樹") if p.is_file() else None
+    tree = (own or shared().get("提問樹", {})).get("節點", [])
+    return [n for n in tree if use in n.get("用在", [use])]
+
+
+def question_rounds(need: str, ctx: dict[str, set[str]], use: str, recs: dict[str, str] | None = None) -> tuple[list[dict], list[dict]]:
+    """(this round, later). A node is settled when the need or its facets already answer it; this round holds the unsettled
+    nodes whose prerequisites are all settled, each with a recommended answer the user can accept with 是."""
+    tree = question_tree(use)
+    low = need.lower()
+    def settled(n: dict) -> bool:
+        if n.get("分面") and (ctx.get(n["分面"]) or (n.get("或") and ctx.get(n["或"]))):
+            return True
+        return any(w.lower() in low for w in n.get("文字", []))
+    done = {n["id"] for n in tree if settled(n)}
+    open_ = [n for n in tree if n["id"] not in done]
+    now = [n for n in open_ if all(p in done for p in n.get("前提", []))]
+    later = [n for n in open_ if n not in now]
+    out = []
+    for n in now:
+        rec = None if n.get("不給建議") else (recs or {}).get(n["id"])
+        out.append({**n, "建議": rec})
+    return out, later
+
+
+def rounds_text(now: list[dict], later: list[dict]) -> list[str]:
+    if not now:
+        return []
+    out = []
+    for i, n in enumerate(now, 1):
+        out.append(f"❓ Q{i}｜{n['id']}：{n['問']}")
+        out.append(f"   ➡️ " + (f"建議：{n['建議']}" if n.get("建議") else "沒有建議，這要你決定（不會替你編）"))
+    out.append("答「是」就照建議；不同就直接寫答案。把答案加進需求再跑一次，會算出下一輪。")
+    if later:
+        out.append("下一輪（等上面的答案）：" + "、".join(n["id"] for n in later))
+    return out
+
+
+def question_recs(ctx: dict[str, set[str]], chosen: dict | None = None, spec: dict | None = None) -> dict[str, str]:
+    """Recommended answers: the chosen recipe's own tags, the spec draft's values, tone relations, platform specs."""
+    F, S = facet_dict(), shared()
+    recs: dict[str, str] = {}
+    rctx = parse_ctx(next((rc["情境"] for rc in recipes() if chosen and rc["id"] == chosen.get("id")), "")) if chosen else {}
+    for f, vals in rctx.items():
+        if vals:
+            recs[f] = "、".join(sorted(vals)) + f"（推薦配方 {chosen['id']} 的設定）"
+    if spec:
+        for d, pairs in spec.get("chosen", {}).items():
+            recs.setdefault(d, "、".join(x for x, _ in pairs) + f"（{pairs[0][1]}）")
+    tones, _ = tone_advice(ctx, F)
+    if tones:
+        best = sorted(tones.items(), key=lambda x: -len(x[1]))[0]
+        recs.setdefault("調性", f"{best[0]}（依 {'、'.join(best[1])}）")
+    for p in sorted(ctx.get("平台", set())):
+        spec_p = S.get("平台規格", {}).get(p, {})
+        if spec_p.get("長度") or spec_p.get("尺寸"):
+            recs.setdefault("篇幅", f"{spec_p.get('長度') or spec_p.get('尺寸')}（{p} 的慣例）")
+    for g in sorted(ctx.get("目的", set())):
+        if g in S.get("提問樹", {}).get("指標建議", {}):
+            recs.setdefault("指標", S["提問樹"]["指標建議"][g] + "；數字和期限由你定")
+    V = vocab()
+    for d in ("工作類型", "驗收方式", "風險等級"):
+        if recs.get(d) is None and spec and d in spec.get("chosen", {}):
+            recs[d] = "、".join(x for x, _ in spec["chosen"][d])
+    if spec and "工作類型" in spec.get("chosen", {}):
+        t = spec["chosen"]["工作類型"][0][0]
+        recs.setdefault("風險等級", "有硬停止（agent、MCP、hook 會動到外部或權限）" if t in ("agent", "MCP", "hook")
+                        else "可還原；但只要會寄信或發訊息、安裝套件、碰密鑰、刪資料或動正式環境，就算硬停止")
+        how = V["維度"].get("工作類型", {}).get(t, {}).get("寫法", {}).get("驗收")
+        if how:
+            recs["完成的定義"] = how
+    return recs
+
+
+def B_need(need: str) -> str:
+    return need.split("；指標 ")[0]
+
+
 def blueprint(need: str, work: dict | None = None, pick_n: int = 1, rules: list[str] | None = None) -> dict:
     F = facet_dict()
     card = strategy_card()
@@ -2340,11 +2417,15 @@ def blueprint(need: str, work: dict | None = None, pick_n: int = 1, rules: list[
     res = plan_options(need, None, rules or [], facets)
     opts = [o for o in res["options"] if o["id"] != "自組"] or res["options"]
     chosen = opts[min(max(pick_n, 1), len(opts)) - 1] if opts else None
-    asks = [] if work or card else [q for f, q in (("受眾", "給誰看？"), ("平台", "放在哪個平台？"), ("調性", "什麼調性？（或直接指定風格）"))
-                                    if not ctx.get(f) and not (f == "調性" and ctx.get("風格"))][:3]
     V = vocab()
     spec = spec_from(need, V, work or ({"情境": ctx_text({k: v for k, v in ctx.items() if k in ("受眾", "調性")}), "設計基因": card.get("設計基因", {}), "編號": "策略卡"} if card else None)) if V["維度"] else None
-    return {"need": need, "source": source, "ctx": ctx, "asks": asks, "res": res, "chosen": chosen, "opts": opts, "spec": spec,
+    known = dict(ctx)
+    for d, pairs in (spec or {}).get("chosen", {}).items():
+        known.setdefault(d, {x for x, _ in pairs})
+    if card and card.get("指標"):
+        need = need + "；指標 " + "、".join(card["指標"])
+    now, later = question_rounds(need, known, "blueprint", question_recs(ctx, chosen, spec))
+    return {"need": B_need(need), "source": source, "ctx": ctx, "rounds": (now, later), "res": res, "chosen": chosen, "opts": opts, "spec": spec,
             "siblings": sibling_options(need, facets), "card": card, "work": work}
 
 
@@ -2355,7 +2436,9 @@ def blueprint_text(B: dict) -> str:
     out = [f"# 計畫書：{B['need']}", "", f"手冊：{NAME}｜依據：{B['source']}｜日期：{today()}", ""]
     # 1
     out += ["## 1. 需求與情境", "", f"- 分面：{ctx_text(B['ctx']) or '（沒有推測到分面）'}"]
-    out += [f"- 待補問題：{'　'.join(B['asks'])}（答不出來就照下面的預設做）"] if B["asks"] else []
+    rt = rounds_text(*B["rounds"])
+    if rt:
+        out += ["", "**這一輪要問（分輪：只問前提都已確定的）**", ""] + rt
     out.append("")
     # 2
     out += ["## 2. 推薦方案", ""]
@@ -2405,8 +2488,8 @@ def blueprint_text(B: dict) -> str:
                if "需要人核准" in r.get("情境", "") or "核准" in (r.get("要點") or "")]
     out += ["## 5. 要負責人提供的與核准點", ""]
     out += [f"- {r['id']} {item_name(r)[:40]}" for r in {r['id']: r for r in approve}.values()][:8] or ["- 第 0 階段過關前，請負責人確認目的、範圍和素材來源"]
-    if B["asks"]:
-        out.append("- 回答第 1 節的待補問題")
+    if B["rounds"][0]:
+        out.append("- 回答第 1 節這一輪的問題（答「是」就照建議）")
     out.append("")
     # 6
     out += ["## 6. 這件作品順便測的待試項目", ""]
