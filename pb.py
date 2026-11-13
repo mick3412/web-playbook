@@ -146,6 +146,20 @@ def bench_groups() -> dict[str, list[str]]:
 # ---------------------------------------------------------------- situation facets (data/facets.json)
 SHARED_DIMS = ("色彩方案", "字體性格", "形狀語言", "線條", "深度與光影", "紋理", "版面密度", "構成", "動態性格")
 MOTION_DIMS = {"運鏡", "過場", "剪輯節奏", "主體動作與表演", "動態圖像"}
+PRESENT_DIMS = {"動態圖像", "過場", "文字與字幕", "動效"}   # design values that need the five presentation layers
+PRESENT_KEYS = ["主體設計", "陪襯元素", "環境反應", "色彩變化", "進出場與循環"]
+
+
+def present_lines(x: dict, indent: str = "  ") -> list[str]:
+    """Full recipe or the five presentation layers of one value; layers nobody wrote are named so the maker fills them in."""
+    if x.get("完整做法"):
+        return [f"{indent}{i}. {step}" for i, step in enumerate(x["完整做法"], 1)]
+    layers = x.get("呈現層", {})
+    out = [f"{indent}{k}：{layers[k]}" for k in PRESENT_KEYS if layers.get(k) and layers[k] != "—"]
+    missing = [k for k in PRESENT_KEYS if not layers.get(k)]
+    if missing:
+        out.append(f"{indent}（沒寫：{'、'.join(missing)}；製作前在卡片補上，否則畫面只會有骨架）")
+    return out
 IMAGE_WORDS = re.compile(r"圖卡|縮圖|輪播|海報|封面|貼文圖|單張|carousel|thumbnail|poster", re.I)
 _cache: dict = {}
 
@@ -1337,6 +1351,8 @@ def spec_render(card: dict, V: dict) -> str:
                     code = d["寫法"]["程式動畫"]
                     mp = (" " + " ".join(d["對應"])) if d["對應"] else ""
                     out.append(f"  - {dim}＝{x}（{full[dim][1]}）：{code if code not in ('', '—') else d['定義']}｜參數 {d['參數']}{mp}")
+                    if dim in PRESENT_DIMS or d.get("完整做法") or d.get("呈現層"):
+                        out += present_lines(d, "    ")
         if r.get("hints"):
             out.append("  - 可考慮（調性建議，沒自動套用）：" + "；".join(f"{k}＝{'、'.join(v)}" for k, v in r["hints"].items()))
         frame += n
@@ -1464,7 +1480,9 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
     if medium == "圖片" and "鏡頭" in card:
         card["素材類型"] = "圖片"
     unit = C["單位"]
-    return {"medium": medium, "unit": unit, "card": card, "chosen": chosen, "hints": hints, "options": options, "warns": warns, "numbers": numbers, "effective": effective,
+    present = [(d, x, dims[d][x]) for d, pairs in chosen.items() for x, _ in pairs
+               if d in dims and x in dims[d] and (d in PRESENT_DIMS or dims[d][x].get("完整做法") or dims[d][x].get("呈現層"))]
+    return {"medium": medium, "unit": unit, "card": card, "chosen": chosen, "hints": hints, "options": options, "warns": warns, "numbers": numbers, "effective": effective, "present": present,
             "scenes": scenes, "tones": tones, "styles": styles, "kind": kind, "attrs": [v for _, v in attrs]}
 
 
@@ -1483,6 +1501,12 @@ def spec_from_text(need: str, R: dict) -> str:
     if R["effective"]:
         out += ["", "## 生效數值（製作和審查都照這些；場景＞風格＞語彙的通用範圍）", "", "| 參數 | 值 | 依據 | 其他層的說法 |", "|---|---|---|---|"]
         out += [f"| {k} | {v} | {src} | {'；'.join(alt) or '—'} |" for k, (v, src, alt) in R["effective"].items()]
+    if R.get("present"):
+        out += ["", "## 呈現層（主體設計、陪襯元素、環境反應、色彩變化、進出場與循環）", "",
+                "只照數值做出來會只有動作骨架；下面是每個值要一起做的畫面層次（有參照的照參照，沒寫的要自己補）。", ""]
+        for d, x, e in R["present"]:
+            ref = f"（參照 {' '.join(e['對應'])}）" if e.get("對應") else ""
+            out += [f"- {d}＝{x}{ref}"] + present_lines(e)
     crit = [(n, nums["判準"]) for n, nums, _ in R["numbers"] if nums.get("判準")]
     if crit:
         out += ["", "沒有單一數字的值，照這些判準：" + "；".join(f"{n}：{c}" for n, c in crit)]
@@ -2093,6 +2117,8 @@ def cmd_vocab(a) -> int:
             print("  數值：" + "、".join(f"{a} {b if not isinstance(b, list) else '／'.join(map(str, b))}" for a, b in x["數值"].items()))
         if x.get("易混淆"):
             print(f"  最容易混淆：{x['易混淆']}")
+        if x.get("完整做法") or x.get("呈現層"):
+            print("  呈現：" + "；".join(l.strip() for l in present_lines(x, "")))
     return 0
 
 
