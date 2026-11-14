@@ -591,6 +591,25 @@ def validate() -> list[str]:
             dim, val = side.split("=", 1)
             if val not in V["維度"].get(dim, {}):
                 errors.append(f"vocab.json 衝突：「{side}」不在語彙裡")
+    SB = storyboards()
+    if SB:
+        ids = [t["id"] for t in SB.get("模板", []) + SB.get("系列格式", [])]
+        if len(ids) != len(set(ids)):
+            errors.append("storyboards.json: duplicate template id")
+        for t in SB.get("模板", []):
+            if not re.fullmatch(r"SB-[A-Z]\d+", t["id"]):
+                errors.append(f"storyboards.json {t['id']}：模板 id 要像 SB-T1")
+            if t.get("形式") not in SB.get("形式", {}):
+                errors.append(f"storyboards.json {t['id']}：形式「{t.get('形式')}」不在 形式 裡")
+            if t.get("狀態") not in ("待試", "採用", "避開"):
+                errors.append(f"storyboards.json {t['id']}：狀態只能是 待試／採用／避開")
+            if not t.get("段落") or not t.get("審片要點") or not t.get("素材槽"):
+                errors.append(f"storyboards.json {t['id']}：要有段落、素材槽、審片要點")
+            if re.search(r"y ?(≤|<) ?78 ?%|y ?10–78 ?%", json.dumps(t, ensure_ascii=False)):
+                errors.append(f"storyboards.json {t['id']}：還在用舊安全區 y 10–78%，改照 S0-06")
+        for s in SB.get("系列格式", []):
+            if not re.fullmatch(r"SF-\d+", s["id"]) or not s.get("結構"):
+                errors.append(f"storyboards.json {s['id']}：系列格式 id 要像 SF-01，且要有結構")
     return errors
 
 
@@ -2177,6 +2196,128 @@ def cmd_probe(a) -> int:
     return subprocess.call([sys.executable, str(tool), *a.args])
 
 
+# ---------------------------------------------------------------- storyboard library (data/storyboards.json; production-playbook only)
+def storyboards() -> dict:
+    if "sb" not in _cache:
+        p = DATA / "storyboards.json"
+        _cache["sb"] = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+    return _cache["sb"]
+
+
+def sb_text(t: dict) -> str:
+    return t["名稱"] + " " + t["目的"] + " " + " ".join(s["段"] + s["版型"] for s in t["段落"])
+
+
+def sb_match(need: str, form: str | None = None, top: int = 3) -> dict:
+    """A need → the series format it belongs to (if any), the format it asks for, and the best templates with reasons."""
+    SB = storyboards()
+    low = need.lower()
+    series = [s for s in SB.get("系列格式", []) if s["系列"].lower() in low or any(k in low for k in s.get("觸發", []))]
+    hits = {f: [w for w in x["同義詞"] if w.lower() in low] for f, x in SB.get("形式", {}).items()}
+    forms = [form] if form else [f for f, w in sorted(hits.items(), key=lambda kv: -len(kv[1])) if w]
+    q, aud = grams(need), set(re.findall(r"S\d", need.upper()))
+    scored = []
+    for t in SB.get("模板", []):
+        if form and t["形式"] != form:
+            continue
+        why, s = [], len(q & grams(t["名稱"] + t["目的"])) * 1.0 + 0.15 * len(q & grams(sb_text(t)))
+        if forms and t["形式"] == forms[0]:
+            s += 4
+            why.append(f"形式＝{t['形式']}（{'、'.join(hits.get(t['形式'], [])) or '指定'}）")
+        elif forms and t["形式"] in forms:
+            s += 2
+            why.append(f"形式也符合 {t['形式']}")
+        a = aud & set(re.findall(r"S\d", t["目的"]))
+        if a:
+            s += 1.5
+            why.append("受眾 " + "、".join(sorted(a)))
+        common = sorted({w for w in re.findall(r"[一-鿿]{2,}|[a-z]{3,}", low) if w in (t["名稱"] + t["目的"]).lower()})
+        if common:
+            why.append("目的相近：" + "、".join(common[:4]))
+        scored.append((round(s, 2), t, why))
+    scored.sort(key=lambda x: -x[0])
+    return {"series": series, "forms": forms, "top": scored[:top]}
+
+
+def sb_find(tid: str) -> dict | None:
+    SB = storyboards()
+    return next((t for t in SB.get("模板", []) + SB.get("系列格式", []) if t["id"].upper() == tid.upper()), None)
+
+
+def sb_card(t: dict, full: bool = False) -> list[str]:
+    SB = storyboards()
+    if t["id"].startswith("SF-"):
+        out = [f"### {t['id']} 系列格式：{t['系列']}（{t['形式']}｜{t['狀態']}）", f"- 受眾：{t['受眾']}"]
+        out += [f"  {i}. {r['段']}｜{r['版型']}｜{r['秒數']} 秒" + (f"｜≤{r['字數上限']} 字" if r.get("字數上限") else "") + f"｜{r['規則']}"
+                for i, r in enumerate(t["結構"], 1)]
+        return out + [f"- 串場：{t['串場']}", f"- 動態：{t['動態']}", f"- 合規：{t['合規']}", f"- 元件：{t['元件']}", f"- 審片：`{t['審片']}`"]
+    out = [f"### {t['id']} {t['名稱']}（{t['形式']}｜{t['狀態']}）", f"- 目的：{t['目的']}", "- 段落："]
+    out += [f"  {i}. {s['段']}｜{s['秒數']}｜{s['版型']}" + (f"｜字數 {s['字數']}" if s.get("字數") else "") for i, s in enumerate(t["段落"], 1)]
+    if t.get("字數預算"):
+        out.append(f"- 字數預算：{t['字數預算']}")
+    out += [f"- 素材槽：{t['素材槽']}", f"- 審片要點：{'；'.join(t['審片要點'])}"]
+    if full:
+        F = SB["形式"][t["形式"]]
+        out += [f"- 這種形式的共用規則：{F['共用規則']}", "- 這種形式最常見的錯誤（參考範本量到的）："]
+        out += [f"  - {m['名稱']}：{m['說明']}" for m in F["手法"].get("常見錯誤", [])[:5]]
+        if t.get("手法來源"):
+            out.append(f"- 手法來源：{t['手法來源']}")
+    return out
+
+
+def cmd_storyboard(a) -> int:
+    """Need → series format or the 3 best storyboard templates (skeleton, word budget, asset slots, review points)."""
+    SB = storyboards()
+    if not SB:
+        sys.exit("這本手冊沒有分鏡智庫（data/storyboards.json 在 production-playbook）。")
+    if a.use:
+        t = sb_find(a.use)
+        if not t:
+            sys.exit(f"找不到 {a.use}；`pb.py storyboard --list` 看全部")
+        print("\n".join(sb_card(t, full=True)))
+        print(f"\n下一步：照段落寫腳本並控制字數 → 動態分鏡核准 → 算圖 → `pb.py qa 成品.mp4 --template {t['id']}`")
+        return 0
+    if a.list or not a.need:
+        for f, x in SB["形式"].items():
+            print(f"## {f}（深拆 {x['樣本']} 支）")
+            print("\n".join(f"- {t['id']} {t['名稱']}：{t['目的']}" for t in SB["模板"] if t["形式"] == f))
+        print("## 系列格式\n" + "\n".join(f"- {s['id']} {s['系列']}（{s['形式']}）" for s in SB["系列格式"]))
+        return 0
+    M = sb_match(a.need, a.form)
+    print(f"# 分鏡派發：{a.need}\n")
+    if M["series"]:
+        print("這是既有系列，先用系列格式（固定結構與元件，一期一期迭代）：\n")
+        for s in M["series"]:
+            print("\n".join(sb_card(s)) + "\n")
+    print(f"形式：{'、'.join(M['forms']) or '（需求沒寫形式，四種都排；寫上「純文字／照片／口播／輪播」會更準）'}\n")
+    for i, (s, t, why) in enumerate(M["top"], 1):
+        print(f"## 方案 {i}（分數 {s}）：{'；'.join(why) or '目的字面最接近'}")
+        print("\n".join(sb_card(t)) + "\n")
+    print(f"安全區：{SB['安全區']}")
+    print("看完整模板：`pb.py storyboard --use SB-xx`；做完審片：`pb.py qa 成品.mp4 --template SB-xx`")
+    return 0
+
+
+def cmd_qa(a) -> int:
+    """Measure a finished video against the storyboard norms (bin/video_qa.py), then list the template's own review points."""
+    tool = DATA.parent / "bin" / "video_qa.py"
+    if not tool.is_file():
+        sys.exit("這本手冊沒有成品審片工具（bin/video_qa.py 在 production-playbook）。")
+    t = sb_find(a.template) if a.template else None
+    if a.template and not t:
+        sys.exit(f"找不到模板 {a.template}")
+    args = [sys.executable, str(tool), a.video, "--platform", a.platform, "--out", a.out]
+    args += ["--card", a.card] if a.card else []
+    for r in a.require or []:
+        args += ["--require", r]
+    rc = subprocess.call(args)
+    if t:
+        pts = t.get("審片要點") or [t.get("審片", "")]
+        print(f"\n{t['id']} 的審片要點（逐項看畫面打勾）：")
+        print("\n".join(f"- [ ] {p}" for p in (pts if isinstance(pts, list) else [pts])))
+    return rc
+
+
 # ---------------------------------------------------------------- strategy → work orders (all books read <project>/.strategy/)
 BOOK_OF_MEDIUM = {"影片": "production-playbook", "圖片": "production-playbook", "網站": "web-playbook", "文案": "marketing-playbook", "程式": "engineering-playbook"}
 HORIZON = ("短期", "中期", "長期")
@@ -2536,6 +2677,10 @@ def blueprint_text(B: dict) -> str:
         for x in R["options"]:
             out.append(f"  - 要選：{x}")
         out.append("  - 完整規格：`pb.py spec --from \"<需求>\"" + (f" --work {B['work']['編號']}" if B.get("work") else "") + " --out 卡.json`，補內容後 `pb.py spec 卡.json`")
+    if storyboards():
+        M = sb_match(B["need"])
+        picks = [f"{s['id']} {s['系列']}（系列格式）" for s in M["series"]] + [f"{t['id']} {t['名稱']}" for _, t, _ in M["top"]]
+        out.append("- 分鏡模板（`pb.py storyboard`）：" + "、".join(picks) + "；選定後 `pb.py storyboard --use <id>` 取段落骨架、字數預算、素材槽，成品用 `pb.py qa` 審")
     if not plats and not R:
         out.append("- （這本沒有數值規格；交付物依推薦方案的第 0 階段定）")
     out.append("")
@@ -2756,6 +2901,20 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("probe", help="measure raw footage (footage) or break down a reference video (breakdown)")
     p.add_argument("args", nargs=argparse.REMAINDER)
     p.set_defaults(fn=cmd_probe)
+    p = sub.add_parser("storyboard", help="need → series format or storyboard templates (production-playbook)")
+    p.add_argument("need", nargs="?")
+    p.add_argument("--use", help="show one template or series format in full, e.g. SB-T1")
+    p.add_argument("--form", help="limit to one format: 文字動態, 照片故事, 口播訪談, 輪播圖卡")
+    p.add_argument("--list", action="store_true")
+    p.set_defaults(fn=cmd_storyboard)
+    p = sub.add_parser("qa", help="measure a finished video against the storyboard norms (production-playbook)")
+    p.add_argument("video")
+    p.add_argument("--template", help="add this template's review points, e.g. SB-T1 or SF-01")
+    p.add_argument("--card", help="beat lengths from a kit card.json")
+    p.add_argument("--platform", default="reels-tiktok", choices=["reels-tiktok", "shorts"])
+    p.add_argument("--require", action="append", help="a phrase that must appear on screen (repeatable)")
+    p.add_argument("--out", default="qa.json")
+    p.set_defaults(fn=cmd_qa)
     p = sub.add_parser("facets")
     p.add_argument("--suggest", help="guess the facets of a need from its words")
     p.add_argument("--audit", action="store_true", help="tag health: coverage, broad values, deaf values, unreachable items")
