@@ -1888,7 +1888,8 @@ def cmd_next_id(a) -> int:
 
 def cmd_run_log(a) -> int:
     ids = split(a.entries)
-    known = {r["id"] for r in entries()} | {t["id"] for t in tools()}
+    SB = storyboards()
+    known = {r["id"] for r in entries()} | {t["id"] for t in tools()} | {t["id"] for t in SB.get("模板", []) + SB.get("系列格式", [])}
     bad = [i for i in ids if i not in known]
     if bad:
         sys.exit(f"不認得這些代號：{bad}")
