@@ -603,8 +603,8 @@ def validate() -> list[str]:
                 errors.append(f"storyboards.json {t['id']}：形式「{t.get('形式')}」不在 形式 裡")
             if t.get("狀態") not in ("待試", "採用", "避開"):
                 errors.append(f"storyboards.json {t['id']}：狀態只能是 待試／採用／避開")
-            if not t.get("段落") or not t.get("審片要點") or not t.get("素材槽"):
-                errors.append(f"storyboards.json {t['id']}：要有段落、素材槽、審片要點")
+            if not t.get("段落") or not t.get("審片要點") or not t.get("素材槽") or not t.get("下方區塊"):
+                errors.append(f"storyboards.json {t['id']}：要有段落、素材槽、審片要點、下方區塊")
             if re.search(r"y ?(≤|<) ?78 ?%|y ?10–78 ?%", json.dumps(t, ensure_ascii=False)):
                 errors.append(f"storyboards.json {t['id']}：還在用舊安全區 y 10–78%，改照 S0-06")
         for s in SB.get("系列格式", []):
@@ -2256,6 +2256,8 @@ def sb_card(t: dict, full: bool = False) -> list[str]:
     out += [f"  {i}. {s['段']}｜{s['秒數']}｜{s['版型']}" + (f"｜字數 {s['字數']}" if s.get("字數") else "") for i, s in enumerate(t["段落"], 1)]
     if t.get("字數預算"):
         out.append(f"- 字數預算：{t['字數預算']}")
+    if t.get("下方區塊"):
+        out.append(f"- 下方區塊（安全區外，分鏡時就要排）：{t['下方區塊']}")
     out += [f"- 素材槽：{t['素材槽']}", f"- 審片要點：{'；'.join(t['審片要點'])}"]
     if full:
         F = SB["形式"][t["形式"]]
@@ -2295,6 +2297,8 @@ def cmd_storyboard(a) -> int:
         print(f"## 方案 {i}（分數 {s}）：{'；'.join(why) or '目的字面最接近'}")
         print("\n".join(sb_card(t)) + "\n")
     print(f"安全區：{SB['安全區']}")
+    if SB.get("版面分區"):
+        print(f"版面分區：{SB['版面分區']}")
     print("看完整模板：`pb.py storyboard --use SB-xx`；做完審片：`pb.py qa 成品.mp4 --template SB-xx`")
     return 0
 
