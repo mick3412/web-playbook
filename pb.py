@@ -2307,7 +2307,8 @@ def cmd_qa(a) -> int:
     t = sb_find(a.template) if a.template else None
     if a.template and not t:
         sys.exit(f"找不到模板 {a.template}")
-    args = [sys.executable, str(tool), a.video, "--platform", a.platform, "--out", a.out]
+    pages = len(a.video) > 1 or a.video[0].lower().endswith((".png", ".jpg", ".jpeg", ".webp"))
+    args = [sys.executable, str(tool), a.video[0], *(["--images", *a.video[1:]] if pages else []), "--platform", a.platform, "--out", a.out]
     args += ["--card", a.card] if a.card else []
     for r in a.require or []:
         args += ["--require", r]
@@ -2909,10 +2910,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--list", action="store_true")
     p.set_defaults(fn=cmd_storyboard)
     p = sub.add_parser("qa", help="measure a finished video against the storyboard norms (production-playbook)")
-    p.add_argument("video")
+    p.add_argument("video", nargs="+", help="a finished video, or every page image of a static carousel")
     p.add_argument("--template", help="add this template's review points, e.g. SB-T1 or SF-01")
     p.add_argument("--card", help="beat lengths from a kit card.json")
-    p.add_argument("--platform", default="reels-tiktok", choices=["reels-tiktok", "shorts"])
+    p.add_argument("--platform", default="reels-tiktok", choices=["reels-tiktok", "shorts", "feed"])
     p.add_argument("--require", action="append", help="a phrase that must appear on screen (repeatable)")
     p.add_argument("--out", default="qa.json")
     p.set_defaults(fn=cmd_qa)

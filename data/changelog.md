@@ -44,3 +44,4 @@
 - 2026-11-13 網站動效 8 個值補五層呈現建議（主體、陪襯、環境、色彩、進出場）；引擎：規格卡新增呈現層一節
 - 2026-11-14 引擎：新增 storyboard、qa 指令（只在有 data/storyboards.json、bin/video_qa.py 的手冊生效）；blueprint 會列分鏡模板；validate 檢查分鏡智庫
 - 2026-11-14 引擎：run-log 可記分鏡模板與系列格式代號（SB-、SF-）
+- 2026-11-14 引擎：pb.py qa 可收多張輪播頁圖片、新增 feed 安全區
