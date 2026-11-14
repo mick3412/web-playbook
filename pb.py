@@ -2913,7 +2913,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("video", nargs="+", help="a finished video, or every page image of a static carousel")
     p.add_argument("--template", help="add this template's review points, e.g. SB-T1 or SF-01")
     p.add_argument("--card", help="beat lengths from a kit card.json")
-    p.add_argument("--platform", default="reels-tiktok", choices=["reels-tiktok", "shorts", "feed"])
+    p.add_argument("--platform", default="reels-tiktok", choices=["reels-tiktok", "shorts", "feed", "story"])
     p.add_argument("--require", action="append", help="a phrase that must appear on screen (repeatable)")
     p.add_argument("--out", default="qa.json")
     p.set_defaults(fn=cmd_qa)

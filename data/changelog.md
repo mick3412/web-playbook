@@ -45,3 +45,4 @@
 - 2026-11-14 引擎：新增 storyboard、qa 指令（只在有 data/storyboards.json、bin/video_qa.py 的手冊生效）；blueprint 會列分鏡模板；validate 檢查分鏡智庫
 - 2026-11-14 引擎：run-log 可記分鏡模板與系列格式代號（SB-、SF-）
 - 2026-11-14 引擎：pb.py qa 可收多張輪播頁圖片、新增 feed 安全區
+- 2026-11-14 引擎：pb.py qa 新增 story 平台
