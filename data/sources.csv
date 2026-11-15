@@ -46,3 +46,5 @@
 "S70","nextlevelbuilder/ui-ux-pro-max-skill（MIT）資料檔：89 個帶 CSS 數值的風格、34 種頁面模式、120 條 UX 規範、字體配對與色板","https://github.com/nextlevelbuilder/ui-ux-pro-max-skill","2026-11-12","作者整理的經驗值，不是規範；風格與頁面模式拿來補子類"
 "S71","google-labs-code/design.md（Apache-2.0）DESIGN.md 段落格式，與 VoltAgent/awesome-design-md（MIT）範例","https://github.com/google-labs-code/design.md ；https://github.com/VoltAgent/awesome-design-md","2026-11-12","範例改了品牌名，只借結構，不抄品牌視覺"
 "S72","skills.sh 安裝排行截圖：agent-browser（vercel-labs，Apache-2.0）、design-mobile-apps（designed-by-ai/skills，MIT，背後呼叫付費服務 Sleek）","https://github.com/vercel-labs/agent-browser ；https://github.com/designed-by-ai/skills","2026-11-13","skills.sh 安裝排行截圖（負責人提供，2026-11-13）；安裝數以 npx skills find 查證"
+"S73","design360.pro 8pt 間距系統圖卡（IG 截圖）","（截圖，無網址）","2026-11-15","併進 S3-05 的間距細節"
+"S74","動畫服務指令截圖（/logo-animation、/micro-interactions、/website-hero、/explainer、/product-demo；來源未標）","（截圖，無網址）","2026-11-15","收成 S3-08 品牌動態元件組"
