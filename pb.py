@@ -2206,7 +2206,7 @@ def storyboards() -> dict:
 
 
 def sb_text(t: dict) -> str:
-    return t["名稱"] + " " + t["目的"] + " " + " ".join(s["段"] + s["版型"] for s in t["段落"])
+    return t["名稱"] + " " + t["目的"] + " " + " ".join(s["段"] + s.get("說明", "") + s["版型"] for s in t["段落"])
 
 
 def sb_match(need: str, form: str | None = None, top: int = 3) -> dict:
@@ -2253,11 +2253,13 @@ def sb_card(t: dict, full: bool = False) -> list[str]:
                 for i, r in enumerate(t["結構"], 1)]
         return out + [f"- 串場：{t['串場']}", f"- 動態：{t['動態']}", f"- 合規：{t['合規']}", f"- 元件：{t['元件']}", f"- 審片：`{t['審片']}`"]
     out = [f"### {t['id']} {t['名稱']}（{t['形式']}｜{t['狀態']}）", f"- 目的：{t['目的']}", "- 段落："]
-    out += [f"  {i}. {s['段']}｜{s['秒數']}｜{s['版型']}" + (f"｜字數 {s['字數']}" if s.get("字數") else "") for i, s in enumerate(t["段落"], 1)]
+    out += [f"  {i}. {s['段']}｜{s['秒數']}｜版型 `{s['版型']}`" + (f"（可換 {'、'.join(s['可替換'])}）" if s.get("可替換") else "")
+            + (f"｜{s['說明']}" if s.get("說明") else "") + (f"｜字數 {s['字數']}" if s.get("字數") else "") + (f"｜⚠ {s['缺版型']}" if s.get("缺版型") else "")
+            for i, s in enumerate(t["段落"], 1)]
     if t.get("字數預算"):
         out.append(f"- 字數預算：{t['字數預算']}")
     if t.get("下方區塊"):
-        out.append(f"- 下方區塊（安全區外，分鏡時就要排）：{t['下方區塊']}")
+        out.append(f"- 畫面層（滿版，不受安全區限制；每段的 visual 欄位）：{t['下方區塊']}")
     out += [f"- 素材槽：{t['素材槽']}", f"- 審片要點：{'；'.join(t['審片要點'])}"]
     if full:
         F = SB["形式"][t["形式"]]
@@ -2278,7 +2280,10 @@ def cmd_storyboard(a) -> int:
         if not t:
             sys.exit(f"找不到 {a.use}；`pb.py storyboard --list` 看全部")
         print("\n".join(sb_card(t, full=True)))
-        print(f"\n下一步：照段落寫腳本並控制字數 → 動態分鏡核准 → 算圖 → `pb.py qa 成品.mp4 --template {t['id']}`")
+        if a.emit:
+            Path(a.emit).write_text(json.dumps(sb_emit(t), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            print(f"\n已寫出卡片草稿：{a.emit}（每段是版型範例；改欄位值，不改 layout）。接著 `pb.py card-check {a.emit}`")
+        print(f"\n下一步：照段落寫腳本並控制字數 → `pb.py storyboard --use {t['id']} --emit card.json` → `pb.py card-check card.json` → 動態分鏡核准 → 算圖 → `pb.py qa 成品.mp4 --card card.json`")
         return 0
     if a.list or not a.need:
         for f, x in SB["形式"].items():
@@ -2299,8 +2304,127 @@ def cmd_storyboard(a) -> int:
     print(f"安全區：{SB['安全區']}")
     if SB.get("版面分區"):
         print(f"版面分區：{SB['版面分區']}")
-    print("看完整模板：`pb.py storyboard --use SB-xx`；做完審片：`pb.py qa 成品.mp4 --template SB-xx`")
+    print("看完整模板：`pb.py storyboard --use SB-xx`；出卡片草稿：`--use SB-xx --emit card.json`；驗證：`pb.py card-check card.json`；版型圖鑑：kits/storyboard/gallery/index.html")
     return 0
+
+
+# ---------------------------------------------------------------- layouts (kits/storyboard/layouts.json; production-playbook only)
+def layouts() -> dict:
+    if "lay" not in _cache:
+        p = ROOT / "kits" / "storyboard" / "layouts.json"
+        _cache["lay"] = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+    return _cache["lay"]
+
+
+def _secs(x: str, default: float) -> float:
+    nums = [float(n) for n in re.findall(r"\d+(?:\.\d+)?", str(x))]
+    if len(nums) >= 2 and "–" in str(x) and "每" not in str(x) and "各" not in str(x):
+        return round(nums[1] - nums[0], 2) or default
+    return nums[0] if nums else default
+
+
+def sb_emit(t: dict) -> dict:
+    """A card.json draft from a template: each segment becomes its layout's example beat, timed from the template."""
+    L = {x["id"]: x for x in layouts().get("版型", [])}
+    beats = []
+    for s in t.get("段落", []):
+        ex = dict(L[s["版型"]]["範例"]) if s.get("版型") in L else {"layout": s.get("版型", "statement"), "seconds": 3}
+        ex["seconds"] = _secs(s.get("秒數") or s.get("段", ""), ex.get("seconds", 3))
+        ex["_段"] = s["段"] + ("｜" + s["說明"] if s.get("說明") else "")
+        beats.append(ex)
+    tall = t["形式"] != "輪播圖卡"
+    return {"模板": t["id"], "width": 1080, "height": 1920 if tall else 1350, "platform": "reels-tiktok", "transition": "panel",
+            "brand": {"colors": {"primary": "#14213D", "background": "#F4EFE6", "accent": "#C9A227", "accent_ink": "#8A6D12"}, "fonts": {"heading": "IBM Plex Sans", "body": "IBM Plex Sans"}, "handle": "@brand"},
+            "beats": beats}
+
+
+def _chars(v) -> int:
+    if isinstance(v, list):
+        return max((_chars(x) for x in v), default=0)
+    return len(re.sub(r"&[a-z]+;", "x", re.sub(r"<[^>]+>", "", str(v))))
+
+
+def card_check(card: dict, template: dict | None = None) -> list[tuple[str, str, str]]:
+    """Validate a kit card against layouts.json: layout ids, required fields, limits, the visual layer, and the switching rules."""
+    LA = layouts()
+    L = {x["id"]: x for x in LA.get("版型", [])}
+    R = LA.get("換版規則", {})
+    out = []
+    beats = card.get("beats", [])
+    tall = card.get("height", 1920) == 1920
+    for i, b in enumerate(beats, 1):
+        lay = L.get(b.get("layout"))
+        if not lay:
+            out.append(("FAIL", f"第 {i} 段版型", f"沒有 `{b.get('layout')}`；可用：{'、'.join(L)}"))
+            continue
+        for f in lay["欄位"]:
+            name = f["欄位"]
+            if f["必填"] and name not in b:
+                out.append(("FAIL", f"第 {i} 段 {lay['id']}", f"缺必填欄位 `{name}`（{f['型別']}）"))
+            lim = str(f.get("上限", ""))
+            m = re.search(r"每行 ≤(\d+) 字元|≤(\d+) 字元", lim)
+            if name in b and m and not isinstance(b[name], dict) and not (isinstance(b[name], list) and b[name] and isinstance(b[name][0], dict)):
+                cap = int(m.group(1) or m.group(2))   # a limit on sub-fields (split.a.label, table.cols[].v) is not counted on the whole object
+                if _chars(b[name]) > cap:
+                    out.append(("WARN", f"第 {i} 段 {lay['id']}.{name}", f"{_chars(b[name])} 字元，上限 {cap}"))
+            m = re.search(r"≤(\d+) 行|≤(\d+) 條|(\d+)–(\d+) [條詞張個]|恰好 (\d+) 欄", lim)
+            if name in b and isinstance(b[name], list) and m:
+                hi = int(next(g for g in (m.group(1), m.group(2), m.group(4), m.group(5)) if g))
+                if len(b[name]) > hi:
+                    out.append(("WARN", f"第 {i} 段 {lay['id']}.{name}", f"{len(b[name])} 項，上限 {hi}"))
+        own = lay["群組"] in ("照片",) or (lay["id"] == "chart" and b.get("fill")) or lay.get("版面") == "1080×1350"
+        vis = b["visual"] if "visual" in b else card.get("visual")
+        if tall and not own and not vis:
+            out.append(("FAIL", f"第 {i} 段畫面層", f"`{lay['id']}` 沒有自帶畫面，要加 visual（{lay['畫面層']}）"))
+    ids = [b.get("layout") for b in beats if b.get("layout") in L]
+    dur = sum(float(b.get("seconds", 0) or 0) for b in beats)
+    if ids:
+        kinds = len({x for x in ids if L[x]["群組"] != "收尾"})   # the closing (CTA, required disclosure) is not a design choice: not counted
+        cap = R.get("種類上限", {}).get("≤30 秒" if dur <= 30 else ">30 秒", 99)
+        out.append(("FAIL" if kinds > cap else "PASS", "版型種類", f"{kinds} 種，不含收尾（{dur:.0f} 秒，上限 {cap}）"))
+        run, best, prev = 0, 0, None
+        for x in ids:
+            run = run + 1 if x == prev else 1
+            best, prev = max(best, run), x
+        photo = template and template.get("形式") == "照片故事"
+        rcap = R.get("同版型連用上限（照片故事）" if photo else "同版型連用上限", 99)
+        out.append(("WARN" if best > rcap else "PASS", "同版型連用", f"最長 {best} 段（上限 {rcap}）"))
+        body = [L[x] for x in ids[1:] if L[x]["群組"] != "收尾"]   # the opening may differ (measured: ~40 % change the amount of text there)
+        dens = {x["字量"] for x in body if x.get("字量")}
+        out.append(("WARN" if len(dens) > 1 else "PASS", "字量固定", "、".join(sorted(dens)) + ("：整支片維持一種字量，用排法變化" if len(dens) > 1 else "")))
+    if template:
+        want = [s["版型"] for s in template.get("段落", [])]
+        allowed = [{s["版型"], *s.get("可替換", [])} for s in template.get("段落", [])]
+        j = 0
+        for i, x in enumerate(ids, 1):   # beats may repeat a segment (每點 ×N); walk forward through the template
+            if L[x]["群組"] == "收尾" and all(L[y]["群組"] == "收尾" for y in ids[i - 1:]):
+                continue                  # a closing CTA or required disclosure may always end the piece
+            while j < len(allowed) and x not in allowed[j] and j + 1 < len(allowed) and x in allowed[j + 1]:
+                j += 1
+            if j < len(allowed) and x not in allowed[j]:
+                k = next((k for k in range(j, len(allowed)) if x in allowed[k]), None)
+                if k is None:
+                    out.append(("FAIL", f"第 {i} 段對模板", f"`{x}` 不在 {template['id']} 的版型或可替換清單（這一段應是 {'／'.join(sorted(allowed[j]))}）"))
+                    continue
+                j = k
+        out.append(("PASS", "模板", f"{template['id']}：{' → '.join(want)}"))
+    return out
+
+
+def cmd_card_check(a) -> int:
+    """Validate a storyboard card before rendering (layout ids, required fields, limits, visual layer, switching rules)."""
+    if not layouts():
+        sys.exit("這本手冊沒有版型圖鑑（kits/storyboard/layouts.json 在 production-playbook）。")
+    card = json.loads(Path(a.card).read_text(encoding="utf-8"))
+    t = sb_find(a.template or card.get("模板", "")) if (a.template or card.get("模板")) else None
+    rows = card_check(card, t)
+    worst = "FAIL" if any(r[0] == "FAIL" for r in rows) else "WARN" if any(r[0] == "WARN" for r in rows) else "PASS"
+    print(f"總評 {worst}｜{a.card}（{len(card.get('beats', []))} 段）")
+    for lv, k, msg in rows:
+        print(f"  {lv:4}  {k}：{msg}")
+    if worst == "FAIL":
+        print("不過就不算圖：照訊息改 card.json 的欄位（不要改套件或座標）；版型欄位見 kits/storyboard/layouts.json")
+    return 1 if worst == "FAIL" else 0
 
 
 def cmd_qa(a) -> int:
@@ -2912,7 +3036,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--use", help="show one template or series format in full, e.g. SB-T1")
     p.add_argument("--form", help="limit to one format: 文字動態, 照片故事, 口播訪談, 輪播圖卡")
     p.add_argument("--list", action="store_true")
+    p.add_argument("--emit", help="with --use: write a card.json draft built from the layouts' examples")
     p.set_defaults(fn=cmd_storyboard)
+    p = sub.add_parser("card-check", help="validate a kit card against the layout catalogue before rendering (production-playbook)")
+    p.add_argument("card")
+    p.add_argument("--template", help="also check the beats follow this template's layouts, e.g. SB-T10")
+    p.set_defaults(fn=cmd_card_check)
     p = sub.add_parser("qa", help="measure a finished video against the storyboard norms (production-playbook)")
     p.add_argument("video", nargs="+", help="a finished video, or every page image of a static carousel")
     p.add_argument("--template", help="add this template's review points, e.g. SB-T1 or SF-01")

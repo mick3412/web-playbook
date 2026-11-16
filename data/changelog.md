@@ -51,3 +51,4 @@
 - 2026-11-16 新增 S0-02（採用）：會花錢的步驟先顯示價格與上限，等人同意才執行；第 0 階段步驟補同一句
 - 2026-11-16 收錄技能排行截圖（S75）：新增 T-51 Anatomy（待試）
 - 2026-11-16 Logo 流程併入配方 R-05：S2-06 Logo 五步、S2-07 免費版不可商用與範本不可註冊；工具 T-52 Recraft、T-53 Hatchful、T-54 Namecheap Logo Maker、T-55 Design.com（後三者待查）、T-56 Inkscape、T-57 Penpot、T-58 Coolors；分面 工作項目=Logo；2.2 加做法
+- 2026-11-16 引擎：storyboard --emit 出卡片草稿、card-check 驗證版型卡（影片手冊用）
