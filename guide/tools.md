@@ -14,7 +14,14 @@
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待試 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
 | [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)（T-37） | 待試 | 免費 | MIT（寬鬆） | 選配色、字型、版型方向時 |
+| [Recraft](https://www.recraft.ai)（T-52） | 待試 | 部分付費 | 服務條款（特殊） | 發想 logo 方向、想要直接出向量草圖時 |
+| [Inkscape](https://inkscape.org)（T-56） | 待試 | 免費 | GPL-2.0+（寬鬆） | 把點陣草圖描成向量、調細節、輸出正式檔時 |
+| [Penpot](https://penpot.app)（T-57） | 待試 | 免費 | MPL-2.0（寬鬆） | 排 logo 使用規範、品牌規範頁時 |
+| [Coolors](https://coolors.co)（T-58） | 待試 | 部分付費 | 服務條款（未標） | 定品牌配色時 |
 | [design-mobile-apps（Sleek）](https://github.com/designed-by-ai/skills)（T-50） | 待查 | 不明 | MIT（技能）（特殊） | 要快速出手機 App 畫面草稿時；技能本身 MIT，但實際呼叫付費服務 Sleek，要帳號和 API 金鑰 |
+| [Shopify Hatchful](https://www.shopify.com/tools/logo-maker)（T-53） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
+| [Namecheap Logo Maker](https://www.namecheap.com/logo-maker/)（T-54） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
+| [Design.com](https://www.design.com)（T-55） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
 | [設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells）](https://scrolltide.co/)（T-18） | 未採用 | 免費 | 網站內容各自所有（未標） | 找特定元件或細節的參考時。已併入 T-15 |
 | [figmaformotion](https://figmaformotion.com/v2)（T-21） | 未採用 | 付費 | 付費授權（未標） | — |
 
