@@ -2460,6 +2460,87 @@ def cmd_card_check(a) -> int:
     return 1 if worst == "FAIL" else 0
 
 
+def _keyframes(video: str, card: dict | None, out: Path) -> list[tuple[str, str]]:
+    """Frames a reviewer must see: the hook at 0.6 s and 1.5 s, then each beat just before it changes (fully entered)."""
+    marks = [(0.6, "開場 0.6 秒"), (1.5, "開場 1.5 秒")]
+    if card:
+        t = 0.0
+        for i, b in enumerate(card.get("beats", []), 1):
+            t += float(b.get("seconds", 3) or 3)
+            marks.append((max(0.1, t - 0.35), f"第 {i} 段（{b.get('layout', '?')}）結束前"))
+    else:
+        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video], capture_output=True, text=True).stdout.strip() or 0)
+        marks += [(dur * k / 8, f"{k}/8") for k in range(1, 8)]
+    got = []
+    for n, (sec, label) in enumerate(marks, 1):
+        f = out / f"f{n:02d}.png"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{sec:.2f}", "-i", video, "-frames:v", "1", str(f)])
+        if f.is_file():
+            got.append((f.name, f"{label}，{sec:.1f} 秒"))
+    if got:
+        cols = 4
+        rows = -(-len(got) // cols)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", "1", "-i", str(out / "f%02d.png"), "-vf", f"scale=360:-1,tile={cols}x{rows}:padding=8:color=white",
+                        "-frames:v", "1", str(out / "contact_sheet.jpg")])
+    return got
+
+
+def cmd_review_pack(a) -> int:
+    """One command for an agent review round: machine checks first, then key frames and a brief a fresh reviewer agent works from."""
+    path = DATA / "review_checklists.json"
+    if not path.is_file():
+        sys.exit("這本手冊沒有送審審查表（data/review_checklists.json 在 production-playbook）。")
+    R = json.loads(path.read_text(encoding="utf-8"))
+    S, rnd = R[a.stage], str(a.round)
+    out = Path(a.out or (Path(a.card).parent if a.card else Path(".")) / "review")
+    out.mkdir(parents=True, exist_ok=True)
+    card = json.loads(Path(a.card).read_text(encoding="utf-8")) if a.card else None
+    if card and layouts():
+        rows = card_check(card, sb_find(card["模板"]) if card.get("模板") else None)
+        if any(r[0] == "FAIL" for r in rows):
+            print("card-check 有 FAIL，先修好再送審（不浪費審查）：")
+            for lv, k, msg in rows:
+                if lv == "FAIL":
+                    print(f"  FAIL  {k}：{msg}")
+            return 1
+    rd = out / f"round{rnd}"
+    rd.mkdir(exist_ok=True)
+    looks = []
+    if a.video:
+        frames = _keyframes(a.video, card, rd)
+        looks.append(f"- 動態分鏡影片：`{Path(a.video).resolve()}`（看節奏與轉場；需要時自己抽格）")
+        if (rd / "contact_sheet.jpg").is_file():
+            looks.append(f"- 定格拼圖：`{(rd / 'contact_sheet.jpg').resolve()}`（由左到右、由上到下）：" + "；".join(f"{i}. {lab}" for i, (_, lab) in enumerate(frames, 1)))
+        looks += [f"- `{(rd / n).resolve()}`：{lab}" for n, lab in frames]
+    for im in a.stills or []:
+        looks.append(f"- 定格：`{Path(im).resolve()}`")
+    if card:
+        looks.append(f"- 卡片：`{Path(a.card).resolve()}`（每段的版型、文字、秒數、motion；欄位說明在 kits/storyboard/layouts.json）")
+    if not looks:
+        sys.exit("沒有東西可審：給 --video（動態分鏡）或 --stills（定格圖）")
+    prev = ""
+    if rnd == "2":
+        if not a.prev or not Path(a.prev).is_file():
+            sys.exit("第二輪要附第一輪報告：--prev review/round1_report.md")
+        prev = "\n## 第一輪報告（逐條核對改了沒有）\n\n" + Path(a.prev).read_text(encoding="utf-8")
+    report = (out / f"round{rnd}_report.md").resolve()
+    brief = "\n".join([
+        f"# 審查包：{S['名稱']}，第 {rnd} 輪", "",
+        "你是沒參與製作的獨立審查員。只用這份審查包和下面列的檔案判斷。", "",
+        f"## 需求\n\n{a.brief or '（未提供；只依畫面判斷）'}", "",
+        "## 要看的東西", "", *looks, "",
+        f"## 這一輪看什麼（角度：{S[rnd]['角度']}）", "", *[f"{i}. {x}" for i, x in enumerate(S[rnd]["看"], 1)], "",
+        "## 嚴重度", "", *[f"- {k}：{v}" for k, v in R["嚴重度"].items()], "",
+        f"## 報告格式\n\n{R['報告格式']}", "",
+        f"報告寫到：`{report}`", prev])
+    bp = out / f"round{rnd}_brief.md"
+    bp.write_text(brief + "\n", encoding="utf-8")
+    print(f"已寫出審查包：{bp}")
+    print(f"下一步：派一個新的 video-reviewer 子代理（不要沿用上一輪的），任務說明只寫：「讀 {bp.resolve()} 照做」。")
+    print("它寫完報告後：改作品 → " + ("`pb.py review-pack ... --round 2 --prev " + str(report) + "`（換另一個新代理）" if rnd == "1" else "兩份報告附給負責人核准；第二輪後仍未解決的由負責人決定，不再開第三輪"))
+    return 0
+
+
 def cmd_qa(a) -> int:
     """Measure a finished video against the storyboard norms (bin/video_qa.py), then list the template's own review points."""
     tool = DATA.parent / "bin" / "video_qa.py"
@@ -3075,6 +3156,16 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("card")
     p.add_argument("--template", help="also check the beats follow this template's layouts, e.g. SB-T10")
     p.set_defaults(fn=cmd_card_check)
+    p = sub.add_parser("review-pack", help="build one agent review round for a storyboard or design submission (production-playbook)")
+    p.add_argument("--stage", choices=["storyboard", "design"], default="storyboard")
+    p.add_argument("--round", type=int, choices=[1, 2], default=1)
+    p.add_argument("--card", help="the kit card.json (card-check runs first)")
+    p.add_argument("--video", help="the animatic or draft video")
+    p.add_argument("--stills", nargs="+", help="style frames for a design submission")
+    p.add_argument("--brief", help="the request in one or two sentences")
+    p.add_argument("--prev", help="round 1 report (required for round 2)")
+    p.add_argument("--out", help="folder for the pack (default: review/ next to the card)")
+    p.set_defaults(fn=cmd_review_pack)
     p = sub.add_parser("qa", help="measure a finished video against the storyboard norms (production-playbook)")
     p.add_argument("video", nargs="+", help="a finished video, or every page image of a static carousel")
     p.add_argument("--template", help="add this template's review points, e.g. SB-T1 or SF-01")

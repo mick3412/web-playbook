@@ -53,3 +53,4 @@
 - 2026-11-16 Logo 流程併入配方 R-05：S2-06 Logo 五步、S2-07 免費版不可商用與範本不可註冊；工具 T-52 Recraft、T-53 Hatchful、T-54 Namecheap Logo Maker、T-55 Design.com（後三者待查）、T-56 Inkscape、T-57 Penpot、T-58 Coolors；分面 工作項目=Logo；2.2 加做法
 - 2026-11-16 引擎：storyboard --emit 出卡片草稿、card-check 驗證版型卡（影片手冊用）
 - 2026-11-17 pb.py 同步：card-check 檢查分鏡卡片的動態設定（motion 預設與數值範圍）
+- 2026-11-17 pb.py 同步：review-pack（影片送審的 agent 兩輪審查包）
