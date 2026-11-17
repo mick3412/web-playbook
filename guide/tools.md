@@ -19,7 +19,7 @@
 | [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery、Httpster、Mobbin）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時。原 T-18 的靈感網站清單已併入這裡 |
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待試 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
-| [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)（T-37） | 待試 | 免費 | MIT（寬鬆） | 選配色、字型、版型方向時 |
+| [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)（T-37） | 待試 | 免費 | MIT（寬鬆） | 查 UX 規則（--domain ux）與交付前檢查清單時。2026-11-17 實測：--design-system 給的風格方向不貼產業（金融服務給了 Liquid Glass），定方向交給 taste-skill |
 | [Recraft](https://www.recraft.ai)（T-52） | 待試 | 部分付費 | 服務條款（特殊） | 發想 logo 方向、想要直接出向量草圖時 |
 | [Inkscape](https://inkscape.org)（T-56） | 待試 | 免費 | GPL-2.0+（寬鬆） | 把點陣草圖描成向量、調細節、輸出正式檔時 |
 | [Penpot](https://penpot.app)（T-57） | 待試 | 免費 | MPL-2.0（寬鬆） | 排 logo 使用規範、品牌規範頁時 |
@@ -47,6 +47,7 @@
 |---|---|---|---|---|
 | [Three.js](https://github.com/mrdoob/three.js)（T-10） | 已整合 | 免費 | MIT（寬鬆） | 頁面真的需要 3D 時 |
 | [GSAP](https://github.com/greensock/GSAP)（T-11） | 已整合 | 免費 | GSAP Standard No Charge License（不是開源授權）（特殊） | 網頁動效需要時間軸、捲動觸發、文字拆分時 |
+| [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 已整合 | 免費 | Apache-2.0（寬鬆） | 上線前或改版後自動掃 AI 感與品質問題（npx impeccable detect <網址或資料夾>，62 條規則、不用 API 金鑰）；也有一組設計指令（polish、critique、audit） |
 | [Taste Skill（design-taste-frontend）](https://github.com/Leonxlnx/taste-skill)（T-12） | 已安裝 | 免費 | MIT（寬鬆） | 要避免 AI 味的版面和視覺時 |
 | [unslop](https://github.com/heydamir/unslop)（T-29） | 已安裝 | 免費 | CC BY 4.0（須標註作者）（寬鬆） | 畫面一看就是 AI 做的、要改版或上線前審查視覺時 |
 | [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 已安裝 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
@@ -54,7 +55,6 @@
 | [WebGL 特效（ShaderGradient、Liquid Logo、Liquid Glass JS、React Three Fiber）](https://cindyzhu.com.au/guides/4-github-design-repos)（T-20） | 待試 | 免費 | R3F、Liquid Glass JS 為 MIT；ShaderGradient 未標；Liquid Logo 自訂（特殊） | 首屏需要一個動態重點時 |
 | [Hallmark](https://github.com/Nutlope/hallmark)（T-22） | 待試 | 免費 | MIT（圖庫照片各有 CC0／公有領域／CC BY／CC BY-SA，使用時要標註）（寬鬆） | 建新頁、改版既有頁、或只想檢查 AI 感時 |
 | [PulsoIcon](https://github.com/CityPulso/PulsoIcon)（T-26） | 待試 | 免費 | ISC（部分圖示沿用 Lucide、Tabler 等原授權；品牌 logo 是各品牌商標）（寬鬆） | 按鈕、連結、分頁要有輕微的滑過動態圖示時 |
-| [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 待試 | 免費 | Apache-2.0（寬鬆） | 要給 agent 一組固定的設計指令（polish、bolder、critique、audit、抓 AI 感）時 |
 | [Motion（原 Framer Motion）](https://motion.dev)（T-40） | 待試 | 免費 | MIT（寬鬆） | CSS 做不到的動效：拖曳、版面切換、跟著捲動的複雜效果 |
 | [動畫元件庫（Motion Primitives、Magic UI、Uiverse）](https://motion-primitives.com)（T-41） | 待試 | 免費 | MIT（寬鬆） | 想找現成的動畫元件或小互動（按鈕、載入、切換）時 |
 | [Anime.js](https://animejs.com)（T-42） | 待試 | 免費 | MIT（寬鬆） | 不用 React、要輕量的時間軸動畫時 |
@@ -89,10 +89,11 @@
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
 | [Web Design Guidelines（Vercel）](https://github.com/vercel-labs/agent-skills)（T-13） | 已安裝 | 免費 | 未標（未標） | 審查介面是否符合規範時 |
-| [Playwright CLI（Microsoft）](https://github.com/microsoft/playwright-cli)（T-07） | 待試 | 免費 | Apache-2.0（寬鬆） | 要批次截圖、查選擇器、錄測試時 |
+| [Playwright CLI（Microsoft）](https://github.com/microsoft/playwright-cli)（T-07） | 待試 | 免費 | Apache-2.0（寬鬆） | 要批次截圖、查選擇器、錄測試時（Puppeteer 是同類工具，不另收） |
 | [agency-agents（網站挑 3 個）](https://github.com/msitarzewski/agency-agents)（T-28） | 待試 | 免費 | MIT（寬鬆） | 上線前要獨立審查：通用感、無障礙、受眾模擬 |
 | [agent-browser（Vercel Labs）](https://github.com/vercel-labs/agent-browser)（T-49） | 待試 | 免費 | Apache-2.0（寬鬆） | 要讓 agent 實際開頁面、填表單、多寬度截圖檢查時；和 Playwright CLI（T-07）比 |
 | [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)（T-67） | 待試 | 免費 | 服務條款（未標） | 檢查文字與背景的對比是否達 WCAG AA／AAA 時 |
+| [axe-core（Deque）](https://github.com/dequelabs/axe-core)（T-79） | 待試 | 免費 | MPL-2.0（寬鬆） | 上線前自動檢查無障礙問題時（可接 Playwright 每次跑） |
 | [uSpec（create-voice）](https://github.com/redongreen/uSpec)（T-75） | 待查 | 不明 | 未查（未標） | 交接前要寫螢幕閱讀器規格時 |
 
 ## 6 SEO 與 AI 搜尋
@@ -106,6 +107,13 @@
 | [All-In-One Free SEO Tool](https://github.com/IamRamgarhia/All-In-One-Free-SEO-Tool)（T-25） | 未採用 | 免費 | MIT（寬鬆） | 要免費做關鍵字研究、關鍵字缺口、競品比較、AI 能見度、在地 SEO 時。W5 比較：保留 T-35 geo-seo-claude（主用）與 T-23 Claude SEO（範圍廣） |
 | [NotFair Plugin（原 TopRank）](https://github.com/nowork-studio/notfair-plugin)（T-47） | 未採用 | 免費 | MIT（寬鬆） | 做 SEO、GEO 健檢與內容時。W5 比較：保留 T-35 geo-seo-claude（主用）與 T-23 Claude SEO（範圍廣） |
 | [OpenSEO](https://github.com/every-app/open-seo)（T-02） | 避開 | 付費 | MIT（寬鬆） | 開源版的 Semrush／Ahrefs：關鍵字研究、排名追蹤、反向連結、網站健檢 |
+
+## 7 上線
+
+| 工具 | 狀態 | 費用 | 授權 | 何時用 |
+|---|---|---|---|---|
+| [Vercel](https://vercel.com)（T-77） | 待試 | 部分付費 | 服務條款（未標） | 部署 Next.js 等前端並產生預覽網址時。商業網站不能用免費 Hobby 方案（見陷阱條目） |
+| [Sentry](https://sentry.io)（T-78） | 待試 | 部分付費 | FSL（程式碼）／服務條款（特殊） | 網站上線後要知道使用者遇到什麼錯誤時 |
 
 ## 8 量測與迭代
 
