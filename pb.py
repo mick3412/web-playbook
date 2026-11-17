@@ -2366,6 +2366,14 @@ def cmd_spec(a) -> int:
     return 1 if text.startswith("規格卡有錯") or worst_fail else 0
 
 
+def cmd_direction(a) -> int:
+    """Direction alignment before any storyboard: this-or-that pairs, a reference wall, three sample renders → 方向卡."""
+    tool = DATA.parent / "bin" / "direction.py"
+    if not tool.is_file():
+        sys.exit("這本手冊沒有方向對齊工具（bin/direction.py 在 production-playbook）。")
+    return subprocess.call([sys.executable, str(tool), *a.rest])
+
+
 def cmd_prompt_check(a) -> int:
     """Check a prompt against the skeleton: a card's 提示詞 (section by section) or free text (keywords only)."""
     if not skeleton("圖片"):
@@ -2483,8 +2491,14 @@ def cmd_storyboard(a) -> int:
         if not t:
             sys.exit(f"找不到 {a.use}；`pb.py storyboard --list` 看全部")
         print("\n".join(sb_card(t, full=True)))
+        refs = sb_refs(t)
+        if refs:
+            print("\n真實例子（參考片，只供內部參考）：" + "、".join(f"{k}（總覽 {v}）" if v else k for k, v in refs))
         if a.emit:
-            Path(a.emit).write_text(json.dumps(sb_emit(t), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            card = sb_emit(t)
+            if a.direction:
+                card = apply_direction(card, json.loads(Path(a.direction).expanduser().read_text(encoding="utf-8")), a.direction)
+            Path(a.emit).write_text(json.dumps(card, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
             print(f"\n已寫出卡片草稿：{a.emit}（每段是版型範例；改欄位值，不改 layout）。接著 `pb.py card-check {a.emit}`")
         print(f"\n下一步：照段落寫腳本並控制字數 → `pb.py storyboard --use {t['id']} --emit card.json` → `pb.py card-check card.json` → 動態分鏡核准 → 算圖 → `pb.py qa 成品.mp4 --card card.json`")
         return 0
@@ -2524,6 +2538,32 @@ def _secs(x: str, default: float) -> float:
     if len(nums) >= 2 and "–" in str(x) and "每" not in str(x) and "各" not in str(x):
         return round(nums[1] - nums[0], 2) or default
     return nums[0] if nums else default
+
+
+def sb_refs(t: dict) -> list[tuple[str, str]]:
+    """The template's 手法來源 slugs that are real reference videos (exact key match in the reference corpus; never guessed)."""
+    ref = Path(os.environ.get("PB_REF_DIR") or os.path.expanduser("~/Dev Projects/playbook-bench/production/flexclip"))
+    if not (ref / "video").is_dir():
+        return []
+    slugs = re.split(r"[、,，\s]+", str(t.get("手法來源", "")))
+    return [(k, str(ref / "sheets" / f"{k}.jpg") if (ref / "sheets" / f"{k}.jpg").is_file() else "") for k in dict.fromkeys(slugs) if k and (ref / "video" / f"{k}.mp4").is_file()]
+
+
+def apply_direction(card: dict, d: dict, src: str) -> dict:
+    """A 方向卡 (pb.py direction choose) sets what the owner agreed on: motion, colours, light or dark; layouts outside its groups are flagged."""
+    card["motion"] = d.get("motion", card.get("motion"))
+    card.setdefault("brand", {})["colors"] = d.get("色盤", card.get("brand", {}).get("colors"))
+    card["方向卡"] = src
+    tone = d.get("tone")
+    for i, b in enumerate(card.get("beats", [])):
+        if tone:
+            b.setdefault("tone", tone if i % 2 == 0 else ("dark" if tone == "light" else "light"))
+    L = {x["id"]: x for x in layouts().get("版型", [])}
+    groups = set(d.get("版型群組", [])) | {"收尾"}
+    off = [b["layout"] for b in card.get("beats", []) if b.get("layout") in L and L[b["layout"]]["群組"] not in groups]
+    if off and groups - {"收尾"}:
+        print(f"注意：方向卡偏好 {'、'.join(sorted(groups - {'收尾'}))} 類版型；這個模板有 {'、'.join(dict.fromkeys(off))}，看「可替換」清單能不能換")
+    return card
 
 
 def sb_emit(t: dict) -> dict:
@@ -3336,6 +3376,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--from", dest="need", help="draft a spec card from a need: scene, tone and style presets with their numbers")
     p.add_argument("--work", help="a work order from `strategy --works` (W01 or a path)")
     p.set_defaults(fn=cmd_spec)
+    p = sub.add_parser("direction", help="direction alignment: pairs, reference wall, three samples → 方向卡 (production-playbook)", add_help=False)
+    p.add_argument("rest", nargs=argparse.REMAINDER)
+    p.set_defaults(fn=cmd_direction)
     p = sub.add_parser("prompt-check", help="check an image or video prompt against the skeleton (production-playbook)")
     p.add_argument("prompt", help="a card.json (its 提示詞), a text file, or the prompt itself")
     p.add_argument("--media", choices=["圖片", "影片"])
@@ -3358,6 +3401,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--form", help="limit to one format: 文字動態, 照片故事, 口播訪談, 輪播圖卡")
     p.add_argument("--list", action="store_true")
     p.add_argument("--emit", help="with --use: write a card.json draft built from the layouts' examples")
+    p.add_argument("--direction", help="with --emit: a 方向卡 (direction.json) sets motion, colours and light or dark")
     p.set_defaults(fn=cmd_storyboard)
     p = sub.add_parser("card-check", help="validate a kit card against the layout catalogue before rendering (production-playbook)")
     p.add_argument("card")
