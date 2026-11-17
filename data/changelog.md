@@ -54,3 +54,4 @@
 - 2026-11-16 引擎：storyboard --emit 出卡片草稿、card-check 驗證版型卡（影片手冊用）
 - 2026-11-17 pb.py 同步：card-check 檢查分鏡卡片的動態設定（motion 預設與數值範圍）
 - 2026-11-17 pb.py 同步：review-pack（影片送審的 agent 兩輪審查包）
+- 2026-11-17 pb.py 同步：prompt-check、spec 的圖片模式與比例分區解析（網站 spec 輸出不變）

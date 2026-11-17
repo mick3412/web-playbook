@@ -1311,6 +1311,29 @@ def spec_render_generic(card: dict, V: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+def prompt_section(P: dict, medium: str, title: str) -> list[str]:
+    text, neg = prompt_assemble(P, medium)
+    rows = prompt_check(P, medium)
+    worst = "FAIL" if any(r[0] == "FAIL" for r in rows) else "WARN" if any(r[0] == "WARN" for r in rows) else "PASS"
+    out = [f"## {title}", "", f"prompt-check：{worst}"] + [f"- {lv} {k}：{m}" for lv, k, m in rows if lv != "PASS"] + [""]
+    out += ["```text", text or "（還沒寫）", "```", "", f"避免（有負面提示詞欄位就放這裡，沒有就改寫成正面限制併進上面）：{neg or '—'}", ""]
+    return out
+
+
+def spec_render_image(card: dict) -> str:
+    """An image card: the skeleton prompt, its check, and what to compare the result against."""
+    P = card.get("提示詞", {})
+    out = [f"# 規格：{card.get('片名', '未命名')}", "", f"素材類型 圖片｜畫幅 {card.get('畫幅', '待補')}" + (f"｜版面 {'；'.join(card['版面'])}" if card.get("版面") else "")
+           + f"｜調性 {card.get('調性') or '—'}", ""]
+    out += prompt_section(P, "圖片", "一、生圖提示詞（骨架順序：任務 → 畫幅 → 主體 → 轉化 → 風格 → 張力 → 構圖 → 光線 → 色彩 → 材質 → 文字 → 目標）")
+    if card.get("數值"):
+        out += ["## 二、生效數值（審圖時對照）", ""] + [f"- {k}：{'／'.join(map(str, v)) if isinstance(v, list) else v}" for k, v in card["數值"].items()] + [""]
+    out += ["## 三、審圖對照", "", "| 段 | 怎麼檢查 |", "|---|---|"]
+    out += [f"| {x['名稱']} | 對照提示詞這一段，成品看得到才算 |" for x in skeleton("圖片") if str(P.get(x["id"], "")).strip() and not str(P.get(x["id"], "")).startswith("待補")]
+    out += ["", "同一份提示詞至少出 4 張（不同 seed）再挑；4 張差很多代表提示詞還有沒寫清楚的段。"]
+    return "\n".join(out) + "\n"
+
+
 def spec_render(card: dict, V: dict) -> str:
     dims = V["維度"]
     fps = float(card.get("格率", 30))
@@ -1319,6 +1342,8 @@ def spec_render(card: dict, V: dict) -> str:
         return "規格卡有錯，先修正：\n" + "\n".join(f"- {e}" for e in errors) + "\n"
     if V.get("規格卡"):
         return spec_render_generic(card, V)
+    if card.get("素材類型") == "圖片" and not card.get("鏡頭"):
+        return spec_render_image(card)
     rows = spec_fill(card, V)
     kinds = sorted({r["kind"] for r in rows if r["kind"]})
     out = [f"# 規格：{card.get('片名', '未命名')}", "",
@@ -1328,6 +1353,8 @@ def spec_render(card: dict, V: dict) -> str:
     out += [f"警告：{w}" for w in warns] + ([""] if warns else [])
     def en(dim, vals):
         return [dims[dim][x]["寫法"]["AI 生成"] if dims[dim][x]["寫法"]["AI 生成"] not in ("", "—") else dims[dim][x]["英文"] for x in vals]
+    if card.get("提示詞"):
+        out += prompt_section(card["提示詞"], "影片", "全片提示詞底稿（每一鏡加上下面該鏡的景別、運鏡與動作）")
     out += ["## 一、AI 生成提示詞（英文，固定順序：景別→視角→運鏡→鏡頭→主體→構圖→布光→色彩→質感→氛圍）", ""]
     for r in rows:
         s, full = r["shot"], r["full"]
@@ -1394,6 +1421,91 @@ def spec_render(card: dict, V: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+# ---------------------------------------------------------------- prompt skeleton (data/prompt_skeleton.json, production-playbook)
+RATIO_RE = re.compile(r"(?<![\d.])(\d{1,2})\s*[:：比/]\s*(\d{1,2})(?![\d.])")
+ZONE_RE = re.compile(r"(上半(?:部分|部|区|區)?|下半(?:部分|部|区|區)?|左半(?:部分|部|边|邊)?|右半(?:部分|部|边|邊)?|上方|下方|左側|右側|左侧|右侧)[^，,。；;\n]{0,40}")
+IMAGE_SKIP_DIMS = {"聲音設計", "過場"}                          # a still image has no sound or transitions (its type stays: big type on a card)
+VIDEO_ONLY = re.compile(r"秒|每格|格率|進場|出場|停留|fps|循環|逐格|補間|輪替|^動作$")   # numbers and build notes that only exist in moving pictures
+
+
+def skeleton(medium: str) -> list[dict]:
+    p = DATA / "prompt_skeleton.json"
+    if not p.is_file():
+        return []
+    return json.loads(p.read_text(encoding="utf-8")).get("圖片" if medium == "圖片" else "影片", [])
+
+
+def skeleton_rules() -> dict:
+    p = DATA / "prompt_skeleton.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {}
+
+
+def parse_frame(need: str) -> tuple[str, list[str]]:
+    """The aspect ratio and the layout zones a need states (「3:4 竖版」「上下严格 1:1」「上半…下半…」)."""
+    low = need.lower()
+    ratio = ""
+    for m in RATIO_RE.finditer(need):
+        if re.search(r"上下|左右|各|分割", need[max(0, m.start() - 6):m.start()]):
+            continue                                   # 「上下 1:1」 splits the canvas; it is not the canvas ratio
+        ratio = f"{m[1]}:{m[2]}"
+        break
+    if not ratio:
+        ratio = "9:16" if re.search(r"reels|shorts|tiktok|限動|直式|竖版|豎版", low) else "16:9" if re.search(r"橫式|横版|youtube|16:9", low) else "1:1" if re.search(r"方形|正方", low) else ""
+    zones = [m[0].strip() for m in ZONE_RE.finditer(need)]
+    split = re.search(r"(上下|左右)[^，,。；;]{0,6}?(\d+)\s*[:：比]\s*(\d+)", need)
+    if split:
+        zones.insert(0, f"{split[1]}分割 {split[2]}:{split[3]}")
+    return ratio, zones
+
+
+def prompt_assemble(P: dict, medium: str) -> tuple[str, str]:
+    """A filled skeleton → (prompt in section order, negative list). Section labels are left out: models draw labels as text."""
+    sk = skeleton(medium)
+    clean = lambda v: re.sub(r"^草稿：", "", str(v).strip())
+    body = [clean(P[x["id"]]) for x in sk if x["id"] != "避免" and str(P.get(x["id"], "")).strip() and not str(P[x["id"]]).startswith("待補")]
+    return "\n".join(body), clean(P.get("避免", ""))
+
+
+def prompt_check(P, medium: str) -> list[tuple[str, str, str]]:
+    """A filled skeleton (dict, from a card) is checked section by section: a missing required section FAILs.
+    Free text can only be read by keywords, so a section that does not show is a WARN; too short a prompt FAILs either way."""
+    R, sk, out = skeleton_rules(), skeleton(medium), []
+    if not sk:
+        return []
+    if isinstance(P, dict):
+        for x in sk:
+            v = str(P.get(x["id"], "")).strip()
+            if not v or v.startswith("待補"):
+                if x["必填"]:
+                    out.append(("FAIL", x["名稱"], f"沒寫：{x['問']}"))
+            elif v.startswith("草稿"):
+                out.append(("WARN", x["名稱"], "還是手冊給的通用草稿；照這件作品改寫（拿掉「草稿」兩字）"))
+        text = "\n".join(prompt_assemble(P, medium))
+    else:
+        text = P
+        low = text.lower()
+        miss = [x for x in sk if x["必填"] and not any(re.search(t, low) for t in x["認"])]
+        for x in miss:
+            out.append(("WARN", x["名稱"], f"看不出有寫（文字只能靠關鍵字判斷）：{x['問']}"))
+        if len(miss) * 2 >= sum(1 for x in sk if x["必填"]):
+            out.append(("FAIL", "結構", f"必填的 {sum(1 for x in sk if x['必填'])} 段裡有 {len(miss)} 段看不出來；照骨架分段寫（pb.py spec --template 圖片）"))
+    low = text.lower()
+    n = len(re.sub(r"\s+", "", text)) if re.search(r"[\u4e00-\u9fff]", text) else len(text)
+    if n < R.get("長度", {}).get("最短字", 0):
+        out.append(("FAIL", "長度", f"{n} 字，至少 {R['長度']['最短字']}：{R['長度']['說明']}"))
+    vague = [w for w in R.get("空詞", []) if re.search(r"(?<![a-z])" + re.escape(w) + r"(?![a-z])", low)]
+    if vague:
+        out.append(("WARN", "空詞", f"{'、'.join(vague)}：{R.get('空詞說明', '')}"))
+    NEG = re.compile(r"(拒绝|拒絕|避免|避开|避開|不要|禁止|严禁|嚴禁|而非|no|avoid|without|not)\W{0,3}$")
+    said = lambda w: any(not NEG.search(low[max(0, m.start() - 10):m.start()]) for m in re.finditer(re.escape(w), low))   # 「拒绝繁复」 is not asking for 繁复
+    for a, b in R.get("矛盾", []):
+        if said(a) and said(b):
+            out.append(("WARN", "矛盾", f"同時寫了「{a}」和「{b}」，確認是刻意的張力，不是寫錯"))
+    if not any(r[0] == "FAIL" for r in out):
+        out.append(("PASS", "骨架", f"{len(text)} 字元" + ("；有警告，看上面" if out else "")))
+    return out
+
+
 GRAPHIC_FAMILIES = {"動漫", "插畫", "3D", "平面設計", "極簡", "粗獷", "質感擬物", "編輯排版", "科技", "有機柔和"}
 PER_VALUE_KEYS = {"時長格", "時長秒", "對齊", "緩動", "間隔格", "位移%畫面高", "速度°每秒", "速度", "寬px", "項目數", "停留秒", "延遲ms", "位置", "鍵盤", "手機"}
 
@@ -1404,13 +1516,13 @@ def family_of(dim: dict, v: str) -> str:
     return v
 
 
-def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
+def spec_from(need: str, V: dict, work: dict | None = None, medium: str | None = None) -> dict:
     """Draft a spec card from a need: values the need names (指定) > work order (作品單) > scene preset (場景) > tone preset (調性)
     > style (風格) > design attributes (設計屬性). Shared values land in this book's medium (圖片 when the need is a still image).
     A lower layer never overwrites a higher one; where it disagrees on a one-value dimension it is offered as an option."""
     F = facet_dict()
     low = need.lower()
-    medium = "圖片" if "圖片" in media() and IMAGE_WORDS.search(need) else (media()[0] if media() else "")
+    medium = medium if medium in media() else "圖片" if "圖片" in media() and IMAGE_WORDS.search(need) else (media()[0] if media() else "")
     if medium and medium != (media() or [""])[0]:
         V = vocab(medium)
     dims, C = V["維度"], spec_conf(V)
@@ -1421,7 +1533,7 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
         for f, vals in work.get("設計基因", {}).items():
             sug.setdefault(f, set()).update(as_list(vals))
     if medium == "圖片":
-        dims = {d: v for d, v in dims.items() if d not in MOTION_DIMS}
+        dims = {d: v for d, v in dims.items() if d not in MOTION_DIMS | IMAGE_SKIP_DIMS}
     given = {d: sorted(vs) for d, vs in sug.items() if d in dims and d != "風格" and d not in SHARED_DIMS}
     layers: list[tuple[str, dict, dict]] = [("指定" if not work else f"指定／{'策略卡' if work.get('編號') == '策略卡' else '作品單'}", given, {})]
     scenes = [k for k, sc in V.get("場景預設", {}).items() if any(term_in(w, low) for w in [k, *sc.get("同義詞", [])])]
@@ -1430,6 +1542,14 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
     layers += [(f"調性：{t}", V["調性預設"][t], {}) for t in tones]
     sdim = "風格"
     styles = sorted(sug.get(sdim, set())) if sdim in dims else []
+    # a style counts as named only through a specific word; a generic one (幾何, 霓虹, 拼貼: also a design attribute) makes it a candidate
+    generic = {w.lower() for d in shared()["設計屬性"].values() for k, x in d.items() for w in [k, *x.get("同義詞", [])]}
+    def named_style(st: str) -> bool:
+        x = shared()["風格"].get(st, {})
+        words = [st, x.get("英文", ""), *x.get("同義詞", []), *x.get("專有名稱", []), *term_words(x)]
+        return any(w and term_in(w, low) and not any(w.lower() in g for g in generic) for w in words)
+    style_cands = [st for st in styles if not named_style(st)]
+    styles = [st for st in styles if st not in style_cands]
     layers += [(f"風格：{st}", {sdim: [st], **dims[sdim][st].get("預設", {})}, dims[sdim][st].get("數值", {})) for st in styles]
     attrs = [(d, v) for d in SHARED_DIMS for v in sorted(sug.get(d, set())) if d in dims and v in dims[d]]
     layers += [(f"設計屬性：{v}", {d: [v], **dims[d][v].get("預設", {})}, dims[d][v].get("數值", {})) for d, v in attrs]
@@ -1452,10 +1572,14 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
             if not have_d:
                 chosen[d] = [(x, label) for x in keep]
             elif not set(keep) & set(have_d):
-                if d in C["單選"]:
+                look = d in ("色彩", "質感") and label.startswith("風格") and chosen[d][0][1].startswith("調性")
+                if d in C["單選"] or look:   # tone and style disagreeing on the look: ask, never blend (中性＋高飽和)
                     options.append(f"{d}：{'、'.join(have_d)}（{chosen[d][0][1]}）或 {'、'.join(keep)}（{label}）")
                 elif len(have_d) < 3:
                     chosen[d].append((keep[0], label))
+    if style_cands:
+        options.append("風格：需求沒有指名，只對到一般用詞；候選 " + "、".join(f"{st}（{shared()['風格'][st].get('定義', '')}）" for st in style_cands)
+                       + "。挑一個寫進需求，或在提示詞的「風格」段自己寫")
     have = {f"{d}={x}" for d, pairs in chosen.items() for x, _ in pairs}
     warns = [f"{c['a']} 和 {c['b']} 衝突：{c['說明']}" for c in V.get("衝突", []) if c["a"] in have and c["b"] in have]
     numbers = [(f"{d}＝{x}", dims[d][x].get("數值", {}), src) for d, pairs in chosen.items() for x, src in pairs
@@ -1468,6 +1592,8 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
         for k, v in nums.items():
             if k in ("判準", "說明", "畫面類型"):
                 continue
+            if medium == "圖片" and (VIDEO_ONLY.search(k) or VIDEO_ONLY.search(str(v))):
+                continue                              # a still image has no frames, entrances or holds
             v = "／".join(map(str, v)) if isinstance(v, list) else str(v)
             if k in PER_VALUE_KEYS and "＝" in label:      # a duration or alignment belongs to its own value
                 k = f"{k}（{label.split('＝', 1)[1]}）"
@@ -1496,13 +1622,53 @@ def spec_from(need: str, V: dict, work: dict | None = None) -> dict:
                 "鏡頭": [{"編號": i + 1, "秒數": round(length / n, 2) if i < n - 1 else round(length - round(length / n, 2) * (n - 1), 2),
                           "內容": "（這一鏡發生什麼）"} for i in range(n)]}
     card["數值"] = {k: v for k, (v, src, _) in effective.items() if src.startswith(("場景", "風格", "設計屬性"))}
+    ratio, zones = parse_frame(need)
     if medium == "圖片" and "鏡頭" in card:
-        card["素材類型"] = "圖片"
+        card = {"片名": card["片名"], "素材類型": "圖片", "畫幅": ratio or "待補", **({"版面": zones} if zones else {}),
+                "調性": card.get("調性", ""), "全片": card["全片"], "數值": card["數值"]}
+    elif "鏡頭" in card and ratio:
+        card["畫幅"] = ratio
+    if skeleton(medium) and (card.get("素材類型") == "圖片" or "鏡頭" in card and kind == "AI 生成"):   # live action and motion graphics need no generation prompt
+        card["提示詞"] = prompt_prefill(need, medium, dims, chosen, styles, card, ratio, zones, style_cands)
     unit = C["單位"]
     present = [(d, x, dims[d][x]) for d, pairs in chosen.items() for x, _ in pairs
                if d in dims and x in dims[d] and (d in PRESENT_DIMS or dims[d][x].get("完整做法") or dims[d][x].get("呈現層"))]
+    if medium == "圖片":   # presentation layers are about entrances, loops and per-frame changes
+        present = [(d, x, {**e, "完整做法": [l for l in e.get("完整做法", []) if not VIDEO_ONLY.search(l)]}) for d, x, e in present]
+        present = [(d, x, e) for d, x, e in present if e["完整做法"]]
     return {"medium": medium, "unit": unit, "card": card, "chosen": chosen, "hints": hints, "options": options, "warns": warns, "numbers": numbers, "effective": effective, "present": present,
             "scenes": scenes, "tones": tones, "styles": styles, "kind": kind, "attrs": [v for _, v in attrs]}
+
+
+def prompt_prefill(need, medium, dims, chosen, styles, card, ratio, zones, cands) -> dict:
+    """What the handbook can fill of the skeleton. Vocab text is generic, so it is marked 草稿 for the model to rewrite for this piece;
+    every other section is 待補 with the question it must answer."""
+    sk = skeleton(medium)
+    ai = lambda d, x: (dims[d][x]["寫法"].get("AI 生成") or "") if d in dims and x in dims[d] else ""
+    vals = lambda d: [x for x, _ in chosen.get(d, [])]
+    P = {x["id"]: f"待補：{x['問']}" for x in sk}
+    if "畫幅" in P and (ratio or zones):
+        P["畫幅"] = "草稿：" + "；".join(([f"{ratio} {'直式' if ratio and int(ratio.split(':')[0]) < int(ratio.split(':')[1]) else '橫式' if ratio and int(ratio.split(':')[0]) > int(ratio.split(':')[1]) else '方形'}"] if ratio else []) + zones)
+    S = shared()["風格"]
+    if styles:
+        P["風格"] = "草稿：" + "；".join(f"{S[st].get('英文', st)}（{S[st].get('定義', '')}）— " + "、".join(f"{k} {v}" for k, v in S[st].get("特徵", {}).items() if v not in ("—", "無") and not (medium == "圖片" and k == "動態")) for st in styles)
+    elif cands:
+        P["風格"] = f"待補：需求沒指名風格（候選 {'、'.join(cands)}）；寫 2–4 個術語並各拆成看得到的特徵"
+    nums = card.get("數值", {})
+    colors = [f"{k} {'／'.join(v) if isinstance(v, list) else v}" for k, v in nums.items() if re.search(r"色", k)]
+    cvals = [ai("色彩", x) for x in vals("色彩")]
+    if colors or any(cvals):
+        P["色彩"] = "草稿：" + "；".join([c for c in cvals if c] + colors)
+    for sec, ds in (("材質", ["質感", "紋理", "材質描寫"]), ("光線", ["布光"]), ("構圖", ["構圖", "版面密度", "構成"])):
+        got = [ai(d, x) or x for d in ds for x in vals(d)]
+        if sec in P and got:
+            P[sec] = "草稿：" + "、".join(got)
+    avoid = [f"不要做成{S[st]['易混淆'].split('：')[0]}（{S[st]['易混淆'].split('：', 1)[-1]}）" for st in styles if S[st].get("易混淆")]
+    base = "watermark, extra text, distorted hands, warped face" + (", flicker, morphing, subject drift" if medium != "圖片" else ", stretched or squashed proportions")
+    P["避免"] = "草稿：" + "；".join(avoid + [base])
+    if "任務" in P and re.search(r"照片|原圖|原图|上傳|上传|參考圖|参考图|首格|首帧", need):
+        P["任務"] = f"待補：圖生{'圖' if medium == '圖片' else '影片'}——寫明輸入要保留什麼（主體結構、質感、光影、原色）、不能改什麼（拉伸、扭曲、改動主體）"
+    return P
 
 
 def spec_from_text(need: str, R: dict) -> str:
@@ -1535,15 +1701,25 @@ def spec_from_text(need: str, R: dict) -> str:
         out += ["", "## 衝突", ""] + [f"- {w}" for w in R["warns"]]
     if R["hints"]:
         out += ["", "可考慮（調性建議，沒自動套用）：" + "；".join(f"{k}＝{'、'.join(v)}" for k, v in R["hints"].items())]
-    out += ["", f"下一步：把草稿存成卡片（加 `--out 卡.json`），補每一{R['unit']}的內容與要改的值，再跑 `pb.py spec 卡.json`。"]
+    P = R["card"].get("提示詞")
+    if P:
+        med = R.get("medium", "")
+        out += ["", f"## 提示詞骨架（{'圖片' if med == '圖片' else '影片'}；照每段的問題寫這件作品特有的內容，「草稿」是手冊的通用字，要改寫）", ""]
+        out += [f"- **{x['名稱']}**{'' if x['必填'] else '（選填）'}：{P.get(x['id'], '')}" for x in skeleton(med)]
+        out += ["", "寫完存進卡片的「提示詞」，`pb.py spec 卡.json` 會組成提示詞並檢查；基準範例在 data/prompt_examples/。"]
+    out += ["", "下一步：把草稿存成卡片（加 `--out 卡.json`），" + ("寫完提示詞骨架" if R["card"].get("素材類型") == "圖片" else f"補每一{R['unit']}的內容與要改的值") + "，再跑 `pb.py spec 卡.json`。"]
     return "\n".join(out) + "\n"
 
 
-def spec_template(V: dict) -> dict:
+def spec_template(V: dict, medium: str = "") -> dict:
     if V.get("規格卡", {}).get("範本"):
         return V["規格卡"]["範本"]
+    if medium == "圖片" and skeleton("圖片"):
+        return {"片名": "（名稱）", "素材類型": "圖片", "畫幅": "3:4", "版面": ["（分區與占比，例如上下 1:1）"], "調性": "", "全片": {},
+                "提示詞": {x["id"]: f"待補：{x['問']}" for x in skeleton("圖片")}}
     tone = next(iter(V.get("調性預設", {})), "")
-    return {"片名": "（片名）", "畫幅": "直式 9:16", "格率": 30, "片長": 10, "調性": tone, "畫面類型": "實拍",
+    sk = {"提示詞": {x["id"]: f"待補：{x['問']}" for x in skeleton("影片")}} if skeleton("影片") else {}
+    return {**sk, "片名": "（片名）", "畫幅": "直式 9:16", "格率": 30, "片長": 10, "調性": tone, "畫面類型": "實拍",
             "全片": {"色彩": [], "質感": []},
             "鏡頭": [{"編號": 1, "秒數": 5, "內容": "（這一鏡發生什麼）", "英文描述": "", "台詞": "", "景別": "", "運鏡": "", "過場到下一鏡": ""},
                      {"編號": 2, "秒數": 5, "內容": "", "景別": ""}]}
@@ -2146,8 +2322,11 @@ def cmd_spec(a) -> int:
     V = vocab()
     if not V["維度"]:
         sys.exit("這本手冊沒有製作語彙（data/vocab.json）。")
+    medium = a.card if a.card in media() else None     # `spec 圖片 --from …`, `spec --template 圖片`
+    if medium:
+        a.card = None
     if a.template:
-        print(json.dumps(spec_template(V), ensure_ascii=False, indent=1))
+        print(json.dumps(spec_template(V, medium or (a.template if isinstance(a.template, str) else "")), ensure_ascii=False, indent=1))
         return 0
     if a.need or a.work:
         work = load_work(a.work) if a.work else None
@@ -2159,7 +2338,7 @@ def cmd_spec(a) -> int:
                 ctx = {k: set(c[k]) for k in ("受眾", "調性") if c.get(k)}
                 work = {"情境": ctx_text(ctx), "設計基因": c.get("設計基因", {}), "編號": "策略卡"}
                 note = f"沿用策略卡（{c['目的']}）：受眾、調性和設計基因照策略卡"
-        R = spec_from(need, V, work)
+        R = spec_from(need, V, work, medium)
         if note:
             print(note + "\n")
         print(spec_from_text(need, R), end="")
@@ -2178,12 +2357,36 @@ def cmd_spec(a) -> int:
         sys.exit("用法：pb.py spec <規格卡.json> [--out 檔案]；空白範本：pb.py spec --template")
     card = json.loads(Path(a.card).expanduser().read_text(encoding="utf-8"))
     text = spec_render(card, V)
+    worst_fail = card.get("素材類型") == "圖片" and card.get("提示詞") and any(r[0] == "FAIL" for r in prompt_check(card["提示詞"], "圖片"))   # a video card shows the check, it does not block
     if a.out:
         Path(a.out).expanduser().write_text(text, encoding="utf-8")
         print(f"已寫到 {a.out}")
     else:
         print(text, end="")
-    return 1 if text.startswith("規格卡有錯") else 0
+    return 1 if text.startswith("規格卡有錯") or worst_fail else 0
+
+
+def cmd_prompt_check(a) -> int:
+    """Check a prompt against the skeleton: a card's 提示詞 (section by section) or free text (keywords only)."""
+    if not skeleton("圖片"):
+        sys.exit("這本手冊沒有提示詞骨架（data/prompt_skeleton.json 在 production-playbook）。")
+    src = Path(a.prompt).expanduser()
+    if src.is_file():
+        raw = src.read_text(encoding="utf-8")
+        try:
+            obj = json.loads(raw)
+            P = obj.get("提示詞", obj) if isinstance(obj, dict) else raw
+            medium = a.media or ("圖片" if isinstance(obj, dict) and obj.get("素材類型") == "圖片" else "影片" if isinstance(obj, dict) and obj.get("鏡頭") else "圖片")
+        except json.JSONDecodeError:
+            P, medium = raw, a.media or "圖片"
+    else:
+        P, medium = a.prompt, a.media or "圖片"
+    rows = prompt_check(P, medium)
+    worst = "FAIL" if any(r[0] == "FAIL" for r in rows) else "WARN" if any(r[0] == "WARN" for r in rows) else "PASS"
+    print(f"總評 {worst}｜{medium}提示詞（{'分段' if isinstance(P, dict) else '純文字，只能靠關鍵字判斷'}）")
+    for lv, k, m in rows:
+        print(f"  {lv:4}  {k}：{m}")
+    return 1 if worst == "FAIL" else 0
 
 
 def cmd_probe(a) -> int:
@@ -3133,6 +3336,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--from", dest="need", help="draft a spec card from a need: scene, tone and style presets with their numbers")
     p.add_argument("--work", help="a work order from `strategy --works` (W01 or a path)")
     p.set_defaults(fn=cmd_spec)
+    p = sub.add_parser("prompt-check", help="check an image or video prompt against the skeleton (production-playbook)")
+    p.add_argument("prompt", help="a card.json (its 提示詞), a text file, or the prompt itself")
+    p.add_argument("--media", choices=["圖片", "影片"])
+    p.set_defaults(fn=cmd_prompt_check)
     p = sub.add_parser("style", help="one shared style across video, image and web")
     p.add_argument("name", nargs="?")
     p.add_argument("--items", action="store_true", help="only list this book's items tagged with the style")
