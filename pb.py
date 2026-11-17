@@ -2587,6 +2587,82 @@ def _chars(v) -> int:
     return len(re.sub(r"&[a-z]+;", "x", re.sub(r"<[^>]+>", "", str(v))))
 
 
+_CJK = r"\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF\u3000-\u303F"
+
+
+def _em(c: str, G: dict) -> float:
+    import unicodedata
+    if c in G.get("em", {}):
+        return G["em"][c]
+    return G.get("全形", 1.0) if unicodedata.east_asian_width(c) in "WF" else G.get("其他", 0.6)
+
+
+def wrap_lines(text: str, px: float, track: float, width: float, G: dict) -> tuple[list[str], float, str]:
+    """Break one text item the way the browser does (at spaces; CJK between any two characters) → (visual lines, widest unbreakable piece in px, that piece)."""
+    t = re.sub(r"&[a-z]+;", "x", re.sub(r"<[^>]+>", "", str(text))).strip()
+    w = lambda x: sum(_em(c, G) + track for c in x) * px
+    toks = []   # (piece, space before it)
+    for i, word in enumerate(t.split()):
+        for j, piece in enumerate(re.findall(rf"[{_CJK}]|[^{_CJK}]+", word)):
+            toks.append((piece, i > 0 and j == 0))
+    lines, cur, widest, wtok = [], "", 0.0, ""
+    for piece, sp in toks:
+        if w(piece) > widest:
+            widest, wtok = w(piece), piece
+        cand = cur + (" " if sp and cur else "") + piece
+        if cur and w(cand) > width:
+            lines.append(cur)
+            cur = piece
+        else:
+            cur = cand
+    if cur or not lines:
+        lines.append(cur)
+    return lines, widest, wtok
+
+
+def text_fit(lay: dict, b: dict, card: dict, size: float | None = None) -> dict | None:
+    """Does a beat's text fit its layout's text zone at its font size? Estimated with the kit font's measured glyph widths (layouts.json 字寬)."""
+    fx, G = lay.get("字框"), layouts().get("字寬", {})
+    if not fx or fx["欄位"] not in b or not G:
+        return None
+    big = fx.get("大字") if b.get("big") else None
+    px = float(size or b.get("size") or (big or fx)["字級"])
+    lh = (big or fx).get("行高", fx["行高"])
+    W, H = card.get("width", 1080), card.get("height", 1920)
+    zw = (lay["字區"]["x"][1] - lay["字區"]["x"][0]) / 100 * W
+    zh = (lay["字區"]["y"][1] - lay["字區"]["y"][0]) / 100 * H
+    items = b[fx["欄位"]] if isinstance(b[fx["欄位"]], list) else [b[fx["欄位"]]]
+    rows, widest, wtok = [], 0.0, ""
+    for x in items:
+        ls, wd, wt = wrap_lines(x, px, fx.get("字距", 0), zw, G)
+        rows.append(ls)
+        if wd > widest:
+            widest, wtok = wd, wt
+    n = sum(len(r) for r in rows)
+    return {"字級": px, "行高": lh, "寬": zw, "高": zh, "行": rows, "行數": n, "總高": n * px * lh, "最寬": widest, "最寬字": wtok}
+
+
+def fit_check(lay: dict, b: dict, card: dict, i: int) -> list[tuple[str, str, str]]:
+    f = text_fit(lay, b, card)
+    if not f:
+        return []
+    out, where, fx = [], f"第 {i} 段 {lay['id']}", lay["字框"]
+    font = layouts().get("字寬", {}).get("字型", "")
+    head = ((card.get("brand") or {}).get("fonts") or {}).get("heading", font)
+    lv = "FAIL" if head == font and not card.get("theme") else "WARN"   # widths are measured for the kit font; another font is only an estimate
+    note = "" if lv == "FAIL" else f"（字寬是 {font} 量的，這張卡用 {card.get('theme') or head}：算圖後看定格確認）"
+    if f["最寬"] > f["寬"]:
+        out.append((lv, f"{where} 放不下", f"「{f['最寬字']}」在 {f['字級']:.0f}px 約 {f['最寬']:.0f}px 寬，字區只有 {f['寬']:.0f}px：會被切掉；size 降到 ≤{int(f['字級'] * f['寬'] / f['最寬'])} 或換字{note}"))
+    if f["總高"] > f["高"]:
+        out.append((lv, f"{where} 放不下", f"折行後 {f['行數']} 行 × {f['字級']:.0f}px 約 {f['總高']:.0f}px 高，字區只有 {f['高']:.0f}px：底部會被裁掉；減字或降 size{note}"))
+    wrapped = [k for k, r in enumerate(f["行"], 1) if len(r) > 1]
+    if wrapped and not any(r[0] == lv for r in out):
+        out.append(("WARN", f"{where} 折行", f"第 {'、'.join(map(str, wrapped))} 項在 {f['字級']:.0f}px 會折成多行；一個陣列項放一行，遮罩進場才不會切到折下去的半行"))
+    if fx.get("門檻字級") and f["字級"] < fx["門檻字級"]:
+        out.append(("WARN", f"{where} 字級", f"{f['字級']:.0f}px 低於 {fx['門檻字級']}px（{fx.get('門檻說明', '')}）"))
+    return out
+
+
 def motion_check(card: dict, M: dict) -> list[tuple[str, str, str]]:
     """card.motion and each beat.motion: an unknown preset or value FAILs instead of falling back silently in the kit."""
     if not M:
@@ -2647,6 +2723,7 @@ def card_check(card: dict, template: dict | None = None) -> list[tuple[str, str,
                 hi = int(next(g for g in (m.group(1), m.group(2), m.group(4), m.group(5)) if g))
                 if len(b[name]) > hi:
                     out.append(("WARN", f"第 {i} 段 {lay['id']}.{name}", f"{len(b[name])} 項，上限 {hi}"))
+        out += fit_check(lay, b, card, i)
         own = lay["群組"] in ("照片",) or (lay["id"] == "chart" and b.get("fill")) or lay.get("版面") == "1080×1350"
         vis = b["visual"] if "visual" in b else card.get("visual")
         if tall and not own and not vis:
