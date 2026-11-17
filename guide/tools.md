@@ -2,6 +2,12 @@
 
 > 由 `python3 pb.py build` 產生。依第一個階段分組；狀態：已整合、已安裝、待試、待查、未採用、避開。
 
+## 1 內容與架構
+
+| 工具 | 狀態 | 費用 | 授權 | 何時用 |
+|---|---|---|---|---|
+| [UX 參考站（Laws of UX、NN/g、Apple HIG、Growth.Design）](https://lawsofux.com)（T-76） | 待試 | 免費 | 服務條款（未標） | 設計流程或互動時要找原則與研究依據 |
+
 ## 2 設計方向
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
@@ -18,10 +24,20 @@
 | [Inkscape](https://inkscape.org)（T-56） | 待試 | 免費 | GPL-2.0+（寬鬆） | 把點陣草圖描成向量、調細節、輸出正式檔時 |
 | [Penpot](https://penpot.app)（T-57） | 待試 | 免費 | MPL-2.0（寬鬆） | 排 logo 使用規範、品牌規範頁時 |
 | [Coolors](https://coolors.co)（T-58） | 待試 | 部分付費 | 服務條款（未標） | 定品牌配色時 |
+| [Godly](https://godly.website)（T-59） | 待試 | 免費 | 服務條款（未標） | 找網頁設計參考時（偏高完成度、動效多的網站） |
+| [Awwwards](https://www.awwwards.com)（T-60） | 待試 | 免費 | 服務條款（未標） | 找得獎等級的網頁設計參考時 |
+| [WhatFont](https://chromewebstore.google.com/search/whatfont)（T-61） | 待試 | 免費 | 服務條款（未標） | 看到別人網站的字想知道是什麼字時 |
+| [Fontshare](https://www.fontshare.com)（T-62） | 待試 | 免費 | ITF Free Font License（寬鬆） | 要找免費可商用的英文字型時 |
+| [Fontpair](https://www.fontpair.co)（T-63） | 待試 | 免費 | 服務條款（未標） | 要決定標題字與內文字怎麼搭時 |
+| [Realtime Colors](https://www.realtimecolors.com)（T-64） | 待試 | 免費 | 服務條款（未標） | 定配色時，想直接看顏色套在真實網頁上的效果 |
+| [Huemint](https://huemint.com)（T-65） | 待試 | 免費 | 服務條款（未標） | 要用 AI 產生配色並看在品牌或網頁上的效果時 |
+| [Color Hunt](https://colorhunt.co)（T-66） | 待試 | 免費 | 服務條款（未標） | 想找現成的四色配色靈感時 |
 | [design-mobile-apps（Sleek）](https://github.com/designed-by-ai/skills)（T-50） | 待查 | 不明 | MIT（技能）（特殊） | 要快速出手機 App 畫面草稿時；技能本身 MIT，但實際呼叫付費服務 Sleek，要帳號和 API 金鑰 |
 | [Shopify Hatchful](https://www.shopify.com/tools/logo-maker)（T-53） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
 | [Namecheap Logo Maker](https://www.namecheap.com/logo-maker/)（T-54） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
 | [Design.com](https://www.design.com)（T-55） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
+| [Figma 官方技能（figma-use、figma-generate-design）](https://github.com/figma/mcp-server-guide)（T-73） | 待查 | 部分付費 | 服務條款（未標） | 設計稿在 Figma 時：讓 agent 讀懂既有元件與變數，或用既有設計系統生成新畫面 |
+| [edenspiekermann Skills（audit-design-system、apply-design-system）](https://github.com/edenspiekermann/Skills)（T-74） | 待查 | 不明 | 未查（未標） | 設計稿在 Figma 時，檢查畫面偏離設計系統的地方並改回來 |
 | [設計靈感網站（scrolltide、navbar.gallery、footer.design、cta.gallery、minimal.gallery、60fps.design、collectui、landdding、Savee、Cosmos、Design Spells）](https://scrolltide.co/)（T-18） | 未採用 | 免費 | 網站內容各自所有（未標） | 找特定元件或細節的參考時。已併入 T-15 |
 | [figmaformotion](https://figmaformotion.com/v2)（T-21） | 未採用 | 付費 | 付費授權（未標） | — |
 
@@ -43,6 +59,11 @@
 | [動畫元件庫（Motion Primitives、Magic UI、Uiverse）](https://motion-primitives.com)（T-41） | 待試 | 免費 | MIT（寬鬆） | 想找現成的動畫元件或小互動（按鈕、載入、切換）時 |
 | [Anime.js](https://animejs.com)（T-42） | 待試 | 免費 | MIT（寬鬆） | 不用 React、要輕量的時間軸動畫時 |
 | [Anatomy（wheresryan22）](https://github.com/wheresryan22/anatomy)（T-51） | 待試 | 免費 | MIT（寬鬆） | 要解釋「一個東西怎麼運作」（產品結構、流程裡的機關、系統元件）時，畫成可互動的立體剖面圖 |
+| [Material Symbols](https://fonts.google.com/icons)（T-68） | 待試 | 免費 | Apache-2.0（寬鬆） | 需要一套大量、可調粗細與填色的圖示時 |
+| [Storyset](https://storyset.com)（T-69） | 待試 | 部分付費 | Freepik 授權（特殊） | 需要可改色、可做動畫的情境插畫時 |
+| [Humaaans](https://www.humaaans.com)（T-70） | 待試 | 免費 | 服務條款（未標） | 需要可自由組合的人物插畫時 |
+| [Unsplash](https://unsplash.com)（T-71） | 待試 | 免費 | Unsplash License（寬鬆） | 需要免費高品質照片時 |
+| [Lummi](https://www.lummi.ai)（T-72） | 待試 | 部分付費 | 服務條款（未標） | 需要 AI 生成風格的免費圖庫照片時 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
 | [Spline](https://spline.design)（T-45） | 待查 | 部分付費 | 商業服務（特殊） | 想在網頁放可互動的 3D 場景時 |
@@ -71,6 +92,8 @@
 | [Playwright CLI（Microsoft）](https://github.com/microsoft/playwright-cli)（T-07） | 待試 | 免費 | Apache-2.0（寬鬆） | 要批次截圖、查選擇器、錄測試時 |
 | [agency-agents（網站挑 3 個）](https://github.com/msitarzewski/agency-agents)（T-28） | 待試 | 免費 | MIT（寬鬆） | 上線前要獨立審查：通用感、無障礙、受眾模擬 |
 | [agent-browser（Vercel Labs）](https://github.com/vercel-labs/agent-browser)（T-49） | 待試 | 免費 | Apache-2.0（寬鬆） | 要讓 agent 實際開頁面、填表單、多寬度截圖檢查時；和 Playwright CLI（T-07）比 |
+| [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)（T-67） | 待試 | 免費 | 服務條款（未標） | 檢查文字與背景的對比是否達 WCAG AA／AAA 時 |
+| [uSpec（create-voice）](https://github.com/redongreen/uSpec)（T-75） | 待查 | 不明 | 未查（未標） | 交接前要寫螢幕閱讀器規格時 |
 
 ## 6 SEO 與 AI 搜尋
 
