@@ -2333,7 +2333,7 @@ def sb_emit(t: dict) -> dict:
         ex["_段"] = s["段"] + ("｜" + s["說明"] if s.get("說明") else "")
         beats.append(ex)
     tall = t["形式"] != "輪播圖卡"
-    return {"模板": t["id"], "width": 1080, "height": 1920 if tall else 1350, "platform": "reels-tiktok", "transition": "panel",
+    return {"模板": t["id"], "width": 1080, "height": 1920 if tall else 1350, "platform": "reels-tiktok", "motion": {"preset": "crisp"},
             "brand": {"colors": {"primary": "#14213D", "background": "#F4EFE6", "accent": "#C9A227", "accent_ink": "#8A6D12"}, "fonts": {"heading": "IBM Plex Sans", "body": "IBM Plex Sans"}, "handle": "@brand"},
             "beats": beats}
 
@@ -2342,6 +2342,38 @@ def _chars(v) -> int:
     if isinstance(v, list):
         return max((_chars(x) for x in v), default=0)
     return len(re.sub(r"&[a-z]+;", "x", re.sub(r"<[^>]+>", "", str(v))))
+
+
+def motion_check(card: dict, M: dict) -> list[tuple[str, str, str]]:
+    """card.motion and each beat.motion: an unknown preset or value FAILs instead of falling back silently in the kit."""
+    if not M:
+        return []
+    out, P, rng = [], M.get("預設", {}), M.get("範圍", {})
+    spots = [("整支片", card.get("motion"))] + [(f"第 {i} 段", b.get("motion")) for i, b in enumerate(card.get("beats", []), 1)]
+    if card.get("transition") is not None and card["transition"] not in M.get("換場", []):
+        out.append(("FAIL", "換場", f"transition `{card['transition']}` 不認得；可用：{'、'.join(M.get('換場', []))}"))
+    for where, m in spots:
+        if m is None:
+            continue
+        if not isinstance(m, dict):
+            out.append(("FAIL", f"{where}動態", "motion 要寫成物件，例如 {\"preset\": \"calm\"}"))
+            continue
+        bad = set(m) - set(M.get("欄位", {}))
+        if bad:
+            out.append(("FAIL", f"{where}動態", f"不認得的欄位 {'、'.join(sorted(bad))}；可用：{'、'.join(M.get('欄位', {}))}"))
+        if "preset" in m and m["preset"] not in P:
+            out.append(("FAIL", f"{where}動態", f"preset `{m['preset']}` 不認得；可用：{'、'.join(P)}"))
+        for k, (lo, hi) in rng.items():
+            if k in m and not (isinstance(m[k], (int, float)) and lo <= m[k] <= hi):
+                out.append(("FAIL", f"{where}動態", f"{k} = {m[k]} 超出 {lo}–{hi}"))
+        if "enter" in m and m["enter"] not in M.get("進場", []):
+            out.append(("FAIL", f"{where}動態", f"enter `{m['enter']}` 不認得；可用：{'、'.join(M.get('進場', []))}"))
+        if "transition" in m and (m["transition"] not in M.get("換場", []) or where != "整支片"):
+            out.append(("FAIL", f"{where}動態", f"transition 只能寫在整支片，值為 {'、'.join(M.get('換場', []))}"))
+    if any(m is not None for _, m in spots) and not any(r[0] == "FAIL" for r in out):
+        cm = card.get("motion") or {}
+        out.append(("PASS", "動態", f"預設 {cm.get('preset', 'crisp')}" + ("；有段落自訂" if any(m for _, m in spots[1:]) else "")))
+    return out
 
 
 def card_check(card: dict, template: dict | None = None) -> list[tuple[str, str, str]]:
@@ -2376,6 +2408,7 @@ def card_check(card: dict, template: dict | None = None) -> list[tuple[str, str,
         vis = b["visual"] if "visual" in b else card.get("visual")
         if tall and not own and not vis:
             out.append(("FAIL", f"第 {i} 段畫面層", f"`{lay['id']}` 沒有自帶畫面，要加 visual（{lay['畫面層']}）"))
+    out += motion_check(card, LA.get("動態設定", {}))
     ids = [b.get("layout") for b in beats if b.get("layout") in L]
     dur = sum(float(b.get("seconds", 0) or 0) for b in beats)
     if ids:
