@@ -48,6 +48,7 @@
 | [Three.js](https://github.com/mrdoob/three.js)（T-10） | 已整合 | 免費 | MIT（寬鬆） | 頁面真的需要 3D 時 |
 | [GSAP](https://github.com/greensock/GSAP)（T-11） | 已整合 | 免費 | GSAP Standard No Charge License（不是開源授權）（特殊） | 網頁動效需要時間軸、捲動觸發、文字拆分時 |
 | [Impeccable](https://github.com/pbakaus/impeccable)（T-34） | 已整合 | 免費 | Apache-2.0（寬鬆） | 上線前或改版後自動掃 AI 感與品質問題（npx impeccable detect <網址或資料夾>，62 條規則、不用 API 金鑰）；也有一組設計指令（polish、critique、audit） |
+| [pixelfx（patch-gg）](https://github.com/patch-gg/pixelfx)（T-80） | 已整合 | 免費 | MIT（寬鬆） | 頁面或影片要像素風、遊戲感的特效（火焰、爆炸、魔法、拾取、UI 閃光）時。非像素風的品牌不要用 |
 | [Taste Skill（design-taste-frontend）](https://github.com/Leonxlnx/taste-skill)（T-12） | 已安裝 | 免費 | MIT（寬鬆） | 要避免 AI 味的版面和視覺時 |
 | [unslop](https://github.com/heydamir/unslop)（T-29） | 已安裝 | 免費 | CC BY 4.0（須標註作者）（寬鬆） | 畫面一看就是 AI 做的、要改版或上線前審查視覺時 |
 | [GSAP AI Skills（官方）](https://github.com/greensock/gsap-skills)（T-30） | 已安裝 | 免費 | MIT（GSAP 本身含全部外掛免費）（寬鬆） | 用 GSAP 做時間軸、捲動觸發、文字拆分、SVG 變形等網頁動效時 |
@@ -64,6 +65,7 @@
 | [Humaaans](https://www.humaaans.com)（T-70） | 待試 | 免費 | 服務條款（未標） | 需要可自由組合的人物插畫時 |
 | [Unsplash](https://unsplash.com)（T-71） | 待試 | 免費 | Unsplash License（寬鬆） | 需要免費高品質照片時 |
 | [Lummi](https://www.lummi.ai)（T-72） | 待試 | 部分付費 | 服務條款（未標） | 需要 AI 生成風格的免費圖庫照片時 |
+| [MotionSites claude-skill](https://github.com/Motionsites-AI/claude-skill)（T-81） | 待試 | 部分付費 | 技能 MIT；範例與素材 © MotionSites：可用來做網站（含客戶案），不可轉售或打包再散布（特殊） | 要快速做一頁高動態感的登陸頁草稿（影片背景、3D、捲動動畫）時；正式品牌站仍以設計系統為準 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
 | [Spline](https://spline.design)（T-45） | 待查 | 部分付費 | 商業服務（特殊） | 想在網頁放可互動的 3D 場景時 |
