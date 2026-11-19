@@ -3812,11 +3812,15 @@
     "形狀": "平行投影，物件不因距離變小",
     "深度與光影": "固定光源：頂面最亮、左右兩面依序變暗",
     "字體": "—",
-    "動態": "沿等距軸移動、堆疊"
+    "動態": "沿等距軸移動、堆疊",
+    "簽名": "切面等角小房間，三面明度差；物件掉落擠壓、逐一組出；一個連續鏡頭推近再拉遠，看到周圍的小世界"
    },
    "數值": {
     "軸角度°": 30,
-    "面明度階數": 3
+    "面明度階數": 3,
+    "動畫·側面變暗%": "16／34",
+    "動畫·落下秒": 0.42,
+    "動畫·拉遠倍率": 0.44
    },
    "易混淆": "扁平向量：後者是正面平面、沒有立體面",
    "同義詞": [
@@ -3835,21 +3839,22 @@
     ]
    },
    "來源": [
-    "S62"
+    "S62",
+    "S80"
    ],
    "落地": {
     "影片": {
      "值": {},
      "寫法": {
-      "AI 生成": "isometric illustration, 30-degree axes, no vanishing point, three shades per object for top and sides, clean diagrams",
-      "程式動畫": "所有位移沿 30° 軸；三面明度差 15–25%",
+      "AI 生成": "isometric miniature room diorama on cream background #EFE4D6, cutaway walls in teal #86C3C3, wood floor #E9B07C, coral rug #EF7A63, soft pastel props, three-face shading with darker side faces, crisp unblurred floor shadows, objects dropping in with a small squash, slow continuous camera push then pull back to reveal small isometric islands around it",
+      "程式動畫": "等角投影 cos30（y 比 .5）；三面明度：頂＝基色、右面朝深紫 #3B2946 混 34%、左面 16%；物件落下 0.42 秒（高 11 單位，落地擠壓 exp(−9t)·sin(26t)·.16），錯開 0.045–0.1 秒；彈出 back s1.7（過衝約 10%）；不切鏡：先推 1→1.16（2 秒）再拉遠到 0.44（1.5 秒）；地面硬投影長＝高 ×0.42，不模糊；盒頂前緣 1.4px 白色亮邊",
       "實拍": "—"
      }
     },
     "圖片": {
      "值": {},
      "寫法": {
-      "AI 生成": "isometric illustration, 30-degree axes, no vanishing point, three shades per object for top and sides, clean diagrams"
+      "AI 生成": "isometric miniature room diorama on cream background #EFE4D6, cutaway walls in teal #86C3C3, wood floor #E9B07C, coral rug #EF7A63, soft pastel props, three-face shading with darker side faces, crisp unblurred floor shadows, objects dropping in with a small squash, slow continuous camera push then pull back to reveal small isometric islands around it"
      }
     }
    },
@@ -3959,11 +3964,15 @@
     "形狀": "簡化造型",
     "深度與光影": "每層 2–6 px 投影",
     "字體": "—",
-    "動態": "定格感，約 12 張／秒，層與層錯動"
+    "動態": "定格感，約 12 張／秒，層與層錯動",
+    "簽名": "多層紙板疊出景深，每層有陰影與單側亮邊；所有紙片同一張纖維紋理；日夜光向翻轉、陰影換邊"
    },
    "數值": {
     "投影px": "2–6",
-    "張數每秒": 12
+    "張數每秒": 12,
+    "動畫·層錯開秒": 0.18,
+    "動畫·陰影blur": "10–18",
+    "動畫·視差": 0.22
    },
    "易混淆": "黏土定格：後者是立體塑形、有指紋與體積",
    "同義詞": [
@@ -3985,7 +3994,8 @@
     ]
    },
    "來源": [
-    "S62"
+    "S62",
+    "S80"
    ],
    "落地": {
     "影片": {
@@ -3995,8 +4005,8 @@
       ]
      },
      "寫法": {
-      "AI 生成": "paper cut-out collage, layered colored paper with fiber texture, small drop shadows between layers, stop-motion feel at 12 fps",
-      "程式動畫": "每層加 2–6 px 投影；位移量化到 12 fps",
+      "AI 生成": "layered paper cut-out landscape, stacked paper layers with soft drop shadows and a thin light edge on one side, dawn sky bands #FBE3C0 to #E98A78, teal hills, dark pines, warm house with red roof, fiber paper texture on every piece, layers rising into place one after another, night to morning light change with shadows swapping sides, gentle parallax",
+      "程式動畫": "每層紙：先畫亮 18% 的底再錯開 (1.8,2.4)px 畫本色＝單側亮邊；層陰影 blur 10–18px、偏移 7px 朝光反向；層從下方升起 0.8 秒、錯開 0.18 秒（back s1.35），退場前景先走、錯開 0.09 秒；視差 深度×0.22；夜轉晨 1.5 秒內陰影方向翻轉、整體乘色 #9AA4D6→#FFF4E4；氣泡以底邊 scaleY 展開 0.55 秒、字逐詞 0.16 秒彈出",
       "實拍": "實拍：真紙片俯拍定格"
      }
     },
@@ -4007,7 +4017,7 @@
       ]
      },
      "寫法": {
-      "AI 生成": "paper cut-out collage, layered colored paper with fiber texture, small drop shadows between layers, stop-motion feel at 12 fps"
+      "AI 生成": "layered paper cut-out landscape, stacked paper layers with soft drop shadows and a thin light edge on one side, dawn sky bands #FBE3C0 to #E98A78, teal hills, dark pines, warm house with red roof, fiber paper texture on every piece, layers rising into place one after another, night to morning light change with shadows swapping sides, gentle parallax"
      }
     }
    },
@@ -4046,7 +4056,6 @@
    "同義詞": [
     "線稿",
     "line art",
-    "白板手繪",
     "doodle"
    ],
    "專有名稱": [],
@@ -4086,8 +4095,7 @@
     ],
     "簡中": "线稿单色",
     "其他說法": [
-     "線稿",
-     "白板手繪"
+     "線稿"
     ]
    }
   },
@@ -4175,11 +4183,15 @@
     "形狀": "圓胖",
     "深度與光影": "小型攝影棚柔光",
     "字體": "—",
-    "動態": "一拍二 12 張／秒，微小抖動"
+    "動態": "一拍二 12 張／秒，微小抖動",
+    "簽名": "啞光黏土＋指紋凹點紋理；12 fps 階梯動作與微抖；球體擠壓變形成其他形狀"
    },
    "數值": {
     "張數每秒": 12,
-    "抖動px": "1–2"
+    "抖動px": "1–2",
+    "動畫·fps": 12,
+    "動畫·抖動px": 1.1,
+    "動畫·擠壓": 0.32
    },
    "易混淆": "皮克斯式卡通 3D：後者動作滑順 24 fps、表面光滑",
    "同義詞": [
@@ -4204,7 +4216,8 @@
     ]
    },
    "來源": [
-    "S62"
+    "S62",
+    "S80"
    ],
    "落地": {
     "影片": {
@@ -4217,8 +4230,8 @@
       ]
      },
      "寫法": {
-      "AI 生成": "claymation stop-motion, handmade plasticine characters with fingerprints and tool marks, small studio softbox lighting, 12 fps stepped motion with slight jitter",
-      "程式動畫": "位移量化到 12 fps＋每格 1–2 px 抖動",
+      "AI 生成": "clay stop-motion animation on a warm wooden-beige table #CFAE90 to #ECD5B6, matte plasticine objects in teal #2F8E88, cream #F2E2C2, charcoal #35302F with fingerprint texture, tiny dents and tool marks, soft inner light and warm contact shadows, letters as individual clay pieces hopping and squashing, ball bouncing and morphing into a speech bubble, 12 fps stepped motion with slight jitter, slow camera push",
+      "程式動畫": "全部量化 12 fps；每格位置抖動 ±1.1px（x）±0.7px（y）；落下拉長 sy1.12／sx.9，著地擠壓 sin(πu)·0.32；字母錯開 0.13 秒、跳高 70px、0.33 秒；黏土質感：512px 指紋貼圖（同心弧 7 條、凹點 260、刮痕 40）＋內側光＋接觸陰影 blur 18–22、alpha .28；鏡頭 3.7 秒推近 1→1.13；亮度閃爍 ±1.5%",
       "實拍": "實拍：定格逐格拍、柔光箱"
      }
     },
@@ -4229,7 +4242,7 @@
       ]
      },
      "寫法": {
-      "AI 生成": "claymation stop-motion, handmade plasticine characters with fingerprints and tool marks, small studio softbox lighting, 12 fps stepped motion with slight jitter"
+      "AI 生成": "clay stop-motion animation on a warm wooden-beige table #CFAE90 to #ECD5B6, matte plasticine objects in teal #2F8E88, cream #F2E2C2, charcoal #35302F with fingerprint texture, tiny dents and tool marks, soft inner light and warm contact shadows, letters as individual clay pieces hopping and squashing, ball bouncing and morphing into a speech bubble, 12 fps stepped motion with slight jitter, slow camera push"
      }
     }
    },
@@ -5124,7 +5137,8 @@
     "形狀": "幾何構成",
     "深度與光影": "無",
     "字體": "—",
-    "動態": "幾何形旋轉、組合"
+    "動態": "幾何形旋轉、組合",
+    "簽名": "米色紙＋超寬粗體大寫標題從基線滑上；紅圓、藍方、黃三角在一條墨線上依序進場並各轉一次；用圓形放大做轉場，配紙張顆粒"
    },
    "數值": {
     "色數": "3 原色＋黑白",
@@ -5137,7 +5151,10 @@
     "字色": "#121212",
     "框線px": 2,
     "硬投影px": 4,
-    "形狀": "卡片直角＋按鈕膠囊"
+    "形狀": "卡片直角＋按鈕膠囊",
+    "動畫·緩動": "expo out／in-out",
+    "動畫·字母錯開秒": 0.035,
+    "動畫·轉場秒": 0.62
    },
    "易混淆": "孟菲斯：後者是撞色、波浪線和圖紋，較俏皮",
    "同義詞": [
@@ -5159,21 +5176,22 @@
    },
    "來源": [
     "S62",
-    "S70"
+    "S70",
+    "S80"
    ],
    "落地": {
     "影片": {
      "值": {},
      "寫法": {
-      "AI 生成": "Bauhaus design, primary red yellow blue, circles squares and triangles, bold geometric composition, sans-serif type",
-      "程式動畫": "幾何形補間旋轉 90°／180°",
+      "AI 生成": "Bauhaus poster animation on warm off-white paper #EEE8DC, primary red #D02020, blue #1040C0, yellow #F0C020 and ink #121212, circle square and triangle rolling, dropping and rising onto one thick black baseline, extra-wide heavy uppercase sans headline sliding up from a baseline mask, faint paper grain, flat with no shadows",
+      "程式動畫": "緩動用 expo（1−2^(−10x)）；字母從基線遮罩下 1.1 字高滑上，0.55 秒、錯開 0.035 秒；圓滾入（back s0.9，過衝約 3%）、方落下彈跳 exp(−14t)·sin(40t)·8px、三角從基線升起；三形各轉 90°／90°／120°（0.3 秒）；轉場用圓形本身放大吞掉畫面（先縮到 0.94 蓄力 0.13 秒，再 0.62 秒放大）；整層黑白雜點 alpha 約 .03",
       "實拍": "—"
      }
     },
     "圖片": {
      "值": {},
      "寫法": {
-      "AI 生成": "Bauhaus design, primary red yellow blue, circles squares and triangles, bold geometric composition, sans-serif type"
+      "AI 生成": "Bauhaus poster animation on warm off-white paper #EEE8DC, primary red #D02020, blue #1040C0, yellow #F0C020 and ink #121212, circle square and triangle rolling, dropping and rising onto one thick black baseline, extra-wide heavy uppercase sans headline sliding up from a baseline mask, faint paper grain, flat with no shadows"
      }
     },
     "網站": {
@@ -5220,7 +5238,8 @@
     "形狀": "零散分布的圖形",
     "深度與光影": "無",
     "字體": "—",
-    "動態": "圖形彈跳、旋轉"
+    "動態": "圖形彈跳、旋轉",
+    "簽名": "粉或薄荷底＋黑描邊＋12px 實心硬陰影；之字、斜紋、網點三種圖紋填色；elastic 彈跳與逐字落下擠壓"
    },
    "數值": {
     "圖紋": "波浪、碎點、斑馬紋",
@@ -5232,7 +5251,10 @@
     ],
     "圖紋px": 20,
     "旋轉°": "2–15",
-    "框線": "虛線"
+    "框線": "虛線",
+    "動畫·描邊px": 7,
+    "動畫·硬陰影px": 12,
+    "動畫·過衝%": 20
    },
    "易混淆": "包浩斯：後者嚴謹、只用三原色",
    "同義詞": [
@@ -5254,21 +5276,22 @@
    },
    "來源": [
     "S62",
-    "S70"
+    "S70",
+    "S80"
    ],
    "落地": {
     "影片": {
      "值": {},
      "寫法": {
-      "AI 生成": "Memphis design, clashing pastel colors with black, squiggles, confetti dots and terrazzo patterns, playful scattered geometric shapes",
-      "程式動畫": "圖形彈跳；圖紋用 SVG pattern",
+      "AI 生成": "Memphis style animation, pastel pink #FFD9EA or mint #C4EEDF background with ink dot grid, shapes in pink #FF71CE, yellow #FFCE5C, teal #86CCCA, purple #6A7BB4 with 7px black outlines and solid 12px offset black shadows, squiggles, rings, crosses and dot patterns, chunky rounded heavy sans letters dropping and squashing, elastic bouncy motion, confetti",
+      "程式動畫": "所有形狀 7px 墨線＋(12,12) 實心墨色硬陰影、字 (10,10)；緩動 back s2.6（過衝約 20%）與 elastic 2^(−9x)·sin((10x−.75)·2π/3)+1；字母逐字落下 0.5 秒、錯開 0.07 秒，落地擠壓 sin(30t)·.18·exp(−10t)；飾品持續 |sin(3.2t)|·10px 跳、±0.12 rad 搖；轉場用三層之字帶（振幅 34、週期 70px）0.9 秒橫掃換底色；彩紙 34 片、初速 700–1200 px/s、重力 1400",
       "實拍": "—"
      }
     },
     "圖片": {
      "值": {},
      "寫法": {
-      "AI 生成": "Memphis design, clashing pastel colors with black, squiggles, confetti dots and terrazzo patterns, playful scattered geometric shapes"
+      "AI 生成": "Memphis style animation, pastel pink #FFD9EA or mint #C4EEDF background with ink dot grid, shapes in pink #FF71CE, yellow #FFCE5C, teal #86CCCA, purple #6A7BB4 with 7px black outlines and solid 12px offset black shadows, squiggles, rings, crosses and dot patterns, chunky rounded heavy sans letters dropping and squashing, elastic bouncy motion, confetti"
      }
     },
     "網站": {
@@ -6231,7 +6254,8 @@
     "形狀": "無；字元格",
     "深度與光影": "螢光殘影可選",
     "字體": "等寬",
-    "動態": "打字機、游標"
+    "動態": "打字機、游標",
+    "簽名": "黑底螢光綠等寬字與閃爍游標；掃描線、光暈、殘影、圓角暗角；CRT 開機成線、關機成點"
    },
    "數值": {
     "字型": "等寬",
@@ -6239,7 +6263,10 @@
     "輔助色": "琥珀 #FFB000（選用）",
     "掃描線": "5%（選用）",
     "按鈕": "[ ] 包起來（選用）",
-    "字級": "只用三種（如 12／14／16）"
+    "字級": "只用三種（如 12／14／16）",
+    "動畫·字級px": 32,
+    "動畫·打字字每秒": 30,
+    "動畫·掃描線間距px": 4
    },
    "易混淆": "暗色科技：後者有圖形、卡片與多種字",
    "同義詞": [
@@ -6262,7 +6289,8 @@
    "來源": [
     "S50",
     "S65",
-    "S70"
+    "S70",
+    "S80"
    ],
    "落地": {
     "網站": {
@@ -6277,6 +6305,19 @@
      "寫法": {
       "設計提示詞": "terminal-style website: monospace everything, green or amber text on black, blinking cursor, typewriter reveals",
       "程式實作": "font-family: monospace；動效用打字機"
+     }
+    },
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "retro CRT computer terminal animation, near-black green background #07170D to #010402, phosphor green monospace text #8EF7AA with dim green #3D9A5B and bright #EAFFF0 highlights, box-drawing frames, block progress bar, typing commands with a blinking cursor, scanlines every 4px, soft glow bloom, phosphor afterimage, rounded vignette, CRT power on into a horizontal line and power off into a dot",
+      "程式動畫": "等寬字 32px、行高 52px；打字每字 0.019–0.043 秒（約 30 字／秒）、空格多 0.045 秒、Enter 前停 0.16 秒；游標 1.9 Hz 閃；掃描線每 4px（.30／.12）；殘影 0.04／0.08／0.12 秒前的畫面疊 .30／.17／.10；光暈兩層模糊 2px、3px 以 lighter 疊 .55／.45；雜訊 4 張每 1/30 秒換；開機：水平展開 0.1 秒→垂直展開 0.32 秒＋白閃；關機：先壓成水平線 0.17 秒再收成點"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "retro CRT computer terminal animation, near-black green background #07170D to #010402, phosphor green monospace text #8EF7AA with dim green #3D9A5B and bright #EAFFF0 highlights, box-drawing frames, block progress bar, typing commands with a blinking cursor, scanlines every 4px, soft glow bloom, phosphor afterimage, rounded vignette, CRT power on into a horizontal line and power off into a dot"
      }
     }
    },
@@ -6811,10 +6852,14 @@
     "形狀": "大塊面",
     "深度與光影": "無漸層",
     "字體": "—",
-    "動態": "靜止"
+    "動態": "靜止",
+    "簽名": "只有黑、紅兩色墨在米色紙上；V 形刀痕與粗糙邊、套版偏移；蓋印式 12 fps 進場、滾筒加剝離轉場"
    },
    "數值": {
-    "灰階": "不用"
+    "灰階": "不用",
+    "動畫·fps": 12,
+    "動畫·套版偏移px": "4,−3",
+    "動畫·邊緣抖動px": "3–5"
    },
    "易混淆": "線稿單色：後者細線、沒有刻痕",
    "同義詞": [
@@ -6833,7 +6878,8 @@
     ]
    },
    "來源": [
-    "S58"
+    "S58",
+    "S80"
    ],
    "對應": [
     "#199"
@@ -6854,15 +6900,15 @@
     "影片": {
      "值": {},
      "寫法": {
-      "AI 生成": "linocut print, bold pure black and white lines with rough carving marks, no gray or gradients",
-      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "AI 生成": "linocut print animation, cream paper #EFE5CF with only two inks, black #15120F and red #C7331F, carved V-shaped gouge marks and rough wobbly edges, slight red-black misregistration, uneven ink coverage with wood grain specks, stamping motion in 12 fps steps, an ink roller sweeping across then the print peeling off to reveal a new block",
+      "程式動畫": "全部量化 12 fps；邊緣 roughPoly 步長 34px、抖動 3–5px，墨遮罩每 1/8 秒換一張（沸騰）；刀痕 V 形 1.4–7px；套版偏移紅層 (4,−3)px；墨面 alpha .9 加 0–.14 浮動、未沾墨處 ×.45；印章過衝 1.07→0.985→1（每格一步）；轉場：滾筒 0.5 秒左到右掃過＋版面對角剝離 0.55 秒（背面陰影 blur 50）",
       "實拍": "—"
      }
     },
     "圖片": {
      "值": {},
      "寫法": {
-      "AI 生成": "linocut print, bold pure black and white lines with rough carving marks, no gray or gradients"
+      "AI 生成": "linocut print animation, cream paper #EFE5CF with only two inks, black #15120F and red #C7331F, carved V-shaped gouge marks and rough wobbly edges, slight red-black misregistration, uneven ink coverage with wood grain specks, stamping motion in 12 fps steps, an ink roller sweeping across then the print peeling off to reveal a new block"
      }
     }
    }
@@ -7285,11 +7331,15 @@
     "形狀": "方格",
     "深度與光影": "平面",
     "字體": "像素字",
-    "動態": "定格動畫感"
+    "動態": "定格動畫感",
+    "簽名": "低解析度網格整數放大、限定色盤；5×7 點陣字＋1px 外框＋2px 陰影；馬賽克轉場與圓形光圈收合"
    },
    "數值": {
     "解析度": "低",
-    "格子": "方形"
+    "格子": "方形",
+    "動畫·網格": "320×180",
+    "動畫·放大倍率": 6,
+    "動畫·色數": 18
    },
    "易混淆": "體素：後者是 3D 方塊",
    "同義詞": [
@@ -7304,7 +7354,8 @@
     ]
    },
    "來源": [
-    "S58"
+    "S58",
+    "S80"
    ],
    "對應": [
     "#209"
@@ -7325,15 +7376,15 @@
     "影片": {
      "值": {},
      "寫法": {
-      "AI 生成": "pixel art, low resolution, every square pixel visible, flat front view",
-      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "AI 生成": "16-bit pixel art platformer animation, 320x180 canvas scaled up 6x with nearest neighbor, limited 18-color palette with ink #0D0B1A outlines, Bayer-dithered sky gradient, parallax hills and clouds, 5x7 bitmap font with 1px outline and 2px drop shadow, coins and question blocks, mosaic transition and circular iris close",
+      "程式動畫": "整個畫面在 320×180 網格算，座標取整數像素，最後 ×6 最近鄰放大；精靈動畫各自幀率（跑步 4 格 12 fps、硬幣 6 格 10 fps、星閃 8 fps）；跳躍拋物線 y=4h·u(1−u)（0.3–0.7 秒）；視差 雲 .15、山 .3、丘 .55；轉場馬賽克 block 1→16（0.35 秒）＋黑幕；結尾圓形光圈收合 0.55 秒；音效方波",
       "實拍": "—"
      }
     },
     "圖片": {
      "值": {},
      "寫法": {
-      "AI 生成": "pixel art, low resolution, every square pixel visible, flat front view"
+      "AI 生成": "16-bit pixel art platformer animation, 320x180 canvas scaled up 6x with nearest neighbor, limited 18-color palette with ink #0D0B1A outlines, Bayer-dithered sky gradient, parallax hills and clouds, 5x7 bitmap font with 1px outline and 2px drop shadow, coins and question blocks, mosaic transition and circular iris close"
      }
     }
    }
@@ -7543,11 +7594,15 @@
     "形狀": "工程製圖",
     "深度與光影": "無",
     "字體": "等寬或工程字",
-    "動態": "描邊繪製"
+    "動態": "描邊繪製",
+    "簽名": "藍底白線＋24px 格線與光暈；三視圖、尺寸線、Ø 與引線註記；右下圖框與等寬字標題欄"
    },
    "數值": {
     "底色": "藍",
-    "線色": "白"
+    "線色": "白",
+    "動畫·格線px": 24,
+    "動畫·外形線px": 3,
+    "動畫·逐字秒": 0.028
    },
    "易混淆": "線稿單色：後者白底、無尺寸線",
    "同義詞": [
@@ -7565,7 +7620,8 @@
     ]
    },
    "來源": [
-    "S58"
+    "S58",
+    "S80"
    ],
    "對應": [
     "#216"
@@ -7585,17 +7641,889 @@
     "影片": {
      "值": {},
      "寫法": {
-      "AI 生成": "blueprint technical drawing, fine white lines on blue, a few dimension and construction lines",
-      "程式動畫": "依特徵做；畫面質感用貼圖或濾鏡模擬",
+      "AI 生成": "cyanotype blueprint technical drawing animation, deep blue paper radial #1F5AA6 to #123B75 with a 24px light grid, crisp near-white lines rgb(232,241,255) with a soft glow, front view, section A-A and top view of an object drawn line by line, dimension lines with arrows, diameter marks and leader callouts in condensed italic and monospace caps, title block frame, slow camera pull back",
+      "程式動畫": "線條沿路徑揭示，二次 in-out，外形 0.7–0.9 秒；外形 3px、次要線 1.1–1.6px；中心線虛線 [26,6,4,6]、隱藏線 [10,7]；箭頭與圓點 back s3 彈出；文字逐字 0.028 秒；剖面影線 45° 間距 9–12px 用掃描揭示 0.5 秒；光暈：縮 1/4 模糊 2px 再 lighter 疊 .55；鏡頭從 1.45 倍拉回 1.0（1.3 秒）",
       "實拍": "—"
      }
     },
     "圖片": {
      "值": {},
      "寫法": {
-      "AI 生成": "blueprint technical drawing, fine white lines on blue, a few dimension and construction lines"
+      "AI 生成": "cyanotype blueprint technical drawing animation, deep blue paper radial #1F5AA6 to #123B75 with a 24px light grid, crisp near-white lines rgb(232,241,255) with a soft glow, front view, section A-A and top view of an object drawn line by line, dimension lines with arrows, diameter marks and leader callouts in condensed italic and monospace caps, title block frame, slow camera pull back"
      }
     }
+   }
+  },
+  "科普扁平": {
+   "英文": "flat science explainer",
+   "定義": "深色宇宙或科學場景裡的圓潤扁平向量，帶發光大氣與月牙陰影",
+   "效果": "好懂、明亮、知識感",
+   "上層": "插畫",
+   "特徵": {
+    "線條": "幾乎沒有描邊，用色塊邊界",
+    "色彩": "深藍紫底＋高飽和亮色塊（青、綠、黃、粉）",
+    "形狀": "圓、圓角、膨脹感造型",
+    "深度與光影": "月牙暗面＋外緣亮邊＋柔和發光",
+    "字體": "圓潤無襯線（如 Fredoka）",
+    "動態": "back 彈出、逐字彈跳、縮放穿越轉場",
+    "簽名": "深色宇宙裡帶發光大氣與月牙陰影的扁平球體；圓潤色塊與圓角泡泡；縮放穿越轉場進入下一個尺度"
+   },
+   "數值": {
+    "底色": [
+     "#0A1030",
+     "#1C1552"
+    ],
+    "主色": [
+     "#1F86C9",
+     "#5CD07A",
+     "#FFC94D",
+     "#FF5A4E"
+    ],
+    "暗面": "rgba(12,6,58,.5)",
+    "動畫·過衝%": 12,
+    "動畫·逐字錯開秒": 0.09
+   },
+   "易混淆": "扁平向量：後者一般是淺底、無發光與月牙立體",
+   "同義詞": [
+    "科普動畫",
+    "太空科普",
+    "flat explainer"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "高飽和撞色"
+    ],
+    "形狀語言": [
+     "大圓角"
+    ],
+    "深度與光影": [
+     "柔影"
+    ],
+    "動態性格": [
+     "彈跳"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "flat vector science explainer animation, deep navy-violet space background #0A1030 to #1C1552 with tiny stars, a rounded flat planet with glowing atmosphere ring and crescent shading, blobby green and yellow continents, cream rounded speech bubble, bright saturated accents, soft glow, bouncy overshoot motion, zoom-through transition into a microscopic scene",
+      "程式動畫": "立體只靠月牙：暗面用偏移 0.26R 的圓挖出、亮緣偏移 0.06R；發光精靈 256px 以 lighter 疊；緩動三次 out＋back s1.9（過衝約 12%）；標題逐字 0.09 秒錯開、0.5 秒進場；漂浮 sin(3t)·5px；轉場：0.75 秒縮放 1→10 穿越＋0.16 秒交叉溶解＋藍白閃",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "flat vector science explainer animation, deep navy-violet space background #0A1030 to #1C1552 with tiny stars, a rounded flat planet with glowing atmosphere ring and crescent shading, blobby green and yellow continents, cream rounded speech bubble, bright saturated accents, soft glow, bouncy overshoot motion, zoom-through transition into a microscopic scene"
+     }
+    }
+   },
+   "用語": {
+    "中文": "科普扁平",
+    "英文": [
+     "flat science explainer"
+    ],
+    "簡中": "科普扁平",
+    "其他說法": [
+     "科普動畫",
+     "太空科普",
+     "flat explainer"
+    ]
+   }
+  },
+  "白板手繪": {
+   "英文": "whiteboard drawing",
+   "定義": "白板上黑色麥克筆即時手繪圖解，紅色只做強調",
+   "效果": "教學、邊畫邊講、親切",
+   "上層": "插畫",
+   "特徵": {
+    "線條": "7px 均勻黑線、圓端、微抖",
+    "色彩": "白板灰白＋黑墨＋紅強調",
+    "形狀": "手繪圖示、箭頭、對話框",
+    "深度與光影": "只有板面反光與擦痕",
+    "字體": "手寫粗體（如 Kalam 700）",
+    "動態": "線條沿路徑畫出、鏡頭平移到下一塊板",
+    "簽名": "灰白反光白板＋幽靈擦痕；7px 黑色手寫線帶微抖、筆跟著跑；紅色只用在強調處"
+   },
+   "數值": {
+    "底色": "#F6F6F3",
+    "墨": "#18181B",
+    "強調": "#D4352A",
+    "動畫·線寬px": 7,
+    "動畫·抖動px": 1.6
+   },
+   "易混淆": "黑板粉筆：深綠底白粉筆與粉塵；白板是白底黑麥克筆",
+   "同義詞": [
+    "whiteboard",
+    "白板動畫",
+    "手繪解說"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "單一重點色"
+    ],
+    "線條": [
+     "手繪線"
+    ],
+    "字體性格": [
+     "手寫"
+    ],
+    "動態性格": [
+     "慢緩"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "whiteboard explainer animation, slightly glossy off-white board #F6F6F3 with faint ghost erase marks and soft light streaks, black marker lines #18181B of even 7px width with tiny hand wobble drawn stroke by stroke, red marker #D4352A only for emphasis arrows and underlines, handwritten bold lettering, a marker pen following the line tip, camera panning to the next drawing then pulling back",
+      "程式動畫": "路徑用 Catmull-Rom 平滑後沿長度揭示（線性；連接線二次 in-out、底線三次 out）；線寬 7px（細節 5px）、圓端圓接；抖動 1.6px（兩組正弦，空間頻率 .012）；字逐字揭示、旋轉 −0.01 rad；筆跟著筆尖走、提筆時影子位移 14→40px；鏡頭 1→1.02 慢推、1.1 秒平移到下一塊、結尾 1 秒拉遠到 0.54",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "whiteboard explainer animation, slightly glossy off-white board #F6F6F3 with faint ghost erase marks and soft light streaks, black marker lines #18181B of even 7px width with tiny hand wobble drawn stroke by stroke, red marker #D4352A only for emphasis arrows and underlines, handwritten bold lettering, a marker pen following the line tip, camera panning to the next drawing then pulling back"
+     }
+    }
+   },
+   "用語": {
+    "中文": "白板手繪",
+    "英文": [
+     "whiteboard drawing"
+    ],
+    "簡中": "白板手繪",
+    "其他說法": [
+     "whiteboard",
+     "白板動畫",
+     "手繪解說"
+    ]
+   }
+  },
+  "黑板粉筆": {
+   "英文": "chalkboard",
+   "定義": "深綠黑板上的白粉筆字與圖，黃粉筆強調，帶粉塵與擦痕",
+   "效果": "課堂、溫暖、懷舊",
+   "上層": "插畫",
+   "特徵": {
+    "線條": "8px 粉筆線、粗糙斷續",
+    "色彩": "深綠黑板＋粉筆白＋黃強調",
+    "形狀": "手寫字、圈、箭頭",
+    "深度與光影": "暗角與擦痕殘影",
+    "字體": "手寫（如 Caveat 700）",
+    "動態": "逐字寫出、橡皮擦擦掉留殘影",
+    "簽名": "深綠黑板上的白粉筆字，有粉塵與顆粒；橡皮擦擦過留下灰白殘影；黃粉筆圈與底線做強調"
+   },
+   "數值": {
+    "底色": [
+     "#26352E",
+     "#1B2621"
+    ],
+    "粉筆白": "#F3F0E6",
+    "強調": "#F1D35F",
+    "動畫·線寬px": 8,
+    "動畫·擦除殘影%": 16,
+    "構圖·字級px": "標題 104、步驟字 124、結論句 132（1080 高）",
+    "動畫·圈線px": 6,
+    "動畫·底線px": 7,
+    "質感·暗角": "徑向 520→1250px，邊緣黑 alpha .42",
+    "質感·大斑": "140 個徑向光斑，alpha .05–.07",
+    "質感·擦痕": "弧形 16 組＋水平 10 組，alpha .018–.048、線寬 1–3.4px",
+    "動畫·抖動做法": "沿路徑逐點偏移：兩組正弦、空間頻率 .012／px（不是整條平移、不逐格跳）",
+    "色彩·黃色用途": "只用在箭頭、圈、底線"
+   },
+   "易混淆": "白板手繪：白底黑線、乾淨；黑板有粉塵、顆粒與擦痕",
+   "同義詞": [
+    "chalkboard",
+    "粉筆",
+    "黑板"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "單一重點色"
+    ],
+    "線條": [
+     "手繪線"
+    ],
+    "字體性格": [
+     "手寫"
+    ],
+    "紋理": [
+     "紙紋"
+    ],
+    "動態性格": [
+     "慢緩"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "chalkboard lesson animation, dark green slate gradient #26352E to #1B2621 with faint erased smudges and vignette, white chalk #F3F0E6 handwriting and diagrams with grainy broken strokes and falling chalk dust, yellow chalk #F1D35F for circles, arrows and underlines, a felt eraser wiping a word leaving a faint ghost, slow 4.5% camera push",
+      "程式動畫": "粉筆線 8px 圓端；顆粒遮罩：每像素 16% 機率降到 15–45% 透明；字重疊兩次錯開 (0.8,−0.6)px；外暈描邊寬＋12、alpha .07；抖動固定 1.8px（不逐格跳）；粉塵每 1/90 秒 55% 機率生成、重力、壽命 0.6–1.7 秒；橡皮擦 1.2 秒擦過、留 16% 殘影；全片 1→1.045 慢推",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "chalkboard lesson animation, dark green slate gradient #26352E to #1B2621 with faint erased smudges and vignette, white chalk #F3F0E6 handwriting and diagrams with grainy broken strokes and falling chalk dust, yellow chalk #F1D35F for circles, arrows and underlines, a felt eraser wiping a word leaving a faint ghost, slow 4.5% camera push"
+     }
+    }
+   },
+   "用語": {
+    "中文": "黑板粉筆",
+    "英文": [
+     "chalkboard"
+    ],
+    "簡中": "黑板粉筆",
+    "其他說法": [
+     "chalkboard",
+     "粉筆",
+     "黑板"
+    ]
+   },
+   "比對": "盲測 2026-11-19：只給風格卡，子代理做出的畫面與原片同一風格（色票、質感、簽名元素都對），依它列出的缺口補構圖與質感數值"
+  },
+  "單線畫": {
+   "英文": "single line drawing",
+   "定義": "一條不斷的墨線畫出並變形成不同圖形",
+   "效果": "極簡、優雅、巧思",
+   "上層": "極簡",
+   "特徵": {
+    "線條": "一條連續線、粗細微變（約 4–7px）",
+    "色彩": "米紙＋墨黑＋一個紅點",
+    "形狀": "連續輪廓、點對點變形",
+    "深度與光影": "無",
+    "字體": "細斜體襯線小字說明",
+    "動態": "畫出→停→變形→停→回收",
+    "簽名": "全程一條不斷的墨線；筆頭一個紅點；一個圖形變形成下一個圖形"
+   },
+   "數值": {
+    "底色": "#F3EEE4",
+    "墨": "#1E1C19",
+    "強調": "#C4502F",
+    "動畫·線寬px": "3.8–7.4",
+    "動畫·變形秒": 1.5
+   },
+   "易混淆": "線稿單色：可以多條線；單線畫全程只有一條不斷的線",
+   "同義詞": [
+    "one line drawing",
+    "一筆畫",
+    "連續線"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "單一重點色"
+    ],
+    "線條": [
+     "細線"
+    ],
+    "版面密度": [
+     "大量留白"
+    ],
+    "動態性格": [
+     "慢緩"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "continuous single line drawing animation, warm paper #F3EEE4 with subtle fibers, one unbroken ink line #1E1C19 with gently varying thickness drawn from the left edge, morphing smoothly from a speech bubble into a microphone into handwritten script, a small red dot at the pen tip, one short italic serif caption, lots of empty space",
+      "程式動畫": "一條 2600 點的路徑；線寬 5.6+1.2·sin(37u)·sin(11.3u+1)+0.6·sin(91u)；畫出 2.65 秒（三次 in-out）；圖形間點對點變形 1.4–1.55 秒，每點錯開 u=eio(τ·1.55−0.55·i/N)；每段之間停 0.35 秒；結尾線從左邊回收 1.5 秒；全片 1→1.025 慢推",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "continuous single line drawing animation, warm paper #F3EEE4 with subtle fibers, one unbroken ink line #1E1C19 with gently varying thickness drawn from the left edge, morphing smoothly from a speech bubble into a microphone into handwritten script, a small red dot at the pen tip, one short italic serif caption, lots of empty space"
+     }
+    }
+   },
+   "用語": {
+    "中文": "單線畫",
+    "英文": [
+     "single line drawing"
+    ],
+    "簡中": "單線畫",
+    "其他說法": [
+     "one line drawing",
+     "一筆畫",
+     "連續線"
+    ]
+   }
+  },
+  "鉛筆素描": {
+   "英文": "graphite sketch",
+   "定義": "素描本上先打淡輔助線再上深輪廓、交叉影線與抹糊",
+   "效果": "手作、思考、設計草稿",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "淡輔助線＋兩道深輪廓、12 fps 微抖",
+    "色彩": "米白紙＋石墨灰黑",
+    "形狀": "圓、橢圓、草圖幾何",
+    "深度與光影": "交叉影線＋抹糊陰影",
+    "字體": "手寫（如 Caveat 700）",
+    "動態": "按繪製順序出現、翻頁轉場",
+    "簽名": "先淡輔助線、再兩道深輪廓；交叉影線加抹糊做陰影，石墨只停在紙齒；12 fps 微抖與翻頁轉場"
+   },
+   "數值": {
+    "底色": "#EEEBE3",
+    "石墨": "#1D1E24",
+    "動畫·fps": 12,
+    "動畫·抖動px": 1.1,
+    "動畫·輪廓線px": 3.1
+   },
+   "易混淆": "色鉛筆：有顏色；鉛筆素描只有石墨灰黑",
+   "同義詞": [
+    "pencil sketch",
+    "炭筆",
+    "素描",
+    "graphite"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "黑白"
+    ],
+    "線條": [
+     "手繪線"
+    ],
+    "紋理": [
+     "紙紋"
+    ],
+    "動態性格": [
+     "慢緩"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "graphite pencil sketch animation in a sketchbook, off-white toothy paper #EEEBE3, light construction lines appear first then darker double contour lines, cross-hatching and a soft smudged shadow, graphite only sticking to the paper grain, subtle 12 fps line boil, handwritten notes, a page turning to reveal the next sketch",
+      "程式動畫": "順序：淡輔助線（1.3px、alpha .22–.32）→第一道輪廓→錯開 2.2px 第二道（3.1px、alpha .92）→交叉影線（1.2–1.7px，角度 −1.05 與 .5 rad，每條 0.12–0.18 秒）→抹糊；線條 12 fps 抖動 1.1px；紙齒遮罩讓石墨只停在紙紋上；緩動 .5−.5cos(πx)；轉場翻頁 0.85 秒（摺線由右掃到左、背面鏡射）",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "graphite pencil sketch animation in a sketchbook, off-white toothy paper #EEEBE3, light construction lines appear first then darker double contour lines, cross-hatching and a soft smudged shadow, graphite only sticking to the paper grain, subtle 12 fps line boil, handwritten notes, a page turning to reveal the next sketch"
+     }
+    }
+   },
+   "用語": {
+    "中文": "鉛筆素描",
+    "英文": [
+     "graphite sketch"
+    ],
+    "簡中": "鉛筆素描",
+    "其他說法": [
+     "pencil sketch",
+     "炭筆",
+     "素描",
+     "graphite"
+    ]
+   }
+  },
+  "70 年代": {
+   "英文": "1970s retro TV",
+   "定義": "芥末、橘、鏽紅、深棕四色條紋與太陽，配老電視質感",
+   "效果": "懷舊、溫暖、節目片頭感",
+   "上層": "復古",
+   "特徵": {
+    "線條": "粗彩虹條紋弧",
+    "色彩": "奶油底＋芥末、橘、鏽紅、深棕",
+    "形狀": "放射太陽、條紋圓弧、膠囊色帶",
+    "深度與光影": "硬色疊影字",
+    "字體": "厚重軟襯線（如 Fraunces 900）＋草寫展示字",
+    "動態": "back 彈出、轉盤、四色條紋擦除",
+    "簽名": "四色條紋彎成帶缺口的太陽；厚襯線疊影標題逐字彈出；老電視：掃描線、分色、顆粒、開關機"
+   },
+   "數值": {
+    "底色": "#F3E3C3",
+    "四色": [
+     "#EDB53A",
+     "#E8862B",
+     "#C2501F",
+     "#6E3B1F"
+    ],
+    "動畫·掃描線間距px": 4,
+    "動畫·RGB 分色px": 3
+   },
+   "易混淆": "80 年代合成波：霓虹紫粉、網格；70 年代是暖土色條紋與太陽",
+   "同義詞": [
+    "70s",
+    "復古電視",
+    "七〇年代"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "暖中性"
+    ],
+    "字體性格": [
+     "粗重展示"
+    ],
+    "紋理": [
+     "復古劣化"
+    ],
+    "動態性格": [
+     "彈跳"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "1970s retro TV show opening, cream background #F3E3C3, four-color rainbow stripes in mustard #EDB53A, orange #E8862B, rust #C2501F and brown #6E3B1F bending into a rising sun with horizontal cut lines, chunky soft serif title with hard offset color layers bouncing in letter by letter, wavy script subtitle, old CRT look with scanlines, slight RGB split, film grain and rounded vignette, TV power on and off",
+      "程式動畫": "字母 back s2.2（過衝約 15%）從下方升起並旋轉 ±0.25 rad，0.5 秒、錯開 0.06 秒；條紋四色錯開 0.09 秒展開；轉場：四條膠囊色帶 0.4 秒滑入再滑出；顆粒 6 張每 1/30 秒換、overlay .2；掃描線每 4px、高 2px；RGB 分色 ±3px（故障幀 ±9px，持續 0.1 秒）；開機 X 0.2 秒→Y 0.37 秒＋白閃，關機反向",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "1970s retro TV show opening, cream background #F3E3C3, four-color rainbow stripes in mustard #EDB53A, orange #E8862B, rust #C2501F and brown #6E3B1F bending into a rising sun with horizontal cut lines, chunky soft serif title with hard offset color layers bouncing in letter by letter, wavy script subtitle, old CRT look with scanlines, slight RGB split, film grain and rounded vignette, TV power on and off"
+     }
+    }
+   },
+   "用語": {
+    "中文": "70 年代",
+    "英文": [
+     "1970s retro TV"
+    ],
+    "簡中": "70 年代",
+    "其他說法": [
+     "70s",
+     "復古電視",
+     "七〇年代"
+    ]
+   }
+  },
+  "16mm 黑白紀錄片": {
+   "英文": "16mm black and white documentary",
+   "定義": "黑白 16mm 老紀錄片：片門抖動、刮痕、灰塵、裝飾藝術字卡",
+   "效果": "歷史感、莊重、懷舊",
+   "上層": "實拍風格",
+   "特徵": {
+    "線條": "art deco 細框與飾線",
+    "色彩": "全黑白、黑位微提",
+    "形狀": "直角字卡、角落階梯紋",
+    "深度與光影": "聚光燈、強暗角",
+    "字體": "古典襯線（如 Old Standard TT）＋打字機字",
+    "動態": "倒數片頭、字卡淡入、幀錯位",
+    "簽名": "黑白顆粒、片門抖動、刮痕灰塵；art deco 細框字卡與古典襯線；片頭倒數圓與一格白閃"
+   },
+   "數值": {
+    "底色": "#0E0E0D",
+    "字色": "#E9E7DF",
+    "動畫·片門抖動px": "3–4",
+    "動畫·顆粒換張fps": 30,
+    "動畫·刮痕條數": 4
+   },
+   "易混淆": "紀實：現代彩色手持；16mm 黑白是老片劣化與字卡",
+   "同義詞": [
+    "16mm",
+    "老紀錄片",
+    "黑白電影",
+    "film leader"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "黑白"
+    ],
+    "字體性格": [
+     "有襯線"
+    ],
+    "紋理": [
+     "底片顆粒",
+     "復古劣化"
+    ],
+    "動態性格": [
+     "慢緩"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "1950s 16mm black and white documentary film, heavy film grain, gate weave, vertical scratches, dust and hair specks, exposure flicker, slight softness, film leader countdown with sweeping circle, art deco title cards with thin double frames and diamond ornaments in classic serif type, a vintage microphone under a spotlight, typewriter subtitles, iris close at the end",
+      "程式動畫": "整體 grayscale＋contrast 1.12＋blur 1.1px；顆粒 8 張每 1/30 秒換（overlay .42＋.25）；片門抖動 x≈3px、y≈4px；曝光閃爍 ±7%；刮痕 4 條垂直線 1.6–2.6px；灰塵每格 3–10 點；倒數圓掃 0.7 秒一圈；字卡淡入 0.45 秒、推近 3.5%；轉場：幀錯位（黑條上滑 90px、殘影 ±24px）與 1 格白閃；結尾光圈收合 0.6 秒",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "1950s 16mm black and white documentary film, heavy film grain, gate weave, vertical scratches, dust and hair specks, exposure flicker, slight softness, film leader countdown with sweeping circle, art deco title cards with thin double frames and diamond ornaments in classic serif type, a vintage microphone under a spotlight, typewriter subtitles, iris close at the end"
+     }
+    }
+   },
+   "用語": {
+    "中文": "16mm 黑白紀錄片",
+    "英文": [
+     "16mm black and white documentary"
+    ],
+    "簡中": "16mm 黑白紀錄片",
+    "其他說法": [
+     "16mm",
+     "老紀錄片",
+     "黑白電影",
+     "film leader"
+    ]
+   }
+  },
+  "網點漫畫分格": {
+   "英文": "halftone comic panels",
+   "定義": "報紙漫畫分格頁：粗墨框、Ben-Day 網點、擬聲大字與鏡頭在格間移動",
+   "效果": "熱鬧、敘事、復古漫畫感",
+   "上層": "動漫",
+   "特徵": {
+    "線條": "10px 粗墨分格框、圓接",
+    "色彩": "米黃紙＋青、洋紅、黃網點＋墨",
+    "形狀": "矩形分格、橢圓氣球、爆炸星形",
+    "深度與光影": "網點漸層與實心偏移陰影字",
+    "字體": "漫畫擬聲字（如 Bangers）＋手寫對白字",
+    "動態": "鏡頭在格間推移、擬聲字逐字彈出",
+    "簽名": "米黃紙上的青洋紅黃網點＋套版偏移；粗墨分格框，鏡頭在格間移動；擬聲大字黑外框加實心陰影逐字彈出"
+   },
+   "數值": {
+    "紙色": "#EFE2C0",
+    "網點色": [
+     "#2F9FD8",
+     "#E0393E",
+     "#F5C928"
+    ],
+    "墨": "#1B1716",
+    "動畫·網點格px": "14–18",
+    "動畫·套版偏移px": "5,−4",
+    "網點角度": "青 15°、洋紅 75°、黃 45°（點半徑 6.5–8.2px）",
+    "套版偏移範圍": "所有色塊與網點；墨線不偏移",
+    "構圖·分格間距": "約頁寬 1.6%（3050 寬頁用 50px）",
+    "線寬px": "分格框 10、氣球 8、字幕框 7、星形 5",
+    "擬聲字": "字級 120–250px（1080 高約 10–20%）、陰影為墨色實心 10 層向右下",
+    "爆炸星": "13 尖，內半徑為外半徑 0.62–0.70；小星 8 角",
+    "色彩·避免": "青網點不要疊黃網點（會變綠）"
+   },
+   "易混淆": "美式超英漫畫：重陰影與肌肉英雄；網點漫畫分格著重報紙網點與分格敘事",
+   "同義詞": [
+    "comic",
+    "Ben-Day",
+    "網點",
+    "報紙漫畫",
+    "分格"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "高飽和撞色"
+    ],
+    "線條": [
+     "粗黑框"
+    ],
+    "構成": [
+     "拼貼分格"
+    ],
+    "紋理": [
+     "紙紋"
+    ],
+    "動態性格": [
+     "彈跳"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "vintage newspaper comic page animation, yellowed paper #EFE2C0 with fibers, thick 10px ink panel borders drawn clockwise, Ben-Day halftone dots in cyan #2F9FD8, magenta #E0393E and yellow #F5C928 with slight print misregistration, oval speech balloons, bold comic onomatopoeia like POP with black outline and solid offset shadow popping letter by letter, starburst explosions, camera gliding from panel to panel",
+      "程式動畫": "分格框順時針描出（三次 out）、格子錯開 0.1 秒淡入；網點格 14–18px、角度 15°／45°／75°、以 multiply 疊；所有色塊套版偏移 (5,−4)；擬聲字字距 size×0.04、外框 size×0.1、實心偏移陰影 10 層、逐字延遲 0.18、back s2.6；氣球 back s2.4 彈出 0.4 秒；鏡頭格間移動 0.5 秒三次 in-out、停格時線性微推；爆炸用圓形裁切 0→2200px（0.35 秒）",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "vintage newspaper comic page animation, yellowed paper #EFE2C0 with fibers, thick 10px ink panel borders drawn clockwise, Ben-Day halftone dots in cyan #2F9FD8, magenta #E0393E and yellow #F5C928 with slight print misregistration, oval speech balloons, bold comic onomatopoeia like POP with black outline and solid offset shadow popping letter by letter, starburst explosions, camera gliding from panel to panel"
+     }
+    }
+   },
+   "用語": {
+    "中文": "網點漫畫分格",
+    "英文": [
+     "halftone comic panels"
+    ],
+    "簡中": "網點漫畫分格",
+    "其他說法": [
+     "comic",
+     "Ben-Day",
+     "網點",
+     "報紙漫畫",
+     "分格"
+    ]
+   },
+   "比對": "盲測 2026-11-19：只給風格卡，子代理做出的畫面與原片同一風格（色票、質感、簽名元素都對），依它列出的缺口補構圖與質感數值"
+  },
+  "科幻介面": {
+   "英文": "sci-fi HUD",
+   "定義": "深色底上冰藍細線同心環、雷達掃描、數據引線與解碼文字",
+   "效果": "分析、精準、未來感",
+   "上層": "科技",
+   "特徵": {
+    "線條": "1–2px 冰藍細線、無抖動",
+    "色彩": "近黑底＋冰藍＋白色數字",
+    "形狀": "同心圓、刻度環、四角括號、引線",
+    "深度與光影": "雷達扇形拖尾、徑向暗光",
+    "字體": "方正科技無襯線＋等寬小字（全大寫、加字距）",
+    "動態": "環展開、雷達掃描、亂碼解碼成數字",
+    "簽名": "冰藍細線同心環與雷達拖尾；四角括號＋加字距的大寫標題；引線 callout，數字由亂碼解碼"
+   },
+   "數值": {
+    "底色": "#05090C",
+    "主線": "#A0D0E2",
+    "數字": "#EEF6FA",
+    "動畫·解碼fps": 24,
+    "動畫·掃描一圈秒": 2.9
+   },
+   "易混淆": "終端機：綠色等寬文字與 CRT；科幻介面是冰藍幾何儀表與雷達",
+   "同義詞": [
+    "HUD",
+    "儀表板動畫",
+    "科幻 UI",
+    "雷達"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "暗底霓虹"
+    ],
+    "線條": [
+     "細線"
+    ],
+    "字體性格": [
+     "等寬"
+    ],
+    "動態性格": [
+     "俐落"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "sci-fi HUD analysis interface animation, near-black background #05090C with faint dot grid, thin ice-blue lines #A0D0E2 forming concentric rings, tick rings and a rotating radar sweep with a soft trail, corner brackets, leader-line callouts with large white numbers and tiny monospace uppercase labels that decode from random glyphs, a spectrum ring unrolling into a timeline with a scanning playhead",
+      "程式動畫": "線寬 1px（刻度）、1.2px（引線）、2px（四角括號）；環展開 0.55 秒三次 out、收回 0.45 秒；雷達一圈 2.9 秒（三次 in-out），扇形拖尾 0.9 rad、alpha .13；文字解碼每 1/24 秒換亂碼、0.3–0.75 秒定字；標記 back 彈出 0.35 秒；結果數字 0.7 秒跳到定值；點陣每 48px 一點",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "sci-fi HUD analysis interface animation, near-black background #05090C with faint dot grid, thin ice-blue lines #A0D0E2 forming concentric rings, tick rings and a rotating radar sweep with a soft trail, corner brackets, leader-line callouts with large white numbers and tiny monospace uppercase labels that decode from random glyphs, a spectrum ring unrolling into a timeline with a scanning playhead"
+     }
+    }
+   },
+   "用語": {
+    "中文": "科幻介面",
+    "英文": [
+     "sci-fi HUD"
+    ],
+    "簡中": "科幻介面",
+    "其他說法": [
+     "HUD",
+     "儀表板動畫",
+     "科幻 UI",
+     "雷達"
+    ]
+   }
+  },
+  "資料新聞圖表": {
+   "英文": "editorial data visualization",
+   "定義": "米白紙上的編輯式圖表：襯線標題、紅色主線對灰色對照、大數字標註",
+   "效果": "可信、清楚、報導感",
+   "上層": "編輯排版",
+   "特徵": {
+    "線條": "主線 5px 紅、對照線 3px 灰、軸 2px",
+    "色彩": "米白紙＋墨黑＋一個紅色重點＋灰",
+    "形狀": "直角、圓點資料點",
+    "深度與光影": "無",
+    "字體": "襯線標題＋人文無襯線內文",
+    "動態": "標題遮罩升起、線條逐點畫出、數字計數",
+    "簽名": "紅色主線逐點畫出、灰線對照；大紅百分比數字加括號；襯線標題＋一個字紅底線"
+   },
+   "數值": {
+    "底色": "#F6F4EF",
+    "墨": "#15130F",
+    "強調": "#D8402F",
+    "對照灰": "#A19B8F",
+    "格線": "#DCD7CC"
+   },
+   "易混淆": "科幻介面：深色儀表；資料新聞是紙面報導圖表",
+   "同義詞": [
+    "data viz",
+    "資料視覺化",
+    "新聞圖表",
+    "infographic"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "單一重點色"
+    ],
+    "字體性格": [
+     "有襯線"
+    ],
+    "版面密度": [
+     "標準密度"
+    ],
+    "構成": [
+     "網格對齊"
+    ],
+    "動態性格": [
+     "俐落"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "editorial data journalism chart animation, off-white paper #F6F4EF, serif headline with one word underlined in red, small caps kicker, light grid lines #DCD7CC, a bold red line #D8402F drawing point by point against a thin grey comparison line #A19B8F, shaded area between them, a large red percentage callout with a bracket, then bars growing in sequence, source line in small sans",
+      "程式動畫": "文字用遮罩升起（四次 out，位移 0.9 行高）；格線每條錯開 0.08 秒、0.55 秒；對照線 0.8 秒、主線 1.8 秒（三次 in-out），經過每個點才顯示圓點（內點 r4.5、端點 r7、外加紙色白圈）；區域填色 alpha .075；大數字 0.6 秒計數；長條錯開 0.16 秒、各 0.9 秒（四次 out）；換場用 0.85 秒垂直捲動",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "editorial data journalism chart animation, off-white paper #F6F4EF, serif headline with one word underlined in red, small caps kicker, light grid lines #DCD7CC, a bold red line #D8402F drawing point by point against a thin grey comparison line #A19B8F, shaded area between them, a large red percentage callout with a bracket, then bars growing in sequence, source line in small sans"
+     }
+    }
+   },
+   "用語": {
+    "中文": "資料新聞圖表",
+    "英文": [
+     "editorial data visualization"
+    ],
+    "簡中": "資料新聞圖表",
+    "其他說法": [
+     "data viz",
+     "資料視覺化",
+     "新聞圖表",
+     "infographic"
+    ]
+   }
+  },
+  "動態字卡": {
+   "英文": "kinetic typography",
+   "定義": "只有文字：字級、字重、字距隨語氣變化，鏡頭跟著句子走",
+   "效果": "節奏強、口語感、記憶點",
+   "上層": "編輯排版",
+   "特徵": {
+    "線條": "無",
+    "色彩": "米紙＋墨黑＋一個紅點",
+    "形狀": "只有字與一個點",
+    "深度與光影": "無",
+    "字體": "可變字重無襯線＋斜體襯線交替",
+    "動態": "字重與字級漸增、字牆彈出飛散、逐字擠扁消失",
+    "簽名": "只有文字，斜體小字與粗黑大字交替；字重與字級隨語氣加大；字牆彈出飛散、結尾紅點"
+   },
+   "數值": {
+    "底色": "#EBE5D7",
+    "墨": "#15130F",
+    "強調": "#D8402F",
+    "動畫·字重範圍": "200–800",
+    "動畫·逐字錯開秒": 0.042
+   },
+   "易混淆": "動態大標（特效）：口播上疊字；動態字卡是整支只有文字",
+   "同義詞": [
+    "kinetic type",
+    "文字動畫",
+    "字卡動畫"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "色彩方案": [
+     "單一重點色"
+    ],
+    "字體性格": [
+     "粗重展示"
+    ],
+    "版面密度": [
+     "大量留白"
+    ],
+    "動態性格": [
+     "俐落"
+    ]
+   },
+   "來源": [
+    "S80"
+   ],
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "kinetic typography only, warm paper #EBE5D7 with soft vignette, black type #15130F, small italic serif words alternating with huge variable-weight grotesque words that grow bolder and larger as the sentence builds, a wall of repeated words popping in from near to far then flying outward, letters squashing to the baseline to exit, one red dot at the end moving to center, camera gliding down line by line",
+      "程式動畫": "字詞升起 0.45–0.55 秒、位移 30–40px（back s1.2）；關鍵字字重 300→760、縮放 0.55→1（back s2.2）；字牆每字 0.28 秒（0.7→1、back s1.8），依距離由近到遠出現、0.55 秒向外飛散；結尾字逐字 0.042 秒錯開升起、字重 220→800、退場逐字擠扁 0.26 秒；鏡頭換行 0.5 秒三次 in-out；紅點 back s3 彈出",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "kinetic typography only, warm paper #EBE5D7 with soft vignette, black type #15130F, small italic serif words alternating with huge variable-weight grotesque words that grow bolder and larger as the sentence builds, a wall of repeated words popping in from near to far then flying outward, letters squashing to the baseline to exit, one red dot at the end moving to center, camera gliding down line by line"
+     }
+    }
+   },
+   "用語": {
+    "中文": "動態字卡",
+    "英文": [
+     "kinetic typography"
+    ],
+    "簡中": "動態字卡",
+    "其他說法": [
+     "kinetic type",
+     "文字動畫",
+     "字卡動畫"
+    ]
    }
   }
  },
