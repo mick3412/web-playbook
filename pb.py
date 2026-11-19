@@ -2382,6 +2382,14 @@ def cmd_direction(a) -> int:
     return subprocess.call([sys.executable, str(tool), *a.rest])
 
 
+def cmd_scout(a) -> int:
+    """External same-type references: step 0.5 shortlist (no downloads), 1.2 study, 6 similarity (bin/scout.py)."""
+    tool = DATA.parent / "bin" / "scout.py"
+    if not tool.is_file():
+        sys.exit("這本手冊沒有外找範本工具（bin/scout.py 在 production-playbook）。")
+    return subprocess.call([sys.executable, str(tool), *a.args])
+
+
 def cmd_prompt_check(a) -> int:
     """Check a prompt against the skeleton: a card's 提示詞 (section by section) or free text (keywords only)."""
     if not skeleton("圖片"):
@@ -3480,6 +3488,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--save", action="store_true")
     p.add_argument("--works", action="store_true")
     p.set_defaults(fn=cmd_strategy)
+    p = sub.add_parser("scout", help="external same-type references: shortlist with no downloads, study, similarity (production-playbook)")
+    p.add_argument("args", nargs=argparse.REMAINDER)
+    p.set_defaults(fn=cmd_scout)
     p = sub.add_parser("probe", help="measure raw footage (footage) or break down a reference video (breakdown)")
     p.add_argument("args", nargs=argparse.REMAINDER)
     p.set_defaults(fn=cmd_probe)
