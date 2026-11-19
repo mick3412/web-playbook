@@ -2872,7 +2872,8 @@ def cmd_review_pack(a) -> int:
     bp = out / f"round{rnd}_brief.md"
     bp.write_text(brief + "\n", encoding="utf-8")
     print(f"已寫出審查包：{bp}")
-    print(f"下一步：派一個新的 video-reviewer 子代理（不要沿用上一輪的），任務說明只寫：「讀 {bp.resolve()} 照做」。")
+    who = "一個新的審查子代理（沒參與製作、照審查包判斷、只寫報告）" if a.stage == "web" else "一個新的 video-reviewer 子代理"
+    print(f"下一步：派{who}（不要沿用上一輪的），任務說明只寫：「讀 {bp.resolve()} 照做」。")
     print("它寫完報告後：改作品 → " + ("`pb.py review-pack ... --round 2 --prev " + str(report) + "`（換另一個新代理）" if rnd == "1" else "兩份報告附給負責人核准；第二輪後仍未解決的由負責人決定，不再開第三輪"))
     return 0
 
