@@ -2366,6 +2366,14 @@ def cmd_spec(a) -> int:
     return 1 if text.startswith("規格卡有錯") or worst_fail else 0
 
 
+def cmd_teardown(a) -> int:
+    """Reference-site teardown: capture, tools, measurements, summary; `teardown compare` checks a rebuild against it."""
+    tool = DATA.parent / "bin" / "teardown.py"
+    if not tool.is_file():
+        sys.exit("這本手冊沒有網站拆解工具（bin/teardown.py 在 web-playbook）。")
+    return subprocess.call([sys.executable, str(tool), *a.rest])
+
+
 def cmd_direction(a) -> int:
     """Direction alignment before any storyboard: this-or-that pairs, a reference wall, three sample renders → 方向卡."""
     tool = DATA.parent / "bin" / "direction.py"
@@ -2809,7 +2817,7 @@ def cmd_review_pack(a) -> int:
     """One command for an agent review round: machine checks first, then key frames and a brief a fresh reviewer agent works from."""
     path = DATA / "review_checklists.json"
     if not path.is_file():
-        sys.exit("這本手冊沒有送審審查表（data/review_checklists.json 在 production-playbook）。")
+        sys.exit("這本手冊沒有送審審查表（data/review_checklists.json：影片在 production-playbook、網站在 web-playbook）。")
     R = json.loads(path.read_text(encoding="utf-8"))
     S, rnd = R[a.stage], str(a.round)
     out = Path(a.out or (Path(a.card).parent if a.card else Path(".")) / "review")
@@ -3453,6 +3461,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--from", dest="need", help="draft a spec card from a need: scene, tone and style presets with their numbers")
     p.add_argument("--work", help="a work order from `strategy --works` (W01 or a path)")
     p.set_defaults(fn=cmd_spec)
+    p = sub.add_parser("teardown", help="reference-site teardown and rebuild comparison (web-playbook)", add_help=False)
+    p.add_argument("rest", nargs=argparse.REMAINDER)
+    p.set_defaults(fn=cmd_teardown)
     p = sub.add_parser("direction", help="direction alignment: pairs, reference wall, three samples → 方向卡 (production-playbook)", add_help=False)
     p.add_argument("rest", nargs=argparse.REMAINDER)
     p.set_defaults(fn=cmd_direction)
@@ -3485,7 +3496,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--template", help="also check the beats follow this template's layouts, e.g. SB-T10")
     p.set_defaults(fn=cmd_card_check)
     p = sub.add_parser("review-pack", help="build one agent review round for a storyboard or design submission (production-playbook)")
-    p.add_argument("--stage", choices=["storyboard", "design"], default="storyboard")
+    p.add_argument("--stage", choices=["storyboard", "design", "web"], default="storyboard")
     p.add_argument("--round", type=int, choices=[1, 2], default=1)
     p.add_argument("--card", help="the kit card.json (card-check runs first)")
     p.add_argument("--video", help="the animatic or draft video")

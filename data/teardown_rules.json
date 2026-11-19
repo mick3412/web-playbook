@@ -1,0 +1,154 @@
+{
+ "說明": "參考網站拆解與重現（2026-11-19 負責人決定）。`pb.py teardown <url>` 一個指令把參考站拆成證據、量測和工具輸出；主模型再寫成 DESIGN.md（風格合約）；重建後 `pb.py teardown compare` 分層比對。門檻、寬度、章節都在這裡改，不改程式。",
+ "寬度": [
+  375,
+  768,
+  1280,
+  1440
+ ],
+ "量測寬度": 1440,
+ "頁數上限": 5,
+ "等待毫秒": 1500,
+ "外部工具": {
+  "designlang": {
+   "指令": [
+    "npx",
+    "-y",
+    "designlang@13.4.1",
+    "{url}"
+   ],
+   "輸出": "design-extract-output",
+   "用途": "DTCG、Tailwind v4、shadcn、motion tokens、DESIGN.md 草稿（不合 Google 規格，只當證據）",
+   "秒": 120
+  },
+  "dembrandt": {
+   "指令": [
+    "npx",
+    "-y",
+    "dembrandt@0.40.1",
+    "{url}",
+    "--dtcg"
+   ],
+   "輸出": "output",
+   "用途": "語意色角色、字級、間距、動態（交叉驗證 designlang）",
+   "秒": 240
+  },
+  "webanalyze": {
+   "指令": [
+    "{vendor}/webanalyze/webanalyze",
+    "-host",
+    "{url}",
+    "-crawl",
+    "0",
+    "-output",
+    "json",
+    "-apps",
+    "{vendor}/webanalyze/technologies.json"
+   ],
+   "用途": "技術棧（Wappalyzer 指紋的開源移植）",
+   "秒": 60,
+   "可選": true
+  },
+  "siteone": {
+   "指令": [
+    "siteone-crawler",
+    "--url={url}",
+    "--max-depth=1",
+    "--max-visited-urls=30",
+    "--output-json-file={out}/site/siteone.json",
+    "--output-html-report={out}/site/siteone.html",
+    "--disable-all-assets"
+   ],
+   "用途": "站點結構、SEO、效能、標頭（整站探勘）",
+   "秒": 300,
+   "可選": true
+  },
+  "singlefile": {
+   "指令": [
+    "npx",
+    "-y",
+    "single-file-cli@2.27.3",
+    "{url}",
+    "{out}/freeze/page.html",
+    "--browser-executable-path=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+   ],
+   "用途": "渲染後 DOM＋CSS 凍結成單檔（只在本機）",
+   "秒": 180,
+   "可選": true
+  }
+ },
+ "量測": {
+  "間距級距候選": [
+   2,
+   4,
+   8
+  ],
+  "間距級距門檻": 0.65,
+  "字級比例候選": {
+   "小二度 1.067": 1.067,
+   "大二度 1.125": 1.125,
+   "小三度 1.2": 1.2,
+   "大三度 1.25": 1.25,
+   "完全四度 1.333": 1.333,
+   "增四度 1.414": 1.414,
+   "完全五度 1.5": 1.5,
+   "黃金比 1.618": 1.618
+  },
+  "背景容差": 12,
+  "色彩數": 8,
+  "間距級距說明": "最大的級距、且至少 65% 的間距值是它的倍數；其餘列為「不在級距上」（多半是光學微調或零件內距）"
+ },
+ "比對": {
+  "說明": "四層：一、像素（只在重建要照原版面時有意義）；二、SSIM 分區（3×4 格）；三、系統量測差（間距級距、字級比例、留白、色彩面積，換內容重建時最有用）；四、新代理兩輪評審（review-pack --stage web）。最多 3 輪；第二輪分數低於第一輪就停，交負責人。",
+  "像素差門檻": 0.1,
+  "SSIM 分區": [
+   3,
+   4
+  ],
+  "系統差門檻": {
+   "留白比例": 0.08,
+   "字級比例": 0.06,
+   "主色占比": 0.1
+  }
+ },
+ "DESIGN.md": {
+  "規格": "google-labs-code/design.md：最上方 YAML 只用 colors、typography、spacing、rounded、components 這幾個 key；接著散文章節",
+  "章節": [
+   "Overview（Visual Theme & Atmosphere）",
+   "Colors",
+   "Typography",
+   "Layout",
+   "Elevation & Depth",
+   "Shapes",
+   "Motion & Micro-interaction",
+   "Voice & Content",
+   "Components",
+   "Do's and Don'ts"
+  ],
+  "出處標記": {
+   "量": "teardown 量測",
+   "工具": "designlang／dembrandt 給的",
+   "目測": "看截圖判斷，沒有量測"
+  },
+  "檢查": [
+   "npx",
+   "-y",
+   "@google/design.md",
+   "lint",
+   "{file}"
+  ],
+  "禁用預設": [
+   "Inter 或 system-ui 當唯一字體而原站不是",
+   "白底紫色漸層",
+   "全部圓角 8px 的卡片網格",
+   "所有區塊同樣的上下留白",
+   "沒有動態或只有淡入"
+  ]
+ },
+ "界線": [
+  "只借結構、節奏、系統；文案、圖片、商標、字體檔不帶走",
+  "字體換成有授權的或替代字",
+  "凍結檔與報告只在本機，不發佈",
+  "先看 robots.txt 與使用條款；頁數上限預設 5"
+ ]
+}
