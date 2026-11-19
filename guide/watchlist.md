@@ -47,7 +47,6 @@
 | T-05 | REA（Reverse Engineer Anything） | 待試 | 想知道別人網站的某個互動或效果怎麼做時 | 下一次要分析一個可以合法分析的軟體或網站時 | 何時：下一次想知道某個工具怎麼做出某效果｜怎麼做：setup 時逐項看要改的設定，只核准必要的；分析一個允許分析的對象｜看什麼：產出的說明是否正確、改了哪些設定｜有效＝得到可用的做法說明，且設定可以完整還原 |
 | T-06 | Awesome DESIGN.md（VoltAgent） | 待試 | 要定設計系統、想看好的 DESIGN.md 怎麼寫時 | 下一支走到 2.2 設計系統 的作品 | 何時：定設計系統｜怎麼做：挑一份 DESIGN.md 當範本寫自己的｜看什麼：寫完是否涵蓋 token、元件、規則｜有效＝不用補就能交給 agent 用 |
 | T-07 | Playwright CLI（Microsoft） | 待試 | 要批次截圖、查選擇器、錄測試時（Puppeteer 是同類工具，不另收） | 下一支走到 5.3 跨裝置 的作品 | 何時：要批次截圖或測試｜怎麼做：用它截多寬度整頁｜看什麼：速度、穩定性｜有效＝一個指令完成所有寬度 |
-| T-09 | Design DNA（zanwei） | 待試 | 有參考介面、想把風格量化成規格時 | 下一支走到 2.1 參考與風格 的作品 | 何時：有參考介面要量化｜怎麼做：把一個參考轉成規格｜看什麼：規格數值是否準｜有效＝照規格做出來跟參考感覺接近 |
 | T-15 | 網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery、Httpster、Mobbin） | 待試 | 找版面參考時。原 T-18 的靈感網站清單已併入這裡 | 下一支走到 2.1 參考與風格 的作品 | 何時：找版面參考｜怎麼做：在圖庫找 3 個同類參考｜看什麼：花的時間、是否用得上｜有效＝10 分鐘內找到 |
 | T-16 | logo-design-skill（kaankiziltug） | 待試 | 要做或改 Logo 時 | 下一支走到 2.2 設計系統 的作品 | 何時：要做或改 Logo｜怎麼做：用它出 3 個方向｜看什麼：負責人是否選得出一個｜有效＝一輪選出 |
 | T-19 | 網頁動態元件庫（React Bits、Aceternity UI） | 待試 | 要動態文字、背景、區塊時 | 下一支走到 4.1 元件 的作品 | 何時：要動態文字或背景｜怎麼做：挑一個元件放進頁面｜看什麼：效能、reduced motion、授權｜有效＝效能不掉且授權允許 |
@@ -101,3 +100,5 @@
 | T-78 | Sentry | 待試 | 網站上線後要知道使用者遇到什麼錯誤時 | 下一個要上線的網站 | 何時：下一次上線｜怎麼做：在作品裡實際用一次｜看什麼：上線第一週抓到幾個真實錯誤、額度用了多少｜有效＝抓到真錯誤且不超過免費額度 |
 | T-79 | axe-core（Deque） | 待試 | 上線前自動檢查無障礙問題時（可接 Playwright 每次跑） | 每次上線前 | 何時：每次上線前｜怎麼做：對主要頁面手機寬度跑 wcag2a／wcag2aa｜看什麼：violations 數｜有效＝嚴重以上歸零 |
 | T-81 | MotionSites claude-skill | 待試 | 要快速做一頁高動態感的登陸頁草稿（影片背景、3D、捲動動畫）時；正式品牌站仍以設計系統為準 | 下一次要做動態感登陸頁草稿 | 何時：下一次做登陸頁草稿｜怎麼做：同一份需求分別用它和 taste-skill 各做一版｜看什麼：畫面是否不像 AI 套版、能否接回設計系統｜有效＝明顯比 taste-skill 版好才留 |
+| T-88 | fontpls | 待試 | 要知道參考站用了哪些字體檔與 @font-face 設定時（只研究，不帶走字體） | 下一次用 pb.py teardown 拆解參考站 | 下一次拆解時跑一次，看字重與 font-feature 是否比 teardown 的 document.fonts 清單多；字體檔不能用在作品 |
+| T-89 | animation-reverse-engineering（技能） | 待試 | 參考站的動畫是 JS、canvas 或 WebGL 驅動，getAnimations 讀不到時 | 下一次參考站的動畫 getAnimations 讀不到（JS／canvas／WebGL） | 下一次參考站有 JS 動畫時，拿它拆的數值和 DevTools 量到的比 3 個 |

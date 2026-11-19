@@ -53,3 +53,7 @@
 "S77","AIAgently 輪播：5 個部門各 10 個外掛（截圖 5 張）","https://aiagently.io","2026-11-17","本書新收 Vercel（附 Hobby 不可商用陷阱 S7-03）、Sentry、axe-core；Puppeteer 併入 T-07。2026-11-17 實測 axe-core、Impeccable、UI UX Pro Max"
 "S78","IG 輪播：本週 GitHub 最紅五個新 skill（raraco.lab）","（截圖，無網址）","2026-11-18","本書收 pixelfx（實測）、MotionSites（查證，未實作）；Floorplan 在工程手冊"
 "S79","Notion 筆記〈3 個重點｜提升 AI 的審美〉（AI 生成師果豪）","https://ivory-tub-110.notion.site/3-AI-402fe6bb97aa81dc98aae621349dab48","2026-11-18","參考圖拆解已有 S2-01；新收：審美分色彩、字體、構圖三層，每次微調寫回審美檔"
+"S80","網站拆解工具三份調查（手冊盤點、GitHub 實查 stars／授權／付費、風格重現方法與失敗點）","playbook-bench/web/runs/teardown-2026-11-19","2026-11-19","工具數據以 gh api、npm view 查於 2026-11-19"
+"S81","負責人提供的 Gemini 文件〈網站拆解與風格重現計畫〉；逐項查證，10 處錯誤已修正","~/.gemini/antigravity/brain/…/website-reverse-engineering-workflow.md","2026-11-19","採用四個失真維度與五階段骨架"
+"S82","Anthropic〈Improving frontend design through Skills〉：distributional convergence 與四個指令維度","https://claude.com/blog/improving-frontend-design-through-skills","2026-11-19",""
+"S83","Design2Code（分塊指標）、DCGen（分治重建）、Sketch2Code（主動提問）等網頁還原研究","https://github.com/NoviScl/Design2Code","2026-11-19","自我修正多輪收益有限 → 最多 3 輪"

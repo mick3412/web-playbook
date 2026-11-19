@@ -6,16 +6,22 @@
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
+| [webanalyze（Wappalyzer 開源移植）](https://github.com/rverton/webanalyze)（T-84） | 已整合 | 免費 | MIT（寬鬆） | 想知道參考站用什麼框架、CMS、CDN、分析工具時 |
+| [SiteOne Crawler](https://github.com/janreges/siteone-crawler)（T-85） | 已整合 | 免費 | MIT（寬鬆） | 要看參考站或自己網站的頁面結構、SEO、效能、標頭時 |
 | [UX 參考站（Laws of UX、NN/g、Apple HIG、Growth.Design）](https://lawsofux.com)（T-76） | 待試 | 免費 | 服務條款（未標） | 設計流程或互動時要找原則與研究依據 |
 
 ## 2 設計方向
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
+| [designlang（Manavarya09/design-extract）](https://github.com/Manavarya09/design-extract)（T-82） | 已整合 | 免費 | MIT（寬鬆） | 拆解參考站要 token 時（pb.py teardown 會自動跑） |
+| [dembrandt](https://github.com/dembrandt/dembrandt)（T-83） | 已整合 | 免費 | MIT（寬鬆） | 要交叉驗證 designlang、或要做設計漂移檢查（--compare）時 |
+| [SingleFile CLI](https://github.com/gildas-lormeau/SingleFile)（T-86） | 已整合 | 免費 | AGPL-3.0（只在本機用、不散布，不受影響）（特殊） | 要把參考頁當下的樣子凍結保存（對方改版也不怕）時 |
+| [DESIGN.md 規格與 CLI（Google Labs）](https://github.com/google-labs-code/design.md)（T-87） | 已整合 | 免費 | Apache-2.0（寬鬆） | 寫風格合約（DESIGN.md）並檢查時 |
 | better-design MCP（T-04） | 已安裝 | 不明 | 不明（未標） | 建設計系統、找圖示庫、審查版面和間距時 |
+| [Design DNA（zanwei）](https://github.com/zanwei/design-dna)（T-09） | 已安裝 | 免費 | MIT（寬鬆） | 有參考介面、想把風格量化成規格時 |
 | [REA（Reverse Engineer Anything）](https://github.com/morluto/rea)（T-05） | 待試 | 免費 | MIT（寬鬆） | 想知道別人網站的某個互動或效果怎麼做時 |
 | [Awesome DESIGN.md（VoltAgent）](https://github.com/VoltAgent/awesome-design-md)（T-06） | 待試 | 免費 | MIT（寬鬆） | 要定設計系統、想看好的 DESIGN.md 怎麼寫時 |
-| [Design DNA（zanwei）](https://github.com/zanwei/design-dna)（T-09） | 待試 | 免費 | MIT（寬鬆） | 有參考介面、想把風格量化成規格時 |
 | [網站設計參考圖庫（Land-book、Supahero、Pricing Pages、Social Proof Examples、Navbar Gallery、OG Image Gallery、Deck Gallery、Httpster、Mobbin）](https://land-book.com/)（T-15） | 待試 | 免費 | 網站內容各自所有（未標） | 找版面參考時。原 T-18 的靈感網站清單已併入這裡 |
 | [logo-design-skill（kaankiziltug）](https://github.com/kaankiziltug/logo-design-skill)（T-16） | 待試 | 免費 | MIT（寬鬆） | 要做或改 Logo 時 |
 | [Claude Code Skill 設計風格圖鑑（Casper）](https://www.casper.tw/claude-skill-design-gallery/)（T-27） | 待試 | 免費 | 未標（repo 無 LICENSE，頁面寫可自由下載修改）（未標） | 挑風格或動效方向時先看成品；寫風格規格時拿它的 SKILL.md 當範本 |
@@ -32,6 +38,7 @@
 | [Realtime Colors](https://www.realtimecolors.com)（T-64） | 待試 | 免費 | 服務條款（未標） | 定配色時，想直接看顏色套在真實網頁上的效果 |
 | [Huemint](https://huemint.com)（T-65） | 待試 | 免費 | 服務條款（未標） | 要用 AI 產生配色並看在品牌或網頁上的效果時 |
 | [Color Hunt](https://colorhunt.co)（T-66） | 待試 | 免費 | 服務條款（未標） | 想找現成的四色配色靈感時 |
+| [fontpls](https://github.com/Jon-Becker/fontpls)（T-88） | 待試 | 免費 | MIT（寬鬆） | 要知道參考站用了哪些字體檔與 @font-face 設定時（只研究，不帶走字體） |
 | [design-mobile-apps（Sleek）](https://github.com/designed-by-ai/skills)（T-50） | 待查 | 不明 | MIT（技能）（特殊） | 要快速出手機 App 畫面草稿時；技能本身 MIT，但實際呼叫付費服務 Sleek，要帳號和 API 金鑰 |
 | [Shopify Hatchful](https://www.shopify.com/tools/logo-maker)（T-53） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
 | [Namecheap Logo Maker](https://www.namecheap.com/logo-maker/)（T-54） | 待查 | 不明 | 服務條款（未標） | 需要快速、免費的套版 logo 時 |
@@ -66,6 +73,7 @@
 | [Unsplash](https://unsplash.com)（T-71） | 待試 | 免費 | Unsplash License（寬鬆） | 需要免費高品質照片時 |
 | [Lummi](https://www.lummi.ai)（T-72） | 待試 | 部分付費 | 服務條款（未標） | 需要 AI 生成風格的免費圖庫照片時 |
 | [MotionSites claude-skill](https://github.com/Motionsites-AI/claude-skill)（T-81） | 待試 | 部分付費 | 技能 MIT；範例與素材 © MotionSites：可用來做網站（含客戶案），不可轉售或打包再散布（特殊） | 要快速做一頁高動態感的登陸頁草稿（影片背景、3D、捲動動畫）時；正式品牌站仍以設計系統為準 |
+| [animation-reverse-engineering（技能）](https://github.com/scriptscrypt/animation-reverse-engineering)（T-89） | 待試 | 免費 | README 寫 MIT（repo 沒有授權檔）（未標） | 參考站的動畫是 JS、canvas 或 WebGL 驅動，getAnimations 讀不到時 |
 | [Originkit](https://www.originkit.dev/)（T-32） | 待查 | 免費 | 未標（MCP repo 是 MIT，元件本身授權未寫）（未標） | 找現成的網頁動畫元件時 |
 | [AI Particle Simulator（casberry）](https://particles.casberry.in/)（T-33） | 待查 | 不明 | 未標（未標） | 要做粒子背景或片頭粒子效果時 |
 | [Spline](https://spline.design)（T-45） | 待查 | 部分付費 | 商業服務（特殊） | 想在網頁放可互動的 3D 場景時 |

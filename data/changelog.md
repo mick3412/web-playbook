@@ -56,3 +56,4 @@
 - 2026-11-17 pb.py 同步：review-pack（影片送審的 agent 兩輪審查包）
 - 2026-11-17 pb.py 同步：prompt-check、spec 的圖片模式與比例分區解析（網站 spec 輸出不變）
 - 2026-11-17 pb.py 同步：direction 指令、storyboard --direction、模板的真實例子
+- 2026-11-19 參考網站拆解與重現：pb.py teardown／teardown compare（bin/teardown.py、data/teardown_rules.json）、review-pack --stage web（data/review_checklists.json）；工具 T-82–T-89（designlang、dembrandt、webanalyze、SiteOne、SingleFile、DESIGN.md CLI、fontpls、animation-reverse-engineering），T-09 改已安裝、T-05 註明不解析動畫；條目 S2-10–S2-14、S3-09、S5-10；步驟 2.1 修正 extract-style 誤指、2.2、3.3、5.4 改名；關卡 G2.5、G5.2；配方 R-06；分面加「參考拆解」；linear.app 實測與兩輪評審
