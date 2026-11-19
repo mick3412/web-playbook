@@ -44,6 +44,10 @@ PROBE = r"""
     if (s.fontVariationSettings && s.fontVariationSettings !== 'normal') effects.add('variable font axes');
     if (s.transitionDuration && s.transitionDuration !== '0s') trans.push({ d: s.transitionDuration.split(',')[0], ease: s.transitionTimingFunction.split(',')[0], prop: s.transitionProperty.split(',')[0] });
     if (s.position === 'sticky') effects.add('sticky');
+    for (const ps of ['::before', '::after']) { const q = getComputedStyle(e, ps); if (q.content === 'none' || q.content === 'normal') continue;   // glows and grain often live on pseudo elements
+      if (/gradient/.test(q.backgroundImage)) effects.add(/conic|radial/.test(q.backgroundImage) ? 'radial/conic gradient' : 'linear gradient');
+      if (q.backdropFilter && q.backdropFilter !== 'none') effects.add('backdrop-filter'); if (q.filter && q.filter !== 'none') effects.add('filter');
+      if (q.mixBlendMode && q.mixBlendMode !== 'normal') effects.add('mix-blend-mode'); if (q.maskImage && q.maskImage !== 'none') effects.add('mask'); }
   }
   const canv = [...document.querySelectorAll('canvas')]; if (canv.length) effects.add('canvas×' + canv.length);
   if (window.THREE || [...document.scripts].some(s => /three(\.min)?\.js|webgl|ogl|pixi/i.test(s.src))) effects.add('WebGL library');
@@ -356,7 +360,9 @@ def system_delta(m1: dict, m2: dict) -> list[dict]:
     rows = []
     def add(item, a, b, ok, note=""):
         rows.append({"項目": item, "參考": a, "重建": b, "判": "PASS" if ok else "差", "說明": note})
-    add("間距級距", m1["間距"].get("級距"), m2["間距"].get("級距"), m1["間距"].get("級距") == m2["間距"].get("級距"))
+    u = m1["間距"].get("級距")
+    fit = (m2["間距"].get("各級距符合率") or {}).get(u, (m2["間距"].get("各級距符合率") or {}).get(str(u), 0)) if u else 0
+    add("間距在參考級距上", f"{u}px", f"{round(fit * 100)}% 的值是 {u} 的倍數", bool(u) and fit >= RULES["量測"]["間距級距門檻"], "重建的級距可以更粗（8 也在 4 的系統裡）")
     r1, r2 = m1["字"].get("相鄰比例中位數"), m2["字"].get("相鄰比例中位數")
     add("字級相鄰比例", r1, r2, bool(r1 and r2) and abs(r1 - r2) <= RULES["比對"]["系統差門檻"]["字級比例"])
     c1, c2 = m1["字"].get("內文到最大"), m2["字"].get("內文到最大")
