@@ -1,6 +1,6 @@
 {
   "name": "web-playbook",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "A step-by-step handbook for websites and interfaces: brief, content and architecture, design direction and system, visual design, build, quality (accessibility, performance), SEO and AI search, launch and measurement.",
   "author": {
     "name": "Mick Lu"
