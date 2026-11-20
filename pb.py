@@ -2849,7 +2849,7 @@ def cmd_review_pack(a) -> int:
     looks = []
     if a.video:
         frames = _keyframes(a.video, card, rd)
-        looks.append(f"- {'成片' if a.stage == 'final' else '動態分鏡影片'}：`{Path(a.video).resolve()}`（看節奏與轉場；需要時自己抽格）")
+        looks.append(f"- {'成片' if a.stage == 'final' else '動態分鏡影片'}：`{Path(a.video).resolve()}`（審查員通常不能播放或抽格：以下面已抽好的定格和附件判斷；聽不到的聲音、看不到的動作在報告寫明「未查」）")
         if (rd / "contact_sheet.jpg").is_file():
             looks.append(f"- 定格拼圖：`{(rd / 'contact_sheet.jpg').resolve()}`（由左到右、由上到下）：" + "；".join(f"{i}. {lab}" for i, (_, lab) in enumerate(frames, 1)))
         looks += [f"- `{(rd / n).resolve()}`：{lab}" for n, lab in frames]
