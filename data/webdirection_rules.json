@@ -148,5 +148,22 @@
   "建議": 5,
   "最少": 3,
   "說明": "參考站少時，每對在其他軸上也會差，頁面會標出來；5 個以上比較能挑到只差一個軸的對"
+ },
+ "字體替代": {
+  "說明": "參考站的字多半是付費字：樣片與方向卡改用相近的免費字（Google Fonts），原字記在方向卡",
+  "對照": {
+   "inter": "Inter",
+   "arcadia": "Instrument Sans",
+   "lausanne": "Inter Tight",
+   "sohne": "Inter",
+   "söhne": "Inter",
+   "kinfolk-serif": "Fraunces",
+   "berkeley": "JetBrains Mono",
+   "gt america": "Inter Tight",
+   "graphik": "Inter",
+   "founders grotesk": "Inter Tight"
+  },
+  "襯線預設": "Fraunces",
+  "無襯線預設": "Inter"
  }
 }

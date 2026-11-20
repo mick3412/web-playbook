@@ -105,7 +105,7 @@ const img = p => `<img loading="lazy" src="file://${p}">`;
   c.querySelectorAll('button').forEach(b => { b.classList.toggle('on', st.判 === b.dataset.v); b.onclick = () => { st.判 = b.dataset.v; S.參考牆[r.目錄] = st; c.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); save(); }; });
   c.querySelectorAll('input').forEach(i => i.onchange = () => { st.點 = [...c.querySelectorAll('input:checked')].map(x => x.value); if (st.點.length && !st.判) st.判 = '要'; S.參考牆[r.目錄] = st; save(); }); box.appendChild(c); });
 (D.tiles || []).forEach((t, i) => { const box = document.getElementById('tiles'); const c = document.createElement('div'); c.className = 'w';
-  c.innerHTML = img(t.桌機) + `<div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:8px">${img(t.手機)}<div><div class="q">方向 ${i + 1}：${t.名稱}</div><div class="meta">${t.說明}</div><div class="btns"><button>選這個</button></div></div></div>`;
+  c.innerHTML = img(t.桌機) + `<div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:8px">${img(t.手機)}<div><div class="q">方向 ${i + 1}：${t.名稱}</div><div class="meta">${t.說明}</div><div class="meta"><a href="file://${t.網頁}" target="_blank">開啟這個樣片（看得到動態）</a></div><div class="btns"><button>選這個</button></div></div></div>`;
   const b = c.querySelector('button'); b.classList.toggle('on', S.選 === i + 1); b.onclick = () => { S.選 = i + 1; document.querySelectorAll('#tiles button').forEach(x => x.classList.toggle('on', x === b)); save(); }; box.appendChild(c); });
 document.getElementById('dl').onclick = () => { save(); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(window.PICKS, null, 1)], {type: 'application/json'})); a.download = 'picks.json'; a.click(); };
 save();
@@ -128,10 +128,17 @@ def page(need: str, refs: list[dict], prs: list[dict] | None, out: Path, tiles: 
 
 
 # ---------------------------------------------------------------- picks → directions → tiles
-def direction(picks: dict, flip: list[str] | None = None) -> dict:
+def free_font(name: str) -> str:
+    T = RULES["字體替代"]
+    low = name.lower()
+    hit = next((v for k, v in T["對照"].items() if k in low), None)
+    return hit or (T["襯線預設"] if "serif" in low.replace("sans-serif", "") else T["無襯線預設"])
+
+
+def direction(picks: dict, flip: list[str] | None = None, borrow: str | None = None) -> dict:
     d = json.loads(json.dumps(RULES["預設"]))
     d["依據"] = {}
-    liked = [r for r, v in picks.get("參考牆", {}).items() if v.get("判") == "要"]
+    liked = [borrow] if borrow else [r for r, v in picks.get("參考牆", {}).items() if v.get("判") == "要"]
     for a in AXES:
         v = picks.get("二選一", {}).get(a["id"])
         if a["id"] in (flip or []):
@@ -142,11 +149,26 @@ def direction(picks: dict, flip: list[str] | None = None) -> dict:
     d["色盤"] = dict(RULES["色盤"]["暗" if d["tone"] == "dark" else "亮"])
     for r in liked:                            # borrow the liked reference's most saturated colour as the accent, if it has one
         m = json.loads((Path(r) / "measure.json").read_text(encoding="utf-8"))
-        sat = [a["色"] for a in m["全頁"]["色彩面積"] if saturation(a["色"]) > 0.35 and a["占比"] < 0.4]
-        fonts = " ".join(f["字體"] for f in m["字"].get("字體（依字數）", [])[:2]).lower()
-        if "serif" in fonts.replace("sans-serif", "").replace("sans serif", "") and not flip:   # a liked reference set in a serif: serif headings
-            d["字體"].update({"標題": "Fraunces", "標題棧": "Fraunces, Georgia, serif"})
-            d["依據"]["字體"] = f"襯線，取自 {Path(r).name}"
+        sat = [a["色"] for a in m["全頁"]["色彩面積"] if saturation(a["色"]) > 0.25 and lum(a["色"]) > 0.08 and a["占比"] < 0.4]
+        names = [f["字體"] for f in m["字"].get("字體（依字數）", [])[:2]]
+        wants_font = "字體" in picks.get("參考牆", {}).get(r, {}).get("點", []) or any("serif" in n.lower().replace("sans-serif", "") for n in names)
+        if names and wants_font and not flip:   # the owner liked this reference's type (or it is set in a serif): take its look, in a free face
+            ff = free_font(names[0])
+            serif = ff in ("Fraunces",) or "serif" in names[0].lower().replace("sans-serif", "")
+            d["字體"].update({"標題": ff, "標題棧": f"'{ff}', {'Georgia, serif' if serif else 'sans-serif'}", "原字": names[0]})
+            d["依據"]["字體"] = f"{ff}（代 {names[0]}，取自 {Path(r).name}）"
+        if borrow:   # what this reference measurably has: texture, surfaces, dark blocks, mono labels
+            fx = m.get("特效", {})
+            bgc = m["全頁"]["底色"]
+            others = [a for a in m["全頁"]["色彩面積"] if a["色"] != bgc]
+            ink = next((a for a in others if lum(a["色"]) < 0.12), None)
+            surf = next((a["色"] for a in others if lum(a["色"]) > 0.7 and saturation(a["色"]) < 0.2), None)
+            hi = next((a["色"] for a in others if lum(a["色"]) > 0.8 and saturation(a["色"]) >= 0.1), None)
+            d["借"] = {"光暈": bool(fx.get("radial/conic gradient")), "霧面": bool(fx.get("backdrop-filter")),
+                      "影像動態": any(k.startswith(("canvas", "WebGL", "video")) for k in fx),
+                      "深色區塊": ink["色"] if ink and ink["占比"] >= 0.25 else None, "表面色": surf, "亮點色": hi,
+                      "等寬標籤": any(re.search(r"mono|code|courier", n, re.I) for n in names)}
+            d["依據"]["借用"] = "、".join(k for k, v in d["借"].items() if v)
         if sat and not flip:
             d["色盤"]["accent"] = sat[0]
             d["依據"]["強調色"] = f"取自 {Path(r).name}"
@@ -165,17 +187,18 @@ def saturation(hexc: str) -> float:
 def describe(d: dict) -> str:
     b = d["依據"]
     return "；".join([f"{'暗' if d['tone'] == 'dark' else '亮'}底", f"留白 {b.get('留白', '中')}（區塊間距 {d['區塊間距']}px）", f"字級反差 {b.get('反差', '中')}（標題 {d['標題字級']}px）",
-                     f"色彩 {b.get('色彩', '收斂')}", f"動態 {b.get('動態', '少')}", f"字體 {d['字體']['標題']}"] + ([f"強調色{b['強調色']}"] if b.get("強調色") else []))
+                     f"色彩 {b.get('色彩', '收斂')}", f"動態 {b.get('動態', '少')}", f"字體 {d['字體']['標題']}"] + ([f"強調色{b['強調色']}"] if b.get("強調色") else []) + ([f"借：{b['借用']}"] if b.get("借用") else []))
 
 
-def tile_html(d: dict, headline: str, sub: str, cta: str) -> str:
+def tile_html(d: dict, headline: str, sub: str, cta: str, brand: str | None = None, points: list | None = None) -> str:
     c = d["色盤"]
     vivid = d.get("色彩") == "繽紛"
     anim = d.get("動態") == "多"
-    feats = RULES["樣片文案"]["特色"]
+    B = d.get("借", {})
+    feats = [(p.split("：")[0], p.split("：", 1)[1]) if "：" in p else ("", p) for p in points] if points else RULES["樣片文案"]["特色"]
     cards = "".join(f"<div class='card{' v' + str(i) if vivid else ''}'><b>{html.escape(t)}</b><p>{html.escape(x)}</p></div>" for i, (t, x) in enumerate(feats))
     return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;510;600&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet"><style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;510;600&family=Fraunces:opsz,wght@9..144,400;9..144,600{'&family=' + d['字體']['標題'].replace(' ', '+') + ':wght@400;500;600' if d['字體']['標題'] not in ('Inter', 'Fraunces') else ''}&display=swap" rel="stylesheet"><style>
 :root{{--bg:{c['background']};--fg:{c['foreground']};--mute:{c['muted']};--line:{c['border']};--acc:{c['accent']}}}
 *{{box-sizing:border-box;margin:0}}body{{background:var(--bg);color:var(--mute);font:400 16px/1.6 {d['字體']['內文棧']}}}
 .w{{max-width:1200px;margin:0 auto;padding:0 32px}}nav{{display:flex;align-items:center;gap:28px;height:72px;font-size:14px;border-bottom:1px solid var(--line)}}
@@ -187,8 +210,32 @@ nav b{{color:var(--fg);margin-right:auto;font:600 18px {d['字體']['標題棧']
 .v0{{background:color-mix(in srgb,var(--acc) 14%,transparent)}}.v1{{background:color-mix(in srgb,#ffb547 18%,transparent)}}.v2{{background:color-mix(in srgb,#3ddc97 16%,transparent)}}
 {'.hero h1,.hero p,.hero .cta{animation:up .9s cubic-bezier(.2,.7,.2,1) both}.hero p{animation-delay:.12s}.hero .cta{animation-delay:.24s}@keyframes up{from{opacity:0;transform:translateY(24px)}}.card{transition:transform .2s}.card:hover{transform:translateY(-4px)}' if anim else ''}
 @media (max-width:700px){{h1{{font-size:{max(34, int(d['標題字級'] * .55))}px}}.row{{grid-template-columns:1fr}}nav span{{display:none}}.hero{{padding:{int(d['區塊間距'] * .55)}px 0 40px}}}}
-</style></head><body><div class="w"><nav><b>{html.escape(RULES['樣片文案']['品牌'])}</b><span>{'</span><span>'.join(RULES['樣片文案']['導覽'])}</span><a class="cta">{html.escape(cta)}</a></nav>
-<section class="hero"><h1>{html.escape(headline)}</h1><p>{html.escape(sub)}</p><a class="cta">{html.escape(cta)}</a></section></div><div class="band"></div><div class="w"><section class="row">{cards}</section></div></body></html>"""
+{texture_css(B, c)}
+</style></head><body>{'<div class="glow"></div>' if B.get('光暈') else ''}{'<div class="mesh"></div>' if B.get('影像動態') else ''}<div class="w"><nav><b>{html.escape(brand or RULES['樣片文案']['品牌'])}</b><span>{'</span><span>'.join(RULES['樣片文案']['導覽'])}</span><a class="cta">{html.escape(cta)}</a></nav>
+<section class="hero">{'<p class="eyebrow">' + html.escape(RULES['樣片文案'].get('標籤', 'INDEPENDENT · 2026')) + '</p>' if B.get('等寬標籤') else ''}<h1>{html.escape(headline)}</h1><p>{html.escape(sub)}</p><a class="cta">{html.escape(cta)}</a></section></div><div class="band"></div>{'<div class="dark"><div class="w"><section class="row">' + cards + '</section></div></div>' if B.get('深色區塊') else '<div class="w"><section class="row">' + cards + '</section></div>'}</body></html>"""
+
+
+def texture_css(B: dict, c: dict) -> str:
+    """Measured borrowings drawn as CSS: glow (radial gradients), frosted cards (backdrop-filter), a moving mesh where the reference has
+    canvas, WebGL or video, a dark band (≥25 % dark area), a surface colour for cards, a highlight colour and mono labels."""
+    out = []
+    if B.get("光暈"):
+        out.append(".glow{position:absolute;left:50%;top:-180px;width:900px;height:600px;margin-left:-200px;background:radial-gradient(closest-side,color-mix(in srgb,var(--acc) 22%,transparent),transparent);pointer-events:none;z-index:-1}")
+    if B.get("影像動態"):
+        out.append(".mesh{position:absolute;inset:0 0 auto 0;height:640px;z-index:-2;background:radial-gradient(40% 60% at 80% 30%,color-mix(in srgb,var(--acc) 26%,transparent),transparent),radial-gradient(35% 50% at 60% 70%,"
+                   + (B.get("亮點色") or "#dfe7ff") + ",transparent);filter:blur(8px);animation:drift 12s ease-in-out infinite alternate}@keyframes drift{to{transform:translate(-40px,20px) scale(1.05)}}")
+    if B.get("霧面"):
+        out.append(".card{background:color-mix(in srgb,var(--bg) 60%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}")
+    if B.get("表面色"):
+        out.append(f".card{{background:{B['表面色']};border-color:transparent}}")
+    if B.get("亮點色"):
+        out.append(f"h1{{text-decoration:underline;text-decoration-color:{B['亮點色']};text-decoration-thickness:.32em;text-underline-offset:-.16em;text-decoration-skip-ink:none}}")
+    if B.get("深色區塊"):
+        out.append(f".dark{{background:{B['深色區塊']};color:#b9bcc6}}.dark .card{{border-color:#2a2c36;background:transparent}}.dark .card b{{color:#fff}}")
+    if B.get("等寬標籤"):
+        out.append(".eyebrow{font:500 12px 'JetBrains Mono',monospace;letter-spacing:.08em;color:var(--mute);margin-bottom:20px}")
+    out.append("body{position:relative;overflow-x:hidden}")
+    return "\n".join(out)
 
 
 def shoot(html_path: Path) -> tuple[str, str]:
@@ -217,16 +264,21 @@ def cmd_tiles(a) -> int:
     picks = json.loads(Path(a.picks).read_text(encoding="utf-8"))
     out = Path(a.out or Path(a.picks).parent)
     out.mkdir(parents=True, exist_ok=True)
-    fx = flexible(picks)
-    variants = [("照你的選擇", []), (f"改 {fx[0]}", [fx[0]]), (f"改 {fx[1]}、{fx[2]}", [fx[1], fx[2]])]
+    liked = [r for r, v in picks.get("參考牆", {}).items() if v.get("判") == "要"]
+    weak = [x["id"] for x in AXES if picks.get("二選一", {}).get(x["id"]) in (None, "都可以")]
+    if not weak and len(liked) >= 2:   # every axis decided: never reverse the owner's picks; vary by which liked reference lends type and colour
+        variants = [(f"照你的選擇＋借 {Path(r).name}", [], r) for r in liked[:3]]
+    else:
+        fx = flexible(picks)
+        variants = [("照你的選擇", [], None), (f"改 {fx[0]}", [fx[0]], None), (f"改 {fx[1]}、{fx[2]}", [fx[1], fx[2]], None)]
     tiles = []
-    for i, (name, flip) in enumerate(variants, 1):
-        d = direction(picks, flip)
+    for i, (name, flip, borrow) in enumerate(variants, 1):
+        d = direction(picks, flip, borrow)
         f = out / f"tile{i}.html"
-        f.write_text(tile_html(d, a.headline, a.sub, a.cta), encoding="utf-8")
+        f.write_text(tile_html(d, a.headline, a.sub, a.cta, a.brand, a.point), encoding="utf-8")
         big, small = shoot(f)
         (out / f"direction{i}.json").write_text(json.dumps({"方向": i, "名稱": name, "說明": describe(d), **d}, ensure_ascii=False, indent=1), encoding="utf-8")
-        tiles.append({"名稱": name, "說明": describe(d), "桌機": big, "手機": small})
+        tiles.append({"名稱": name, "說明": describe(d), "桌機": big, "手機": small, "網頁": str(f.resolve())})
         print(f"方向 {i}（{name}）：{describe(d)}")
     refs = [{"目錄": r} for r in picks.get("參考", [])]
     p = page(picks.get("需求", ""), refs, None, out, tiles)
@@ -240,7 +292,7 @@ def cmd_choose(a) -> int:
     picks = json.loads(Path(a.picks).read_text(encoding="utf-8"))
     liked = {Path(k).name: v.get("點", []) for k, v in picks.get("參考牆", {}).items() if v.get("判") == "要"}
     card = {"方向卡": "web-v1", "日期": dt.date.today().isoformat(), "需求": picks.get("需求", ""), "選的方向": a.n, "說明": d["說明"],
-            "色盤": d["色盤"], "字體": d["字體"], "標題字級": d["標題字級"], "區塊間距": d["區塊間距"], "圓角": d["圓角"], "動態": d.get("動態"),
+            "色盤": d["色盤"], "字體": d["字體"], "標題字級": d["標題字級"], "區塊間距": d["區塊間距"], "圓角": d["圓角"], "動態": d.get("動態"), "借用": {k: v for k, v in d.get("借", {}).items() if v},
             "二選一": picks.get("二選一", {}), "參考": {"要": liked, "不要": [Path(k).name for k, v in picks.get("參考牆", {}).items() if v.get("判") == "不要"]}}
     (out / "direction.json").write_text(json.dumps(card, ensure_ascii=False, indent=1), encoding="utf-8")
     c = d["色盤"]
@@ -270,6 +322,7 @@ rounded:
 # Overview
 
 Direction chosen in 決策窗 C ({dt.date.today()}): {d['說明']}. References liked: {', '.join(f'{k}（{"、".join(v) or "整體"}）' for k, v in liked.items()) or 'none'}.
+Borrowed and measured from the reference: {', '.join(k for k, v in d.get('借', {}).items() if v) or 'nothing'}{' (mono labels: JetBrains Mono)' if d.get('借', {}).get('等寬標籤') else ''}.
 Fill in the remaining chapters from the teardown evidence (pb.py teardown) and mark every value 量／工具／目測.
 """
     (out / "DESIGN.seed.md").write_text(seed, encoding="utf-8")
@@ -282,6 +335,7 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("page"); s.add_argument("refs", nargs="+"); s.add_argument("--need", required=True); s.add_argument("--out", default="webdirection")
     s = sub.add_parser("tiles"); s.add_argument("picks"); s.add_argument("--headline", required=True); s.add_argument("--sub", required=True); s.add_argument("--cta", required=True); s.add_argument("--out")
+    s.add_argument("--brand", help="brand name in the nav"); s.add_argument("--point", action="append", help="a card line, 「標題：內文」 (repeat, up to 3)")
     s = sub.add_parser("choose"); s.add_argument("picks"); s.add_argument("n", type=int); s.add_argument("--out")
     a = ap.parse_args(argv)
     if a.cmd == "page":

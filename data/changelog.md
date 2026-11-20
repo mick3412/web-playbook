@@ -60,3 +60,4 @@
 - 2026-11-19 引擎同步：pb.py 加 `scout` 指令（外找同類範本，只在 production-playbook 有 bin/scout.py）
 - 2026-11-19 pb.py：review-pack --stage web 的下一步提示改成通用審查代理（不是 video-reviewer）
 - 2026-11-20 網站流程加 agent 複審與決策窗：review-pack 網站六段（web-ia、web-wire、web、web-code、web-a11y、web-launch）；新步驟 2.0 方向對齊（pb.py direction --web：page、tiles、choose；bin/webdirection.py、data/webdirection_rules.json）；決策窗 A–F 寫進 0.4、1.4、2.0、2.3、3.4、7.4，新關卡 G0.3、G2.0，G1.2、G2.2、G3.2、G7.1 改寫；條目 S0-03、S2-15、S5-11；R-00 加入；teardown 偵測機器人驗證頁就停（不繞過）、等不到網路閒置改等載入
+- 2026-11-20 方向對齊負責人實測後修正：五題都選定時改成各借一個參考站（不反轉選擇）、樣片借量得到的質感（光暈、霧面、深色區塊、表面色、亮點色、等寬標籤）、付費字換免費字、品牌與卡片用 --brand／--point；teardown 補機器人驗證措辭、等不到載入再退一層、載不到時清楚退出、底色改用截圖面積最大的顏色；S2-15 記實測

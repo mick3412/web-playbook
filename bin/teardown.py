@@ -67,7 +67,7 @@ PROBE = r"""
 """
 
 
-BLOCKED = re.compile(r"security verification|verify you are human|just a moment|attention required|are you a robot|captcha|access denied|請確認您是人類")
+BLOCKED = re.compile(r"security verification|verify you are human|just a moment|attention required|are you a robot|captcha|access denied|security service to protect|ray id|you have been blocked|request blocked|請確認您是人類")
 
 
 def log(*a):
@@ -85,9 +85,13 @@ def capture(url: str, out: Path) -> dict:
             pg = b.new_page(viewport={"width": w, "height": 900 if w > 800 else 812}, device_scale_factor=1)
             try:
                 pg.goto(url, wait_until="networkidle", timeout=25000)
-            except Exception:   # sites with long-polling or analytics beacons never go idle: fall back to load + a pause
-                pg.goto(url, wait_until="load", timeout=60000)
-                pg.wait_for_timeout(3000)
+            except Exception:   # sites with long-polling or analytics beacons never go idle: fall back to load, then to the parsed document
+                try:
+                    pg.goto(url, wait_until="load", timeout=30000)
+                    pg.wait_for_timeout(3000)
+                except Exception:
+                    pg.goto(url, wait_until="domcontentloaded", timeout=45000)
+                    pg.wait_for_timeout(6000)
             pg.wait_for_timeout(RULES["等待毫秒"])
             pg.screenshot(path=str(out / "shots" / f"w{w}_fold.png"))
             if w == RULES["量測寬度"]:
@@ -218,9 +222,7 @@ def image_metrics(path: Path, bg: tuple | None) -> dict:
 
 def measure(raw: dict, out: Path) -> dict:
     W = RULES["量測寬度"]
-    bg = rgb(raw.get("bg", ""))
-    if bg == (0, 0, 0) and "rgba(0, 0, 0, 0)" in raw.get("bg", ""):
-        bg = None
+    bg = None   # the colour that covers most of the screenshot; body's own background is often hidden under the page (ramp.com: body #640000, page white)
     shot = raw["shots"].get(W) or raw["shots"].get(str(W))    # keys turn into strings once raw.json is reloaded
     fold = image_metrics(out / shot["fold"], bg)
     full = image_metrics(out / shot["full"], bg)
@@ -431,7 +433,11 @@ def main(argv=None) -> int:
     out = Path(a.out or f"teardown-{host}-{dt.date.today()}")
     out.mkdir(parents=True, exist_ok=True)
     log(f"擷取 {a.url}（{', '.join(map(str, RULES['寬度']))}px）…")
-    raw = capture(a.url, out)
+    try:
+        raw = capture(a.url, out)
+    except Exception as e:  # noqa: BLE001
+        log(f"\n這個網站載不到（{str(e).splitlines()[0][:120]}）：可能擋無頭瀏覽器或一直在載入。換一個參考站，或請負責人自己截圖。")
+        return 3
     raw["url"] = a.url
     m = measure(raw, out)
     tools = {} if a.no_tools else (log("外部工具：") or run_tools(a.url, out, set(a.only.split(",")) if a.only else None))
