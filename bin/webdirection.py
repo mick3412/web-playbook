@@ -187,7 +187,7 @@ def saturation(hexc: str) -> float:
 def describe(d: dict) -> str:
     b = d["依據"]
     return "；".join([f"{'暗' if d['tone'] == 'dark' else '亮'}底", f"留白 {b.get('留白', '中')}（區塊間距 {d['區塊間距']}px）", f"字級反差 {b.get('反差', '中')}（標題 {d['標題字級']}px）",
-                     f"色彩 {b.get('色彩', '收斂')}", f"動態 {b.get('動態', '少')}", f"字體 {d['字體']['標題']}"] + ([f"強調色{b['強調色']}"] if b.get("強調色") else []) + ([f"借：{b['借用']}"] if b.get("借用") else []))
+                     f"色彩 {b.get('色彩', '收斂')}", f"動態 {b.get('動態', '少')}", f"字體 {d['字體']['標題']}"] + (["色彩與字體鎖定為現行品牌"] if d["依據"].get("品牌鎖定") else []) + ([f"強調色{b['強調色']}"] if b.get("強調色") else []) + ([f"借：{b['借用']}"] if b.get("借用") else []))
 
 
 def tile_html(d: dict, headline: str, sub: str, cta: str, brand: str | None = None, points: list | None = None) -> str:
@@ -198,7 +198,7 @@ def tile_html(d: dict, headline: str, sub: str, cta: str, brand: str | None = No
     feats = [(p.split("：")[0], p.split("：", 1)[1]) if "：" in p else ("", p) for p in points] if points else RULES["樣片文案"]["特色"]
     cards = "".join(f"<div class='card{' v' + str(i) if vivid else ''}'><b>{html.escape(t)}</b><p>{html.escape(x)}</p></div>" for i, (t, x) in enumerate(feats))
     return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;510;600&family=Fraunces:opsz,wght@9..144,400;9..144,600{'&family=' + d['字體']['標題'].replace(' ', '+') + ':wght@400;500;600' if d['字體']['標題'] not in ('Inter', 'Fraunces') else ''}&display=swap" rel="stylesheet"><style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;510;600&family=Fraunces:opsz,wght@9..144,400;9..144,600{''.join('&family=' + x.replace(' ', '+') + ':wght@400;500;600' for x in {d['字體']['標題'], d['字體']['內文']} if x not in ('Inter', 'Fraunces'))}&display=swap" rel="stylesheet"><style>
 :root{{--bg:{c['background']};--fg:{c['foreground']};--mute:{c['muted']};--line:{c['border']};--acc:{c['accent']}}}
 *{{box-sizing:border-box;margin:0}}body{{background:var(--bg);color:var(--mute);font:400 16px/1.6 {d['字體']['內文棧']}}}
 .w{{max-width:1200px;margin:0 auto;padding:0 32px}}nav{{display:flex;align-items:center;gap:28px;height:72px;font-size:14px;border-bottom:1px solid var(--line)}}
@@ -260,6 +260,25 @@ def flexible(picks: dict) -> list[str]:
     return weak + [x for x in ("亮暗", "色彩", "留白", "反差") if x not in weak]
 
 
+def lock_brand(d: dict, brand: dict) -> dict:
+    """An existing brand wins over the picks for colour and type (project rules come first); only layout, contrast, motion and texture vary.
+    Reads a brand file shaped like {"colors": {primary, background, accent, muted?, text?}, "fonts": {heading, body}} (fonts_web wins when present)."""
+    c, f = brand.get("colors", {}), brand.get("fonts_web") or brand.get("fonts", {})
+    pal = d["色盤"]
+    pal.update({k: v for k, v in {"background": c.get("background"), "foreground": c.get("text") or c.get("primary"), "muted": c.get("muted"),
+                                   "border": c.get("secondary"), "accent": c.get("accent")}.items() if v})
+    d["tone"] = "dark" if lum(pal["background"]) < 0.3 else "light"
+    if f.get("heading"):
+        serif = any(x in f["heading"].lower() for x in ("fraunces", "bodoni", "garamond", "serif", "spectral", "playfair"))
+        d["字體"].update({"標題": f["heading"], "標題棧": f"'{f['heading']}', {'Georgia, serif' if serif else 'sans-serif'}"})
+    if f.get("body"):
+        d["字體"].update({"內文": f["body"], "內文棧": f"'{f['body']}', sans-serif"})
+    d["依據"]["品牌鎖定"] = "色彩與字體照現行品牌"
+    d.pop("強調色覆寫", None)
+    d["依據"].pop("強調色", None)   # the brand's accent replaced any borrowed one
+    return d
+
+
 def cmd_tiles(a) -> int:
     picks = json.loads(Path(a.picks).read_text(encoding="utf-8"))
     out = Path(a.out or Path(a.picks).parent)
@@ -274,6 +293,8 @@ def cmd_tiles(a) -> int:
     tiles = []
     for i, (name, flip, borrow) in enumerate(variants, 1):
         d = direction(picks, flip, borrow)
+        if a.brand_lock:
+            d = lock_brand(d, json.loads(Path(a.brand_lock).read_text(encoding="utf-8")))
         f = out / f"tile{i}.html"
         f.write_text(tile_html(d, a.headline, a.sub, a.cta, a.brand, a.point), encoding="utf-8")
         big, small = shoot(f)
@@ -335,7 +356,7 @@ def main(argv=None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("page"); s.add_argument("refs", nargs="+"); s.add_argument("--need", required=True); s.add_argument("--out", default="webdirection")
     s = sub.add_parser("tiles"); s.add_argument("picks"); s.add_argument("--headline", required=True); s.add_argument("--sub", required=True); s.add_argument("--cta", required=True); s.add_argument("--out")
-    s.add_argument("--brand", help="brand name in the nav"); s.add_argument("--point", action="append", help="a card line, 「標題：內文」 (repeat, up to 3)")
+    s.add_argument("--brand", help="brand name in the nav"); s.add_argument("--brand-lock", help="a brand file (colors, fonts): keep the product's colour and type, vary the rest"); s.add_argument("--point", action="append", help="a card line, 「標題：內文」 (repeat, up to 3)")
     s = sub.add_parser("choose"); s.add_argument("picks"); s.add_argument("n", type=int); s.add_argument("--out")
     a = ap.parse_args(argv)
     if a.cmd == "page":

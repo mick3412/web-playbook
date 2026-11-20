@@ -117,6 +117,7 @@
           "name": "方向對齊",
           "do": "【決策窗 C 方向】開設計系統前，先用看得到的樣本對整站氣質，不只靠文字：挑 3–5 個參考站各跑 `pb.py teardown <網址> --no-tools` → `pb.py direction --web page <拆解資料夾…> --need \"需求\"` 出本機頁面（不發佈）→ 負責人做二選一（亮暗、留白、標題與內文反差、色彩收斂或繽紛、動態多寡，每題取參考站的兩極）、在參考牆標要或不要並勾要的是哪一點 → 下載 picks.json → `pb.py direction --web tiles picks.json --headline … --sub … --cta …` 用我們的文案做 3 個首屏 style tile → 負責人選一個 → `pb.py direction --web choose picks.json N` 寫出方向卡 direction.json 與 DESIGN.seed.md，2.2 從它開始寫 DESIGN.md",
           "ways": [
+            "產品已有品牌時，tiles 加 `--brand-lock <品牌檔，如 config/brand.json>`：色彩與字體照現行品牌，只讓版面、反差、動態與質感變化（專案規則優先）；只有負責人決定重開品牌視覺時才不鎖，產出的 DESIGN.md 標為候選、不改現行設定",
             "參考站被機器人驗證擋下時 teardown 會標「被擋」並退出，不繞過；換一個參考或請負責人自己截圖",
             "參考站 5 個以上，二選一比較能只差一個軸；3 個時頁面會標出還差在哪"
           ]

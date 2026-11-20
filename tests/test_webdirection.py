@@ -90,6 +90,17 @@ class Tiles(unittest.TestCase):
         self.assertEqual(json.loads((tmp / "direction.json").read_text(encoding="utf-8"))["選的方向"], 1)
 
 
+class BrandLock(unittest.TestCase):
+    def test_an_existing_brand_keeps_its_colour_and_type(self):
+        d = W.direction({"二選一": {"亮暗": "暗", "反差": "大"}, "參考牆": {}})
+        brand = {"colors": {"background": "#F5F0E6", "text": "#111111", "accent": "#C9A45C"}, "fonts_web": {"heading": "Bodoni Moda", "body": "IBM Plex Sans"}}
+        d = W.lock_brand(d, brand)
+        self.assertEqual((d["色盤"]["background"], d["色盤"]["accent"], d["tone"]), ("#F5F0E6", "#C9A45C", "light"))   # the brand wins over the dark pick
+        self.assertIn("serif", d["字體"]["標題棧"])
+        self.assertEqual(d["標題字級"], 80)                                                                          # the rest of the picks still apply
+        self.assertIn("鎖定", W.describe(d))
+
+
 class ReviewStages(unittest.TestCase):
     def test_every_web_stage_has_a_checklist_and_a_parser_choice(self):
         C = json.loads((REPO / "data" / "review_checklists.json").read_text(encoding="utf-8"))
