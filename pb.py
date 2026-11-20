@@ -2827,8 +2827,13 @@ def cmd_review_pack(a) -> int:
     if not path.is_file():
         sys.exit("這本手冊沒有送審審查表（data/review_checklists.json：影片在 production-playbook、網站在 web-playbook）。")
     R = json.loads(path.read_text(encoding="utf-8"))
+    if a.stage not in R:
+        sys.exit(f"這本手冊的審查表沒有「{a.stage}」：有 " + "、".join(k for k, v in R.items() if isinstance(v, dict) and "名稱" in v))
     S, rnd = R[a.stage], str(a.round)
-    out = Path(a.out or (Path(a.card).parent if a.card else Path(".")) / "review")
+    if rnd not in S:
+        sys.exit(f"{S['名稱']}只有一輪，不開第 {rnd} 輪；報告附給負責人")
+    base = Path(a.card).parent if a.card else (Path(a.files[0]).parent if a.files else Path("."))
+    out = Path(a.out) if a.out else base / "review"
     out.mkdir(parents=True, exist_ok=True)
     card = json.loads(Path(a.card).read_text(encoding="utf-8")) if a.card else None
     if card and layouts():
@@ -2844,16 +2849,20 @@ def cmd_review_pack(a) -> int:
     looks = []
     if a.video:
         frames = _keyframes(a.video, card, rd)
-        looks.append(f"- 動態分鏡影片：`{Path(a.video).resolve()}`（看節奏與轉場；需要時自己抽格）")
+        looks.append(f"- {'成片' if a.stage == 'final' else '動態分鏡影片'}：`{Path(a.video).resolve()}`（看節奏與轉場；需要時自己抽格）")
         if (rd / "contact_sheet.jpg").is_file():
             looks.append(f"- 定格拼圖：`{(rd / 'contact_sheet.jpg').resolve()}`（由左到右、由上到下）：" + "；".join(f"{i}. {lab}" for i, (_, lab) in enumerate(frames, 1)))
         looks += [f"- `{(rd / n).resolve()}`：{lab}" for n, lab in frames]
     for im in a.stills or []:
         looks.append(f"- 定格：`{Path(im).resolve()}`")
+    for fp in a.files or []:
+        if not Path(fp).is_file():
+            sys.exit(f"找不到附件：{fp}")
+        looks.append(f"- 附件：`{Path(fp).resolve()}`（整份讀完）")
     if card:
         looks.append(f"- 卡片：`{Path(a.card).resolve()}`（每段的版型、文字、秒數、motion；欄位說明在 kits/storyboard/layouts.json）")
     if not looks:
-        sys.exit("沒有東西可審：給 --video（動態分鏡）或 --stills（定格圖）")
+        sys.exit("沒有東西可審：給 --video（動態分鏡或成片）、--stills（定格或候選圖）或 --files（稿、報告、說明文字）")
     prev = ""
     if rnd == "2":
         if not a.prev or not Path(a.prev).is_file():
@@ -2874,7 +2883,10 @@ def cmd_review_pack(a) -> int:
     print(f"已寫出審查包：{bp}")
     who = "一個新的審查子代理（沒參與製作、照審查包判斷、只寫報告）" if a.stage == "web" else "一個新的 video-reviewer 子代理"
     print(f"下一步：派{who}（不要沿用上一輪的），任務說明只寫：「讀 {bp.resolve()} 照做」。")
-    print("它寫完報告後：改作品 → " + ("`pb.py review-pack ... --round 2 --prev " + str(report) + "`（換另一個新代理）" if rnd == "1" else "兩份報告附給負責人核准；第二輪後仍未解決的由負責人決定，不再開第三輪"))
+    if "2" not in S:
+        print("它寫完報告後：照報告處理，報告附給負責人（這種審查一輪即可）")
+    else:
+        print("它寫完報告後：改作品 → " + ("`pb.py review-pack ... --round 2 --prev " + str(report) + "`（換另一個新代理）" if rnd == "1" else "兩份報告附給負責人核准；第二輪後仍未解決的由負責人決定，不再開第三輪"))
     return 0
 
 
@@ -3507,12 +3519,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("card")
     p.add_argument("--template", help="also check the beats follow this template's layouts, e.g. SB-T10")
     p.set_defaults(fn=cmd_card_check)
-    p = sub.add_parser("review-pack", help="build one agent review round for a storyboard or design submission (production-playbook)")
-    p.add_argument("--stage", choices=["storyboard", "design", "web"], default="storyboard")
+    p = sub.add_parser("review-pack", help="build one agent review round: script, storyboard, design, assets, final cut, publish text (production-playbook) or web")
+    p.add_argument("--stage", choices=["script", "storyboard", "design", "assets", "final", "publish", "web"], default="storyboard")
     p.add_argument("--round", type=int, choices=[1, 2], default=1)
     p.add_argument("--card", help="the kit card.json (card-check runs first)")
     p.add_argument("--video", help="the animatic or draft video")
-    p.add_argument("--stills", nargs="+", help="style frames for a design submission")
+    p.add_argument("--stills", nargs="+", help="style frames for a design submission, or candidate images for an assets review")
+    p.add_argument("--files", nargs="+", help="text attachments the reviewer reads in full: script, fact sheet, qa or similar report, transcript, caption text")
     p.add_argument("--brief", help="the request in one or two sentences")
     p.add_argument("--prev", help="round 1 report (required for round 2)")
     p.add_argument("--out", help="folder for the pack (default: review/ next to the card)")
