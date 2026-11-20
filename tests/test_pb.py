@@ -56,7 +56,7 @@ class PlaybookTest(unittest.TestCase):
         self.assertTrue((self.project / ".website" / "active.json").is_file())
         self.assertIn("進行中的作品（web-playbook）", self.pb("hook", "session"))
         self.assertIn("G0.1", self.pb("advance", ok=False))
-        self.pb("check-off", "G0.1", "G0.2")
+        self.pb("check-off", "G0.1", "G0.2", "G0.3")
         self.assertIn("1 內容與架構", self.pb("advance"))
         self.pb("done")
         self.assertEqual(self.pb("hook", "prompt"), "")

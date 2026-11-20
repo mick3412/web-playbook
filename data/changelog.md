@@ -59,3 +59,4 @@
 - 2026-11-19 參考網站拆解與重現：pb.py teardown／teardown compare（bin/teardown.py、data/teardown_rules.json）、review-pack --stage web（data/review_checklists.json）；工具 T-82–T-89（designlang、dembrandt、webanalyze、SiteOne、SingleFile、DESIGN.md CLI、fontpls、animation-reverse-engineering），T-09 改已安裝、T-05 註明不解析動畫；條目 S2-10–S2-14、S3-09、S5-10；步驟 2.1 修正 extract-style 誤指、2.2、3.3、5.4 改名；關卡 G2.5、G5.2；配方 R-06；分面加「參考拆解」；linear.app 實測與兩輪評審
 - 2026-11-19 引擎同步：pb.py 加 `scout` 指令（外找同類範本，只在 production-playbook 有 bin/scout.py）
 - 2026-11-19 pb.py：review-pack --stage web 的下一步提示改成通用審查代理（不是 video-reviewer）
+- 2026-11-20 網站流程加 agent 複審與決策窗：review-pack 網站六段（web-ia、web-wire、web、web-code、web-a11y、web-launch）；新步驟 2.0 方向對齊（pb.py direction --web：page、tiles、choose；bin/webdirection.py、data/webdirection_rules.json）；決策窗 A–F 寫進 0.4、1.4、2.0、2.3、3.4、7.4，新關卡 G0.3、G2.0，G1.2、G2.2、G3.2、G7.1 改寫；條目 S0-03、S2-15、S5-11；R-00 加入；teardown 偵測機器人驗證頁就停（不繞過）、等不到網路閒置改等載入

@@ -2376,10 +2376,13 @@ def cmd_teardown(a) -> int:
 
 def cmd_direction(a) -> int:
     """Direction alignment before any storyboard: this-or-that pairs, a reference wall, three sample renders → 方向卡."""
-    tool = DATA.parent / "bin" / "direction.py"
+    rest = list(a.rest)
+    web = getattr(a, "web", False) or "--web" in rest or not (DATA.parent / "bin" / "direction.py").is_file()
+    rest = [x for x in rest if x != "--web"]
+    tool = DATA.parent / "bin" / ("webdirection.py" if web else "direction.py")
     if not tool.is_file():
-        sys.exit("這本手冊沒有方向對齊工具（bin/direction.py 在 production-playbook）。")
-    return subprocess.call([sys.executable, str(tool), *a.rest])
+        sys.exit("這本手冊沒有方向對齊工具（影片：production-playbook 的 bin/direction.py；網站：web-playbook 的 bin/webdirection.py，用 --web）。")
+    return subprocess.call([sys.executable, str(tool), *rest])
 
 
 def cmd_scout(a) -> int:
@@ -2881,7 +2884,7 @@ def cmd_review_pack(a) -> int:
     bp = out / f"round{rnd}_brief.md"
     bp.write_text(brief + "\n", encoding="utf-8")
     print(f"已寫出審查包：{bp}")
-    who = "一個新的審查子代理（沒參與製作、照審查包判斷、只寫報告）" if a.stage == "web" else "一個新的 video-reviewer 子代理"
+    who = "一個新的審查子代理（沒參與製作、照審查包判斷、只寫報告）" if a.stage.startswith("web") else "一個新的 video-reviewer 子代理"
     print(f"下一步：派{who}（不要沿用上一輪的），任務說明只寫：「讀 {bp.resolve()} 照做」。")
     if "2" not in S:
         print("它寫完報告後：照報告處理，報告附給負責人（這種審查一輪即可）")
@@ -3486,6 +3489,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("rest", nargs=argparse.REMAINDER)
     p.set_defaults(fn=cmd_teardown)
     p = sub.add_parser("direction", help="direction alignment: pairs, reference wall, three samples → 方向卡 (production-playbook)", add_help=False)
+    p.add_argument("--web", action="store_true", help="website direction (web-playbook bin/webdirection.py)")
     p.add_argument("rest", nargs=argparse.REMAINDER)
     p.set_defaults(fn=cmd_direction)
     p = sub.add_parser("prompt-check", help="check an image or video prompt against the skeleton (production-playbook)")
@@ -3520,7 +3524,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--template", help="also check the beats follow this template's layouts, e.g. SB-T10")
     p.set_defaults(fn=cmd_card_check)
     p = sub.add_parser("review-pack", help="build one agent review round: script, storyboard, design, assets, final cut, publish text (production-playbook) or web")
-    p.add_argument("--stage", choices=["script", "storyboard", "design", "assets", "final", "publish", "web"], default="storyboard")
+    p.add_argument("--stage", choices=["script", "storyboard", "design", "assets", "final", "publish", "web", "web-ia", "web-wire", "web-code", "web-a11y", "web-launch"], default="storyboard")
     p.add_argument("--round", type=int, choices=[1, 2], default=1)
     p.add_argument("--card", help="the kit card.json (card-check runs first)")
     p.add_argument("--video", help="the animatic or draft video")

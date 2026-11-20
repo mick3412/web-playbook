@@ -67,6 +67,9 @@ PROBE = r"""
 """
 
 
+BLOCKED = re.compile(r"security verification|verify you are human|just a moment|attention required|are you a robot|captcha|access denied|請確認您是人類")
+
+
 def log(*a):
     print(*a, flush=True)
 
@@ -80,11 +83,18 @@ def capture(url: str, out: Path) -> dict:
         b = p.chromium.launch(channel="chrome")
         for w in RULES["寬度"]:
             pg = b.new_page(viewport={"width": w, "height": 900 if w > 800 else 812}, device_scale_factor=1)
-            pg.goto(url, wait_until="networkidle", timeout=60000)
+            try:
+                pg.goto(url, wait_until="networkidle", timeout=25000)
+            except Exception:   # sites with long-polling or analytics beacons never go idle: fall back to load + a pause
+                pg.goto(url, wait_until="load", timeout=60000)
+                pg.wait_for_timeout(3000)
             pg.wait_for_timeout(RULES["等待毫秒"])
             pg.screenshot(path=str(out / "shots" / f"w{w}_fold.png"))
             if w == RULES["量測寬度"]:
-                raw = pg.evaluate(PROBE)           # entrance animations are still listed before any scroll
+                raw = pg.evaluate(PROBE)
+                txt = pg.evaluate("() => (document.title + ' ' + document.body.innerText.slice(0, 600)).toLowerCase()")
+                if BLOCKED.search(txt):   # a bot check: never click through it; its measurements describe the check page, not the site
+                    raw["被擋"] = True           # entrance animations are still listed before any scroll
             h = pg.evaluate("document.documentElement.scrollHeight")
             for y in range(0, min(h, 20000), 600):   # scroll through so lazy content and scroll animations fire
                 pg.evaluate(f"window.scrollTo(0, {y})")
@@ -427,6 +437,13 @@ def main(argv=None) -> int:
     tools = {} if a.no_tools else (log("外部工具：") or run_tools(a.url, out, set(a.only.split(",")) if a.only else None))
     ts = tool_summary(out)
     p = report(a.url, out, m, tools, ts)
+    if raw.get("被擋"):
+        txt = p.read_text(encoding="utf-8")
+        p.write_text(txt.replace("\n\n", "\n\n**這個網站回的是機器人驗證頁，量測描述的是驗證頁、不是網站本身：不要用。不繞過驗證；換一個參考站，或請負責人自己截圖。**\n\n", 1), encoding="utf-8")
+        m["被擋"] = True
+        (out / "measure.json").write_text(json.dumps(m, ensure_ascii=False, indent=1), encoding="utf-8")
+        log("\n注意：這個網站回的是機器人驗證頁，量測不能用（不繞過驗證）。")
+        return 2
     log(f"\n完成：{p}\n量測：{out / 'measure.json'}｜截圖：{out / 'shots'}")
     return 0
 
