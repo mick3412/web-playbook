@@ -8774,6 +8774,129 @@
     ]
    },
    "比對": "構圖與質感數值 2026-11-19 從原始碼補齊（字級換算成畫面高 %、暗角、顆粒、形狀、陰影、色彩用途、抖動做法）"
+  },
+  "羊毛氈": {
+   "英文": "needle felt",
+   "定義": "整個場景用羊毛氈與毛線做成的微縮模型，看得到纖維、針腳與手作的不平整",
+   "效果": "溫暖、療癒、童話感",
+   "上層": "數位材質",
+   "特徵": {
+    "線條": "無描線，輪廓是毛茸邊",
+    "色彩": "柔和飽和，毛線本色",
+    "形狀": "圓胖、略不對稱",
+    "深度與光影": "微縮攝影淺景深，暖光加冷月光",
+    "字體": "—",
+    "動態": "小而慢的動作，帶定格動畫的停頓感"
+   },
+   "數值": {
+    "景深": "淺，主體清楚、背景散景",
+    "動作幅度": "一次一個小動作，結尾停住"
+   },
+   "易混淆": "黏土定格：後者是黏土、表面光滑有指紋；刺繡：後者是平面繡在布上",
+   "同義詞": [
+    "needle felt",
+    "wool felt",
+    "羊毛毡",
+    "毛氈",
+    "wool-felt"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S85"
+   ],
+   "用語": {
+    "中文": "羊毛氈",
+    "英文": [
+     "needle felt"
+    ],
+    "簡中": "羊毛毡",
+    "其他說法": [
+     "毛氈",
+     "針氈"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Cinematic handmade wool-and-felt miniature scene, tactile wool fibers, visible stitching, soft felt density, shallow miniature depth of field. Small, deliberate movement with subtle stop-motion timing. Negatives: melting or smoothing fibers, changing stitches, a moving mouth on a stitched face, exaggerated motion",
+      "程式動畫": "依特徵做；質感用貼圖或濾鏡模擬，動作照特徵·動態",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Cinematic handmade wool-and-felt miniature scene, tactile wool fibers, visible stitching, soft felt density, shallow miniature depth of field"
+     }
+    }
+   }
+  },
+  "皮影": {
+   "英文": "shadow puppet",
+   "定義": "傳統皮影戲：半透明染色皮革的鏤空人偶貼在發光幕上，只在鉚釘關節轉動",
+   "效果": "古典、說書、民俗",
+   "上層": "繪畫版畫",
+   "特徵": {
+    "線條": "鏤空雕花的硬邊",
+    "色彩": "背光透出的紅、綠、黃染色，幕面暖黃",
+    "形狀": "扁平側面剪影，關節分段",
+    "深度與光影": "整幕背光，人偶貼幕無透視",
+    "字體": "—",
+    "動態": "只在關節轉、一步一停，身體不彎、不轉向鏡頭"
+   },
+   "數值": {
+    "視角": "正側面",
+    "關節": "肩、肘、膝等鉚釘點"
+   },
+   "易混淆": "剪紙拼貼：後者是紙層前後疊、有投影；彩繪玻璃：後者是黑色鉛條分格",
+   "同義詞": [
+    "shadow puppet",
+    "shadow-puppet",
+    "皮影戲",
+    "影戲"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S85"
+   ],
+   "用語": {
+    "中文": "皮影",
+    "英文": [
+     "shadow puppet"
+    ],
+    "簡中": "皮影",
+    "其他說法": [
+     "皮影戲",
+     "影戲"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Traditional Chinese shadow-puppet theatre stage still, warm back-lit glow, translucent dyed leather, crisp openwork carving, flat side-profile figures pressed against the screen. Leather pieces stay rigid and pivot only at rivet joints, in stepped settle-and-hold beats. Negatives: realistic skin, rounded 3D puppets, bending or folding leather, a puppet turning toward the camera, blurred carved edges, broken or extra control rods",
+      "程式動畫": "依特徵做；質感用貼圖或濾鏡模擬，動作照特徵·動態",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Traditional Chinese shadow-puppet theatre stage still, warm back-lit glow, translucent dyed leather, crisp openwork carving, flat side-profile figures pressed against the screen"
+     }
+    }
+   }
   }
  },
  "策略": {
