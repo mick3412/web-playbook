@@ -103,3 +103,4 @@
 | T-81 | MotionSites claude-skill | 待試 | 要快速做一頁高動態感的登陸頁草稿（影片背景、3D、捲動動畫）時；正式品牌站仍以設計系統為準 | 下一次要做動態感登陸頁草稿 | 何時：下一次做登陸頁草稿｜怎麼做：同一份需求分別用它和 taste-skill 各做一版｜看什麼：畫面是否不像 AI 套版、能否接回設計系統｜有效＝明顯比 taste-skill 版好才留 |
 | T-88 | fontpls | 待試 | 要知道參考站用了哪些字體檔與 @font-face 設定時（只研究，不帶走字體） | 下一次用 pb.py teardown 拆解參考站 | 下一次拆解時跑一次，看字重與 font-feature 是否比 teardown 的 document.fonts 清單多；字體檔不能用在作品 |
 | T-89 | animation-reverse-engineering（技能） | 待試 | 參考站的動畫是 JS、canvas 或 WebGL 驅動，getAnimations 讀不到時 | 下一次參考站的動畫 getAnimations 讀不到（JS／canvas／WebGL） | 下一次參考站有 JS 動畫時，拿它拆的數值和 DevTools 量到的比 3 個 |
+| T-90 | unslop-ui（felipebasurto） | 待試 | 介面文字、圖表、儀表板看起來像 AI 做的，要清掉文字層的痕跡時；版面與視覺層用 T-29 | 下一次做 5.4 上線前檢查時 | 何時：下一個上線前的頁面｜怎麼做：對同一頁跑 unslop-ui 和 T-29，另拿一頁本來乾淨的頁面跑 unslop-ui｜看什麼：兩者找到的痕跡重疊多少、改寫字句是否要重改、乾淨頁結論是否為不用改｜有效＝找到 T-29 沒抓到的文字痕跡，且乾淨頁判不用改 |

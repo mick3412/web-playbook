@@ -8897,6 +8897,74 @@
      }
     }
    }
+  },
+  "黑白物件剪貼": {
+   "英文": "monochrome cutout collage",
+   "定義": "淺灰紙底上放去背的黑白照片物件（像老版畫或網點印刷），配一個橘紅重點色、等寬字小標和細線框，像資訊型報刊的拼貼版",
+   "效果": "冷靜、資訊感、帶一點復古編輯味",
+   "上層": "編輯排版",
+   "特徵": {
+    "線條": "細黑線框與十字定位記號",
+    "色彩": "灰白黑為主，只有一個橘紅重點色（數字、刪除線、強調）",
+    "形狀": "去背物件，邊緣乾淨，常放大到出框",
+    "深度與光影": "平面，物件只有原照片的灰階明暗",
+    "字體": "粗黑無襯線大標＋等寬字小標與註記",
+    "動態": "物件滑入或縮放到位，數字跳動，橘色標記劃過"
+   },
+   "數值": {
+    "重點色": "只用一個，約 #E8553A 的橘紅",
+    "灰底": "約 #E6E6E3",
+    "物件": "黑白、高對比、可加網點顆粒"
+   },
+   "易混淆": "報紙版式：多欄細字、資訊密集，沒有大物件；剪紙拼貼：彩色紙片堆疊帶投影",
+   "同義詞": [
+    "monochrome cutout collage",
+    "黑白剪貼",
+    "灰底剪貼",
+    "halftone cutout"
+   ],
+   "專有名稱": [],
+   "設計屬性": {
+    "紋理": [
+     "紙紋"
+    ]
+   },
+   "來源": [
+    "S88"
+   ],
+   "用語": {
+    "中文": "黑白物件剪貼",
+    "英文": [
+     "monochrome cutout collage"
+    ],
+    "簡中": "黑白物件剪贴",
+    "其他說法": [
+     "黑白剪貼報刊",
+     "灰底剪貼"
+    ]
+   },
+   "落地": {
+    "影片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Editorial collage on a light gray paper background: cut-out black-and-white halftone photographs of objects, a single orange-red accent color, bold black sans-serif headlines with small monospace labels and thin black frame lines. Flat, no perspective; objects slide or scale into place. Negatives: extra accent colors, color photos, drop shadows, 3D rendering, gradients",
+      "程式動畫": "依特徵做：物件用去背灰階 PNG，重點色只給數字與標記；動作照特徵·動態",
+      "實拍": "—"
+     }
+    },
+    "圖片": {
+     "值": {},
+     "寫法": {
+      "AI 生成": "Editorial collage on a light gray paper background, cut-out black-and-white halftone photographs of objects, a single orange-red accent, bold black sans-serif headline, small monospace labels, thin black frame lines. Negatives: extra colors, color photos, drop shadows, 3D, gradients"
+     }
+    },
+    "網頁": {
+     "值": {},
+     "寫法": {
+      "程式": "灰底 #E6E6E3、重點色單一 #E8553A、去背灰階圖、等寬字小標與細線框"
+     }
+    }
+   }
   }
  },
  "策略": {

@@ -104,6 +104,7 @@
 | [agent-browser（Vercel Labs）](https://github.com/vercel-labs/agent-browser)（T-49） | 待試 | 免費 | Apache-2.0（寬鬆） | 要讓 agent 實際開頁面、填表單、多寬度截圖檢查時；和 Playwright CLI（T-07）比 |
 | [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)（T-67） | 待試 | 免費 | 服務條款（未標） | 檢查文字與背景的對比是否達 WCAG AA／AAA 時 |
 | [axe-core（Deque）](https://github.com/dequelabs/axe-core)（T-79） | 待試 | 免費 | MPL-2.0（寬鬆） | 上線前自動檢查無障礙問題時（可接 Playwright 每次跑） |
+| [unslop-ui（felipebasurto）](https://github.com/felipebasurto/unslop-ui)（T-90） | 待試 | 免費 | MIT（寬鬆） | 介面文字、圖表、儀表板看起來像 AI 做的，要清掉文字層的痕跡時；版面與視覺層用 T-29 |
 | [uSpec（create-voice）](https://github.com/redongreen/uSpec)（T-75） | 待查 | 不明 | 未查（未標） | 交接前要寫螢幕閱讀器規格時 |
 
 ## 6 SEO 與 AI 搜尋

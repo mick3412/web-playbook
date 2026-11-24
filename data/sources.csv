@@ -57,3 +57,4 @@
 "S81","負責人提供的 Gemini 文件〈網站拆解與風格重現計畫〉；逐項查證，10 處錯誤已修正","~/.gemini/antigravity/brain/…/website-reverse-engineering-workflow.md","2026-11-19","採用四個失真維度與五階段骨架"
 "S82","Anthropic〈Improving frontend design through Skills〉：distributional convergence 與四個指令維度","https://claude.com/blog/improving-frontend-design-through-skills","2026-11-19",""
 "S83","Design2Code（分塊指標）、DCGen（分治重建）、Sketch2Code（主動提問）等網頁還原研究","https://github.com/NoviScl/Design2Code","2026-11-19","自我修正多輪收益有限 → 最多 3 輪"
+"S84","felipebasurto/unslop-ui（產品經理的背後靈 IG 片介紹）","https://github.com/felipebasurto/unslop-ui ；https://www.instagram.com/reel/DgBk4Upp6Hb/","2026-11-24","MIT，819 星（2026-11-24）；片中「十處到一處」是作者手動標的示範，README 的 31→0 範例 helper 查不到"
