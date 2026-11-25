@@ -111,11 +111,11 @@
 
 | 工具 | 狀態 | 費用 | 授權 | 何時用 |
 |---|---|---|---|---|
+| [Claude SEO](https://github.com/AgriciDaniel/claude-seo)（T-23） | 已安裝 | 免費 | MIT（寬鬆） | 網站上線前後做 SEO 與 AI 搜尋健檢 |
 | [GEO Optimizer](https://github.com/Auriti-Labs/geo-optimizer-skill)（T-03） | 待試 | 不明 | MIT（寬鬆） | 檢查網站對 ChatGPT、Perplexity、Google AI 摘要、Gemini、Claude 的能見度，給 0–100 分、九大類結果和修正建議 |
-| [Claude SEO](https://github.com/AgriciDaniel/claude-seo)（T-23） | 待試 | 免費 | MIT（寬鬆） | 網站上線前後做 SEO 與 AI 搜尋健檢 |
-| [geo-seo-claude](https://github.com/zubair-trabzada/geo-seo-claude)（T-35） | 待試 | 免費 | MIT（寬鬆） | 做 AI 搜尋能見度健檢時 |
 | [localseoskills](https://github.com/garrettjsmith/localseoskills)（T-24） | 未採用 | 部分付費 | MIT（寬鬆） | 做在地商家的 SEO：Google 商家檔案、評論、名錄、在地關鍵字、AI 在地搜尋。W5 比較：保留 T-35 geo-seo-claude（主用）與 T-23 Claude SEO（範圍廣） |
 | [All-In-One Free SEO Tool](https://github.com/IamRamgarhia/All-In-One-Free-SEO-Tool)（T-25） | 未採用 | 免費 | MIT（寬鬆） | 要免費做關鍵字研究、關鍵字缺口、競品比較、AI 能見度、在地 SEO 時。W5 比較：保留 T-35 geo-seo-claude（主用）與 T-23 Claude SEO（範圍廣） |
+| [geo-seo-claude](https://github.com/zubair-trabzada/geo-seo-claude)（T-35） | 未採用 | 免費 | MIT（寬鬆） | 做 AI 搜尋能見度健檢時 |
 | [NotFair Plugin（原 TopRank）](https://github.com/nowork-studio/notfair-plugin)（T-47） | 未採用 | 免費 | MIT（寬鬆） | 做 SEO、GEO 健檢與內容時。W5 比較：保留 T-35 geo-seo-claude（主用）與 T-23 Claude SEO（範圍廣） |
 | [OpenSEO](https://github.com/every-app/open-seo)（T-02） | 避開 | 付費 | MIT（寬鬆） | 開源版的 Semrush／Ahrefs：關鍵字研究、排名追蹤、反向連結、網站健檢 |
 
