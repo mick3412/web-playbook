@@ -58,3 +58,4 @@
 "S82","Anthropic〈Improving frontend design through Skills〉：distributional convergence 與四個指令維度","https://claude.com/blog/improving-frontend-design-through-skills","2026-11-19",""
 "S83","Design2Code（分塊指標）、DCGen（分治重建）、Sketch2Code（主動提問）等網頁還原研究","https://github.com/NoviScl/Design2Code","2026-11-19","自我修正多輪收益有限 → 最多 3 輪"
 "S84","felipebasurto/unslop-ui（產品經理的背後靈 IG 片介紹）","https://github.com/felipebasurto/unslop-ui ；https://www.instagram.com/reel/DgBk4Upp6Hb/","2026-11-24","MIT，819 星（2026-11-24）；片中「十處到一處」是作者手動標的示範，README 的 31→0 範例 helper 查不到"
+"S85","另一專案的 SEO/GEO 規範 v2（使用者提供，內部資料已移除）","對話貼上；桌上實測紀錄 playbook-bench/production/refs/seo1126/notes.md","2026-11-26","6 項：一頁一意圖、先讀真人提問、事實逐句有來源、第一手素材、批次反垃圾、對照組判定；另指出 S8-02 用競品詞會帶到離題頁。證據為該專案自己的紀錄"
